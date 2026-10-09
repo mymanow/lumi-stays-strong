@@ -5,7 +5,7 @@ import { AppShell } from "@/components/hold/AppShell";
 import { Card, LangSwitch, PageTitle } from "@/components/hold/Common";
 import { ChevronIcon } from "@/components/hold/Icons";
 import { AccountLinker } from "@/components/hold/AccountLinker";
-import { ReminderControl } from "./onboarding";
+import { ReminderControl } from "@/components/hold/ReminderControl";
 import { useI18n } from "@/i18n";
 import { useApp } from "@/lib/app-state";
 import { supabase } from "@/integrations/supabase/client";
