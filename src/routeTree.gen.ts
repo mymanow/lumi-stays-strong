@@ -11,10 +11,13 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CheckinRouteImport } from './routes/checkin'
+import { Route as CoachRouteImport } from './routes/coach'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as SigninRouteImport } from './routes/signin'
 import { Route as SosRouteImport } from './routes/sos'
+import { Route as ApiCoachRouteImport } from './routes/api/coach'
+import { Route as ApiPublicWhopWebhookRouteImport } from './routes/api/public/whop-webhook'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -24,6 +27,11 @@ const IndexRoute = IndexRouteImport.update({
 const CheckinRoute = CheckinRouteImport.update({
   id: '/checkin',
   path: '/checkin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CoachRoute = CoachRouteImport.update({
+  id: '/coach',
+  path: '/coach',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HistoryRoute = HistoryRouteImport.update({
@@ -46,54 +54,97 @@ const SosRoute = SosRouteImport.update({
   path: '/sos',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiCoachRoute = ApiCoachRouteImport.update({
+  id: '/api/coach',
+  path: '/api/coach',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicWhopWebhookRoute = ApiPublicWhopWebhookRouteImport.update({
+  id: '/api/public/whop-webhook',
+  path: '/api/public/whop-webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/checkin': typeof CheckinRoute
+  '/coach': typeof CoachRoute
   '/history': typeof HistoryRoute
   '/onboarding': typeof OnboardingRoute
   '/signin': typeof SigninRoute
   '/sos': typeof SosRoute
+  '/api/coach': typeof ApiCoachRoute
+  '/api/public/whop-webhook': typeof ApiPublicWhopWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/checkin': typeof CheckinRoute
+  '/coach': typeof CoachRoute
   '/history': typeof HistoryRoute
   '/onboarding': typeof OnboardingRoute
   '/signin': typeof SigninRoute
   '/sos': typeof SosRoute
+  '/api/coach': typeof ApiCoachRoute
+  '/api/public/whop-webhook': typeof ApiPublicWhopWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/checkin': typeof CheckinRoute
+  '/coach': typeof CoachRoute
   '/history': typeof HistoryRoute
   '/onboarding': typeof OnboardingRoute
   '/signin': typeof SigninRoute
   '/sos': typeof SosRoute
+  '/api/coach': typeof ApiCoachRoute
+  '/api/public/whop-webhook': typeof ApiPublicWhopWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/checkin' | '/history' | '/onboarding' | '/signin' | '/sos'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/checkin' | '/history' | '/onboarding' | '/signin' | '/sos'
-  id:
-    | '__root__'
+  fullPaths:
     | '/'
     | '/checkin'
+    | '/coach'
     | '/history'
     | '/onboarding'
     | '/signin'
     | '/sos'
+    | '/api/coach'
+    | '/api/public/whop-webhook'
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | '/'
+    | '/checkin'
+    | '/coach'
+    | '/history'
+    | '/onboarding'
+    | '/signin'
+    | '/sos'
+    | '/api/coach'
+    | '/api/public/whop-webhook'
+  id:
+    | '__root__'
+    | '/'
+    | '/checkin'
+    | '/coach'
+    | '/history'
+    | '/onboarding'
+    | '/signin'
+    | '/sos'
+    | '/api/coach'
+    | '/api/public/whop-webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CheckinRoute: typeof CheckinRoute
+  CoachRoute: typeof CoachRoute
   HistoryRoute: typeof HistoryRoute
   OnboardingRoute: typeof OnboardingRoute
   SigninRoute: typeof SigninRoute
   SosRoute: typeof SosRoute
+  ApiCoachRoute: typeof ApiCoachRoute
+  ApiPublicWhopWebhookRoute: typeof ApiPublicWhopWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -110,6 +161,13 @@ declare module '@tanstack/react-router' {
       path: '/checkin'
       fullPath: '/checkin'
       preLoaderRoute: typeof CheckinRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/coach': {
+      id: '/coach'
+      path: '/coach'
+      fullPath: '/coach'
+      preLoaderRoute: typeof CoachRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/history': {
@@ -140,16 +198,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SosRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/coach': {
+      id: '/api/coach'
+      path: '/api/coach'
+      fullPath: '/api/coach'
+      preLoaderRoute: typeof ApiCoachRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/whop-webhook': {
+      id: '/api/public/whop-webhook'
+      path: '/api/public/whop-webhook'
+      fullPath: '/api/public/whop-webhook'
+      preLoaderRoute: typeof ApiPublicWhopWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CheckinRoute: CheckinRoute,
+  CoachRoute: CoachRoute,
   HistoryRoute: HistoryRoute,
   OnboardingRoute: OnboardingRoute,
   SigninRoute: SigninRoute,
   SosRoute: SosRoute,
+  ApiCoachRoute: ApiCoachRoute,
+  ApiPublicWhopWebhookRoute: ApiPublicWhopWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
