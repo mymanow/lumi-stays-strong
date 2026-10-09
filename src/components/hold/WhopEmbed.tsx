@@ -2,7 +2,7 @@ import { WhopCheckoutEmbed } from "@whop/checkout/react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { WHOP_ACCENT } from "@/config/whop";
 
-export default function WhopEmbed({ sessionId, email }: { sessionId: string; email?: string }) {
+export default function WhopEmbed({ sessionId, email }: { sessionId: string; email?: string | undefined }) {
   return (
     <WhopCheckoutEmbed
       sessionId={sessionId}

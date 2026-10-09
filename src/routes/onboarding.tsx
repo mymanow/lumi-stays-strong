@@ -45,7 +45,7 @@ function Onboarding() {
   const [init, setInit] = useState(false);
   const [contact, setContact] = useState(() => toLocalInput(new Date()));
   const [triggers, setTriggers] = useState<string[]>([]);
-  type S = { duration: string; endedBy: string; endedChoice?: string; firstBreakup: string; situation: string; motivation: string; emotion: string; gender: string };
+  type S = { duration: string; endedBy: string; endedChoice?: string | undefined; firstBreakup: string; situation: string; motivation: string; emotion: string; gender: string };
   const [single, setSingle] = useState<S>({ duration: "", endedBy: "", firstBreakup: "", situation: "", motivation: "", emotion: "", gender: "" });
   const [age, setAge] = useState(30);
   const [reasons, setReasons] = useState(["", "", ""]);
@@ -190,7 +190,7 @@ function Onboarding() {
             </label>
           ))}
         </div></>);
-      canNext = reasons[0].trim().length > 0;
+      canNext = (reasons[0] ?? "").trim().length > 0;
       onNext = () => go(11, { reasons: reasons.map((r) => r.trim()).filter(Boolean).slice(0, 3) });
       break;
     }
