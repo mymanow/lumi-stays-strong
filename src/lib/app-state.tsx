@@ -3,6 +3,7 @@ import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { useI18n } from "@/i18n";
+import { flushPendingEvents } from "./events";
 
 export type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 export type ProfilePatch = Database["public"]["Tables"]["profiles"]["Update"];
@@ -35,6 +36,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       data = ins.data;
     }
     setProfile(data);
+    if (data) localStorage.setItem("hold_reasons", JSON.stringify(data.reasons ?? []));
+    void flushPendingEvents();
     if (data?.language === "fr" || data?.language === "en") setLang(data.language);
     const sub = await supabase.from("subscriptions").select("status").eq("user_id", uid).maybeSingle();
     setPremium(sub.data?.status === "active");
