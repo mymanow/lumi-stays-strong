@@ -9,7 +9,7 @@ export default function WhopEmbed({ sessionId, email }: { sessionId: string; ema
       returnUrl={window.location.origin + "/subscribe/success"}
       theme="system"
       themeOptions={{ accentColor: WHOP_ACCENT } as never}
-      prefill={email ? { email } : undefined}
+      {...(email ? { prefill: { email } } : {})}
       fallback={<Skeleton className="h-64 rounded-xl bg-surface" />}
     />
   );

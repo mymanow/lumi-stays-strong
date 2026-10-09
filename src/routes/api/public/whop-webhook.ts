@@ -35,7 +35,7 @@ export const Route = createFileRoute("/api/public/whop-webhook")({
 
         const evt = JSON.parse(body) as WhopEvent;
         const type = evt.type ?? evt.action ?? "";
-        const d = evt.data ?? {};
+        const d: any = evt.data ?? {};
         const membership = d.membership ?? d;
         const metadata = d.metadata ?? membership.metadata ?? d.checkout_configuration?.metadata ?? {};
         const userId: string | undefined = metadata.supabase_user_id;

@@ -45,7 +45,8 @@ function Onboarding() {
   const [init, setInit] = useState(false);
   const [contact, setContact] = useState(() => toLocalInput(new Date()));
   const [triggers, setTriggers] = useState<string[]>([]);
-  const [single, setSingle] = useState<Record<string, string>>({});
+  type S = { duration: string; endedBy: string; endedChoice?: string; firstBreakup: string; situation: string; motivation: string; emotion: string; gender: string };
+  const [single, setSingle] = useState<S>({ duration: "", endedBy: "", firstBreakup: "", situation: "", motivation: "", emotion: "", gender: "" });
   const [age, setAge] = useState(30);
   const [reasons, setReasons] = useState(["", "", ""]);
   const [reminder, setReminder] = useState({ enabled: false, time: "21:30" });
@@ -81,7 +82,7 @@ function Onboarding() {
   const opts = <T extends string>(group: string, values: readonly T[]) =>
     values.map((v) => ({ value: v, label: t(`options.${group}.${v}`) }));
 
-  const pick = (key: string) => (v: string[]) => setSingle((s) => ({ ...s, [key]: v[0] ?? "" }));
+  const pick = (key: keyof S) => (v: string[]) => setSingle((s) => ({ ...s, [key]: v[0] ?? "" }));
 
   const commitPhrases = useMemo(() => commitmentPhraseKeys(single.motivation, single.situation).map((k) => t(k)), [single, t]);
 

@@ -43,8 +43,8 @@ function Home() {
   const bestDays = Math.floor(bestSeconds / 86400);
   const stage = lumiStageForDays(bestDays);
   const line = useMemo(() => {
-    const lines = tl<Record<string, string[]>>("home.lines")[timeOfDay(new Date().getHours())];
-    return lines[new Date().getDate() % lines.length];
+    const lines = tl<Record<string, string[]>>("home.lines")[timeOfDay(new Date().getHours())] ?? [];
+    return lines[new Date().getDate() % Math.max(1, lines.length)] ?? "";
   }, [tl]);
 
   const today = localDateString();
