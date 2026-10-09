@@ -14,13 +14,201 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      ai_usage: {
+        Row: {
+          count: number
+          day: string
+          user_id: string
+        }
+        Insert: {
+          count?: number
+          day: string
+          user_id: string
+        }
+        Update: {
+          count?: number
+          day?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      checkins: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          mood: number
+          note: string | null
+          triggers: string[]
+          urge: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          id?: string
+          mood: number
+          note?: string | null
+          triggers?: string[]
+          urge: number
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          mood?: number
+          note?: string | null
+          triggers?: string[]
+          urge?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      contact_events: {
+        Row: {
+          created_at: string
+          id: string
+          mood: number | null
+          occurred_at: string
+          previous_streak_seconds: number | null
+          trigger: string | null
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          mood?: number | null
+          occurred_at?: string
+          previous_streak_seconds?: number | null
+          trigger?: string | null
+          type: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          mood?: number | null
+          occurred_at?: string
+          previous_streak_seconds?: number | null
+          trigger?: string | null
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          age: number | null
+          best_streak_seconds: number
+          coach_tone: string
+          commitment_at: string | null
+          created_at: string
+          dominant_emotion: string | null
+          ended_by: string | null
+          first_breakup: boolean | null
+          gender: string | null
+          id: string
+          language: string
+          last_contact_at: string | null
+          motivation: string | null
+          onboarding_completed: boolean
+          onboarding_step: number
+          reasons: string[]
+          relationship_duration: string | null
+          reminder_enabled: boolean
+          reminder_time: string
+          situation_type: string | null
+          triggers: string[]
+        }
+        Insert: {
+          age?: number | null
+          best_streak_seconds?: number
+          coach_tone?: string
+          commitment_at?: string | null
+          created_at?: string
+          dominant_emotion?: string | null
+          ended_by?: string | null
+          first_breakup?: boolean | null
+          gender?: string | null
+          id: string
+          language?: string
+          last_contact_at?: string | null
+          motivation?: string | null
+          onboarding_completed?: boolean
+          onboarding_step?: number
+          reasons?: string[]
+          relationship_duration?: string | null
+          reminder_enabled?: boolean
+          reminder_time?: string
+          situation_type?: string | null
+          triggers?: string[]
+        }
+        Update: {
+          age?: number | null
+          best_streak_seconds?: number
+          coach_tone?: string
+          commitment_at?: string | null
+          created_at?: string
+          dominant_emotion?: string | null
+          ended_by?: string | null
+          first_breakup?: boolean | null
+          gender?: string | null
+          id?: string
+          language?: string
+          last_contact_at?: string | null
+          motivation?: string | null
+          onboarding_completed?: boolean
+          onboarding_step?: number
+          reasons?: string[]
+          relationship_duration?: string | null
+          reminder_enabled?: boolean
+          reminder_time?: string
+          situation_type?: string | null
+          triggers?: string[]
+        }
+        Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          current_period_end: string | null
+          plan: string | null
+          status: string
+          updated_at: string
+          user_id: string
+          whop_membership_id: string | null
+          whop_user_id: string | null
+        }
+        Insert: {
+          current_period_end?: string | null
+          plan?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+          whop_membership_id?: string | null
+          whop_user_id?: string | null
+        }
+        Update: {
+          current_period_end?: string | null
+          plan?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+          whop_membership_id?: string | null
+          whop_user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      increment_ai_usage: {
+        Args: { _day: string; _user: string }
+        Returns: number
+      }
     }
     Enums: {
       [_ in never]: never
