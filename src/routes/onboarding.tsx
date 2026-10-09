@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useI18n } from "@/i18n";
+import { useI18n, interpolate } from "@/i18n";
 import { useApp, type ProfilePatch } from "@/lib/app-state";
 import { Lumi } from "@/components/hold/Lumi";
 import { ChoiceList, FullLoader, LangSwitch, PrimaryButton, useCrisisLine } from "@/components/hold/Common";
@@ -211,7 +211,7 @@ function Onboarding() {
               <span aria-hidden className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-secondary text-secondary-foreground">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M5 12l5 5 9-10" /></svg>
               </span>
-              {t("x", {}) && r.replace("{companion}", "Lumi")}
+              {interpolate(r)}
             </li>
           ))}
         </ul>
