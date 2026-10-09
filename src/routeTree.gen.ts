@@ -12,10 +12,15 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CheckinRouteImport } from './routes/checkin'
 import { Route as CoachRouteImport } from './routes/coach'
+import { Route as CrisisRouteImport } from './routes/crisis'
 import { Route as HistoryRouteImport } from './routes/history'
+import { Route as LumiRouteImport } from './routes/lumi'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SigninRouteImport } from './routes/signin'
 import { Route as SosRouteImport } from './routes/sos'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as ApiCoachRouteImport } from './routes/api/coach'
 import { Route as ApiPublicWhopWebhookRouteImport } from './routes/api/public/whop-webhook'
 
@@ -34,14 +39,34 @@ const CoachRoute = CoachRouteImport.update({
   path: '/coach',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CrisisRoute = CrisisRouteImport.update({
+  id: '/crisis',
+  path: '/crisis',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HistoryRoute = HistoryRouteImport.update({
   id: '/history',
   path: '/history',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LumiRoute = LumiRouteImport.update({
+  id: '/lumi',
+  path: '/lumi',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SigninRoute = SigninRouteImport.update({
@@ -52,6 +77,11 @@ const SigninRoute = SigninRouteImport.update({
 const SosRoute = SosRouteImport.update({
   id: '/sos',
   path: '/sos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiCoachRoute = ApiCoachRouteImport.update({
@@ -69,10 +99,15 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/checkin': typeof CheckinRoute
   '/coach': typeof CoachRoute
+  '/crisis': typeof CrisisRoute
   '/history': typeof HistoryRoute
+  '/lumi': typeof LumiRoute
   '/onboarding': typeof OnboardingRoute
+  '/privacy': typeof PrivacyRoute
+  '/settings': typeof SettingsRoute
   '/signin': typeof SigninRoute
   '/sos': typeof SosRoute
+  '/terms': typeof TermsRoute
   '/api/coach': typeof ApiCoachRoute
   '/api/public/whop-webhook': typeof ApiPublicWhopWebhookRoute
 }
@@ -80,10 +115,15 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/checkin': typeof CheckinRoute
   '/coach': typeof CoachRoute
+  '/crisis': typeof CrisisRoute
   '/history': typeof HistoryRoute
+  '/lumi': typeof LumiRoute
   '/onboarding': typeof OnboardingRoute
+  '/privacy': typeof PrivacyRoute
+  '/settings': typeof SettingsRoute
   '/signin': typeof SigninRoute
   '/sos': typeof SosRoute
+  '/terms': typeof TermsRoute
   '/api/coach': typeof ApiCoachRoute
   '/api/public/whop-webhook': typeof ApiPublicWhopWebhookRoute
 }
@@ -92,10 +132,15 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/checkin': typeof CheckinRoute
   '/coach': typeof CoachRoute
+  '/crisis': typeof CrisisRoute
   '/history': typeof HistoryRoute
+  '/lumi': typeof LumiRoute
   '/onboarding': typeof OnboardingRoute
+  '/privacy': typeof PrivacyRoute
+  '/settings': typeof SettingsRoute
   '/signin': typeof SigninRoute
   '/sos': typeof SosRoute
+  '/terms': typeof TermsRoute
   '/api/coach': typeof ApiCoachRoute
   '/api/public/whop-webhook': typeof ApiPublicWhopWebhookRoute
 }
@@ -105,10 +150,15 @@ export interface FileRouteTypes {
     | '/'
     | '/checkin'
     | '/coach'
+    | '/crisis'
     | '/history'
+    | '/lumi'
     | '/onboarding'
+    | '/privacy'
+    | '/settings'
     | '/signin'
     | '/sos'
+    | '/terms'
     | '/api/coach'
     | '/api/public/whop-webhook'
   fileRoutesByTo: FileRoutesByTo
@@ -116,10 +166,15 @@ export interface FileRouteTypes {
     | '/'
     | '/checkin'
     | '/coach'
+    | '/crisis'
     | '/history'
+    | '/lumi'
     | '/onboarding'
+    | '/privacy'
+    | '/settings'
     | '/signin'
     | '/sos'
+    | '/terms'
     | '/api/coach'
     | '/api/public/whop-webhook'
   id:
@@ -127,10 +182,15 @@ export interface FileRouteTypes {
     | '/'
     | '/checkin'
     | '/coach'
+    | '/crisis'
     | '/history'
+    | '/lumi'
     | '/onboarding'
+    | '/privacy'
+    | '/settings'
     | '/signin'
     | '/sos'
+    | '/terms'
     | '/api/coach'
     | '/api/public/whop-webhook'
   fileRoutesById: FileRoutesById
@@ -139,10 +199,15 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CheckinRoute: typeof CheckinRoute
   CoachRoute: typeof CoachRoute
+  CrisisRoute: typeof CrisisRoute
   HistoryRoute: typeof HistoryRoute
+  LumiRoute: typeof LumiRoute
   OnboardingRoute: typeof OnboardingRoute
+  PrivacyRoute: typeof PrivacyRoute
+  SettingsRoute: typeof SettingsRoute
   SigninRoute: typeof SigninRoute
   SosRoute: typeof SosRoute
+  TermsRoute: typeof TermsRoute
   ApiCoachRoute: typeof ApiCoachRoute
   ApiPublicWhopWebhookRoute: typeof ApiPublicWhopWebhookRoute
 }
@@ -170,6 +235,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CoachRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/crisis': {
+      id: '/crisis'
+      path: '/crisis'
+      fullPath: '/crisis'
+      preLoaderRoute: typeof CrisisRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/history': {
       id: '/history'
       path: '/history'
@@ -177,11 +249,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HistoryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lumi': {
+      id: '/lumi'
+      path: '/lumi'
+      fullPath: '/lumi'
+      preLoaderRoute: typeof LumiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/onboarding': {
       id: '/onboarding'
       path: '/onboarding'
       fullPath: '/onboarding'
       preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/signin': {
@@ -196,6 +289,13 @@ declare module '@tanstack/react-router' {
       path: '/sos'
       fullPath: '/sos'
       preLoaderRoute: typeof SosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/coach': {
@@ -219,10 +319,15 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CheckinRoute: CheckinRoute,
   CoachRoute: CoachRoute,
+  CrisisRoute: CrisisRoute,
   HistoryRoute: HistoryRoute,
+  LumiRoute: LumiRoute,
   OnboardingRoute: OnboardingRoute,
+  PrivacyRoute: PrivacyRoute,
+  SettingsRoute: SettingsRoute,
   SigninRoute: SigninRoute,
   SosRoute: SosRoute,
+  TermsRoute: TermsRoute,
   ApiCoachRoute: ApiCoachRoute,
   ApiPublicWhopWebhookRoute: ApiPublicWhopWebhookRoute,
 }
