@@ -270,7 +270,7 @@ function Onboarding() {
   return (
     <div className="mx-auto flex min-h-screen max-w-[480px] flex-col px-6 pb-8 pt-4">
       <div className="mb-6 flex items-center gap-3">
-        <button type="button" onClick={() => go(step - 1)} aria-label={t("common.back")} className="flex h-11 w-11 items-center justify-center rounded-full text-muted-foreground hover:bg-surface"><BackIcon /></button>
+        <button type="button" onClick={() => { if (step === 1 && subStep > 0) setSubStep(subStep - 1); else go(step - 1); }} aria-label={t("common.back")} className="flex h-11 w-11 items-center justify-center rounded-full text-muted-foreground hover:bg-surface"><BackIcon /></button>
         <div className="h-1 flex-1 overflow-hidden rounded-full bg-line" role="progressbar" aria-valuemin={0} aria-valuemax={TOTAL} aria-valuenow={step} aria-label={t("onb.progress", { n: step, total: TOTAL })}>
           <div className="h-full rounded-full bg-secondary transition-all" style={{ width: `${(step / TOTAL) * 100}%` }} />
         </div>
