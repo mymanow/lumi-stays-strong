@@ -102,6 +102,7 @@ function Home() {
         <Card>
           <h2 className="text-xl font-semibold">{t("home.checkinTitle")}</h2>
           <p className="mt-1 text-sm text-muted-foreground">{checkin.data ? t("home.checkinDone") : "30 s"}</p>
+          {needsExtraSupport(profile?.difficulty_level) && !checkin.data && <p className="mt-2 text-sm text-muted-foreground">{t("profileScore.encourage")}</p>}
           <Link to="/checkin" className="mt-4 flex min-h-12 items-center justify-center rounded-2xl border border-secondary/50 font-medium text-secondary">
             {checkin.data ? t("home.checkinEdit") : t("home.checkinCta")}
           </Link>

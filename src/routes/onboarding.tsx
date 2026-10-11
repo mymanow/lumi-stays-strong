@@ -107,12 +107,12 @@ function Onboarding() {
     await updateProfile({ ...patch, onboarding_step: next });
   };
 
-  const prepareScore = (selectedAge: number) => {
+  const prepareScore = (selectedAge: number, replay = true) => {
     if (!profile) return;
     const result = calculateScore(profile);
     setScoreResult(result);
-    setScoreScreen("calculate");
-    setAnimateProfile(true);
+    setScoreScreen(replay ? "calculate" : "profile");
+    setAnimateProfile(replay);
     window.scrollTo(0, 0);
     void updateProfile({ age: selectedAge, onboarding_step: 10, difficulty_score: result.score, difficulty_level: result.level, score_factors: result.factors, score_computed_at: result.computedAt });
   };
@@ -305,7 +305,7 @@ function Onboarding() {
       break;
     case 9:
       body = (<><Question id="q9" title={t("onb.age")} sub={t("onb.ageSub")} /><AgeWheel value={age} onChange={setAge} unit={t("onb.ageUnit")} labelledBy="q9" /></>);
-      onNext = () => { if (scoreResult) { setAnimateProfile(false); setScoreScreen("profile"); } else prepareScore(age); };
+      onNext = () => prepareScore(age, !scoreResult);
       break;
     case 10:
       body = (<>
