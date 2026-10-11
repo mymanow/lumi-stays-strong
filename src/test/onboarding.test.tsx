@@ -53,6 +53,7 @@ describe("onboarding hardship question", () => {
     fireEvent.click(screen.getByRole("button", { name: "Back" }));
     expect(screen.getAllByRole("radio", { checked: true })).toHaveLength(1);
     expect(screen.getByRole("radio", { checked: true })).toHaveTextContent(en.options.hardest.guilt);
+  });
 });
 
 describe("onboarding social media question", () => {
