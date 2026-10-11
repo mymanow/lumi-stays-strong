@@ -52,6 +52,6 @@ export function ScoreProfile({ result, animate = false, onContinue, onBack }: { 
       <ul className="flex flex-col gap-3">{result.factors[kind].map(key => <li key={key} className="flex min-h-11 items-center gap-3 rounded-2xl bg-surface px-4 py-3 text-sm"><Status done={kind === 'supportive'} /><span>{t(`profileScore.factors.${key}`)}</span></li>)}</ul>
     </section>)}
     <div className="mt-4 flex items-center gap-2"><Lumi size={22} stage={2} breathe={false} /><p className="text-sm text-muted-foreground">{t('settings.lumi')} : « {t('profileScore.line')} »</p></div>
-    <div className="sticky bottom-0 mt-auto bg-background pt-5"><PrimaryButton onClick={onContinue}>{t('common.next')}</PrimaryButton><div className="flex justify-center"><CrisisLink /></div></div>
+    <div className="mt-auto bg-background pt-5"><PrimaryButton onClick={onContinue}>{t('common.next')}</PrimaryButton><div className="flex justify-center"><CrisisLink /></div></div>
   </div>;
 }
