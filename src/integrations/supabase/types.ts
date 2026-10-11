@@ -113,6 +113,7 @@ export type Database = {
           language: string
           last_contact_at: string | null
           motivation: string | null
+          name: string | null
           onboarding_completed: boolean
           onboarding_step: number
           reasons: string[]
@@ -136,6 +137,7 @@ export type Database = {
           language?: string
           last_contact_at?: string | null
           motivation?: string | null
+          name?: string | null
           onboarding_completed?: boolean
           onboarding_step?: number
           reasons?: string[]
@@ -159,6 +161,7 @@ export type Database = {
           language?: string
           last_contact_at?: string | null
           motivation?: string | null
+          name?: string | null
           onboarding_completed?: boolean
           onboarding_step?: number
           reasons?: string[]

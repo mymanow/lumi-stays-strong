@@ -26,6 +26,8 @@ export const fr = {
     progress: "Étape {n} sur {total}",
     introTitle: "Personnalisons ton parcours",
     introSub: "Quelques questions pour tout adapter à ta situation.",
+    nameTitle: "Comment souhaite-tu qu'on t'appelle ?",
+    namePh: "Ton prénom, ton pseudo, ton surnom…",
     lastContact: "Quand as-tu parlé à ton ex pour la dernière fois ?",
     date: "Date", time: "Heure",
     triggersTitle: "Qu'est-ce qui te donne le plus envie d'écrire ?",

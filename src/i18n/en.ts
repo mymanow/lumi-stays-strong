@@ -28,6 +28,8 @@ export const en: typeof fr = {
     progress: "Step {n} of {total}",
     introTitle: "Let's personalize your journey",
     introSub: "A few questions to tailor everything to your situation.",
+    nameTitle: "How would you like to be called?",
+    namePh: "Your first name, username, nickname…",
     lastContact: "When did you last talk to your ex?",
     date: "Date", time: "Time",
     triggersTitle: "What makes you want to text the most?",

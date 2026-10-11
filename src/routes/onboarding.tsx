@@ -42,8 +42,9 @@ function Onboarding() {
   const navigate = useNavigate();
   const crisis = useCrisisLine();
   const [step, setStep] = useState(0);
-  const [introDone, setIntroDone] = useState(false);
+  const [subStep, setSubStep] = useState(0); // within step 1: 0 intro, 1 name, 2 questions
   const [init, setInit] = useState(false);
+  const [name, setName] = useState("");
   const [contact, setContact] = useState(() => toLocalInput(new Date()));
   const [triggers, setTriggers] = useState<string[]>([]);
   type S = { duration: string; endedBy: string; endedChoice?: string | undefined; firstBreakup: string; situation: string; motivation: string; emotion: string; gender: string };
@@ -58,6 +59,7 @@ function Onboarding() {
     setStep(profile.onboarding_step ?? 0);
     if (profile.last_contact_at) setContact(toLocalInput(new Date(profile.last_contact_at)));
     setTriggers(profile.triggers ?? []);
+    if (profile.name) { setName(profile.name); setSubStep(2); }
     setSingle({
       duration: profile.relationship_duration ?? "", endedBy: profile.ended_by ?? "",
       firstBreakup: profile.first_breakup == null ? "" : profile.first_breakup ? "yes" : "no",
@@ -121,7 +123,7 @@ function Onboarding() {
         </div>
       );
     case 1:
-      if (!introDone) {
+      if (subStep === 0) {
         return (
           <div className="mx-auto flex min-h-screen max-w-[480px] flex-col px-6 pb-6 pt-6">
             <div>
@@ -133,10 +135,25 @@ function Onboarding() {
               <p className="mt-4 text-lg text-muted-foreground">{t("onb.introSub")}</p>
             </div>
             <div className="sticky bottom-0 bg-background pb-2 pt-3">
-              <PrimaryButton onClick={() => { setIntroDone(true); window.scrollTo(0, 0); }}>{t("common.next")}</PrimaryButton>
+              <PrimaryButton onClick={() => { setSubStep(1); window.scrollTo(0, 0); }}>{t("common.next")}</PrimaryButton>
             </div>
           </div>
         );
+      }
+      if (subStep === 1) {
+        body = (<>
+          <Question id="q-name" title={t("onb.nameTitle")} />
+          <input value={name} maxLength={40} aria-label={t("onb.nameTitle")} placeholder={t("onb.namePh")}
+            onChange={(e) => setName(e.target.value)}
+            className="min-h-12 w-full rounded-xl border border-line bg-surface px-4 text-base text-foreground placeholder:text-muted-foreground/60" />
+        </>);
+        canNext = name.trim().length > 0;
+        onNext = async () => {
+          await updateProfile({ name: name.trim() });
+          setSubStep(2);
+          window.scrollTo(0, 0);
+        };
+        break;
       }
       body = (<>
         <Question id="q1" title={t("onb.lastContact")} />
@@ -253,7 +270,7 @@ function Onboarding() {
   return (
     <div className="mx-auto flex min-h-screen max-w-[480px] flex-col px-6 pb-8 pt-4">
       <div className="mb-6 flex items-center gap-3">
-        <button type="button" onClick={() => go(step - 1)} aria-label={t("common.back")} className="flex h-11 w-11 items-center justify-center rounded-full text-muted-foreground hover:bg-surface"><BackIcon /></button>
+        <button type="button" onClick={() => { if (step === 1 && subStep > 0) setSubStep(subStep - 1); else go(step - 1); }} aria-label={t("common.back")} className="flex h-11 w-11 items-center justify-center rounded-full text-muted-foreground hover:bg-surface"><BackIcon /></button>
         <div className="h-1 flex-1 overflow-hidden rounded-full bg-line" role="progressbar" aria-valuemin={0} aria-valuemax={TOTAL} aria-valuenow={step} aria-label={t("onb.progress", { n: step, total: TOTAL })}>
           <div className="h-full rounded-full bg-secondary transition-all" style={{ width: `${(step / TOTAL) * 100}%` }} />
         </div>
