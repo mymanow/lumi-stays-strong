@@ -67,6 +67,7 @@ function Onboarding() {
     const hasHardest = HARDSHIPS.some((value) => value === savedHardest);
     if (hasHardest && savedHardest) setHardest([savedHardest]);
     if (profile.name) { setName(profile.name); setSubStep(hasHardest ? 3 : 2); }
+    if (profile.last_contact_at) setSubStep(4);
     setSingle({
       duration: profile.relationship_duration ?? "", endedBy: profile.ended_by ?? "",
       firstBreakup: profile.first_breakup == null ? "" : profile.first_breakup ? "yes" : "no",
@@ -177,22 +178,26 @@ function Onboarding() {
         };
         break;
       }
-      body = (<>
-        <Question id="q1" title={t("onb.lastContact")} />
-        <div className="mb-8 grid grid-cols-2 gap-3">
+      if (subStep === 3) {
+        body = (<>
+          <Question id="q1" title={t("onb.lastContact")} />
           <label className="flex flex-col gap-1 text-sm text-muted-foreground">{t("onb.date")}
             <input type="date" value={contact.date} max={toLocalInput(new Date()).date} onChange={(e) => setContact({ ...contact, date: e.target.value })}
               className="min-h-12 rounded-xl border border-line bg-surface px-3 text-base text-foreground [color-scheme:dark]" />
           </label>
-          <label className="flex flex-col gap-1 text-sm text-muted-foreground">{t("onb.time")}
-            <input type="time" value={contact.time} onChange={(e) => setContact({ ...contact, time: e.target.value })}
-              className="min-h-12 rounded-xl border border-line bg-surface px-3 text-base text-foreground [color-scheme:dark]" />
-          </label>
-        </div>
+        </>);
+        canNext = !!contact.date;
+        onNext = () => {
+          setSubStep(4);
+          window.scrollTo(0, 0);
+        };
+        break;
+      }
+      body = (<>
         <h2 id="q1b" className="mb-4 text-xl font-semibold">{t("onb.triggersTitle")}</h2>
         <ChoiceList multi labelledBy="q1b" options={opts("triggers", TRIGGERS)} value={triggers} onChange={setTriggers} />
       </>);
-      canNext = !!contact.date && !!contact.time;
+      canNext = true;
       onNext = () => {
         let d = new Date(`${contact.date}T${contact.time}`);
         if (isNaN(d.getTime()) || d > new Date()) d = new Date();
