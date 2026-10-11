@@ -18,12 +18,15 @@ export const Route = createFileRoute("/onboarding")({
       { name: "description", content: "Commence ton no contact avec Lumi, en quelques questions." },
       { property: "og:title", content: "Bienvenue — Hold" },
       { property: "og:description", content: "Commence ton no contact avec Lumi, en quelques questions." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Onboarding,
 });
 
 const TOTAL = 13;
+const HARDSHIPS = ["text_urge", "rumination", "lost", "guilt", "pain", "overwhelmed"] as const;
 const TRIGGERS = ["evening", "social_media", "loneliness", "alcohol", "argument", "anniversary", "other"] as const;
 const DURATIONS = ["lt_6m", "6_12m", "1_3y", "gt_3y"] as const;
 const SITUATIONS = ["infidelity_healing", "one_sided_love", "toxic", "blocked_ghosted", "divorce_long_term", "breakup", "situationship_ended", "mutual_breakup", "ex_moved_on", "first_love", "on_off", "long_relationship_ended"] as const;
@@ -42,7 +45,8 @@ function Onboarding() {
   const navigate = useNavigate();
   const crisis = useCrisisLine();
   const [step, setStep] = useState(0);
-  const [subStep, setSubStep] = useState(0); // within step 1: 0 intro, 1 name, 2 questions
+  const [subStep, setSubStep] = useState(0); // within step 1: intro, name, hardship, contact
+  const [hardest, setHardest] = useState<string[]>([]);
   const [init, setInit] = useState(false);
   const [name, setName] = useState("");
   const [contact, setContact] = useState(() => toLocalInput(new Date()));
@@ -59,7 +63,10 @@ function Onboarding() {
     setStep(profile.onboarding_step ?? 0);
     if (profile.last_contact_at) setContact(toLocalInput(new Date(profile.last_contact_at)));
     setTriggers(profile.triggers ?? []);
-    if (profile.name) { setName(profile.name); setSubStep(2); }
+    const savedHardest = localStorage.getItem(`hold_onboarding_hardest_${profile.id}`);
+    const hasHardest = HARDSHIPS.some((value) => value === savedHardest);
+    if (hasHardest && savedHardest) setHardest([savedHardest]);
+    if (profile.name) { setName(profile.name); setSubStep(hasHardest ? 3 : 2); }
     setSingle({
       duration: profile.relationship_duration ?? "", endedBy: profile.ended_by ?? "",
       firstBreakup: profile.first_breakup == null ? "" : profile.first_breakup ? "yes" : "no",
@@ -151,6 +158,21 @@ function Onboarding() {
         onNext = async () => {
           await updateProfile({ name: name.trim() });
           setSubStep(2);
+          window.scrollTo(0, 0);
+        };
+        break;
+      }
+      if (subStep === 2) {
+        body = (<>
+          <Question id="q-hardest" title={t("onb.hardestTitle")} sub={t("onb.hardestSub")} />
+          <ChoiceList labelledBy="q-hardest" options={opts("hardest", HARDSHIPS)} value={hardest} onChange={setHardest} />
+        </>);
+        canNext = hardest.length === 1;
+        onNext = () => {
+          const answer = hardest[0];
+          if (!profile || !answer) return;
+          localStorage.setItem(`hold_onboarding_hardest_${profile.id}`, answer);
+          setSubStep(3);
           window.scrollTo(0, 0);
         };
         break;

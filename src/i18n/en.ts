@@ -30,6 +30,8 @@ export const en: typeof fr = {
     introSub: "A few questions to tailor everything to your situation.",
     nameTitle: "How would you like to be called?",
     namePh: "Your first name, username, nickname…",
+    hardestTitle: "What's the hardest part for you right now?",
+    hardestSub: "Be honest. That's what we'll work on first.",
     lastContact: "When did you last talk to your ex?",
     date: "Date", time: "Time",
     triggersTitle: "What makes you want to text the most?",
@@ -47,6 +49,14 @@ export const en: typeof fr = {
     reasonPh: ["To find my peace again", "Because I deserve better", "To find myself"],
   },
   options: {
+    hardest: {
+      text_urge: "I want to text them and I know I shouldn't",
+      rumination: "I can't stop thinking about them",
+      lost: "I don't know where to start to feel better",
+      guilt: "I broke No Contact and I feel guilty",
+      pain: "I don't understand why it hurts so much",
+      overwhelmed: "My emotions are taking over",
+    },
     triggers: { evening: "Evenings", social_media: "Social media", loneliness: "Loneliness", alcohol: "Alcohol", argument: "An argument", anniversary: "An anniversary", other: "Other" },
     duration: { lt_6m: "0 to 6 months", "6_12m": "6 to 12 months", "1_3y": "1 to 3 years", gt_3y: "More than 3 years" },
     endedBy: { me: "Me", them_him: "Him", them_her: "Her", mutual: "Mutual decision" },

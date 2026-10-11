@@ -28,6 +28,8 @@ export const fr = {
     introSub: "Quelques questions pour tout adapter à ta situation.",
     nameTitle: "Comment souhaite-tu qu'on t'appelle ?",
     namePh: "Ton prénom, ton pseudo, ton surnom…",
+    hardestTitle: "Qu'est-ce qui est le plus difficile pour toi en ce moment ?",
+    hardestSub: "Sois honnête. C'est ce qu'on travaillera en premier.",
     lastContact: "Quand as-tu parlé à ton ex pour la dernière fois ?",
     date: "Date", time: "Heure",
     triggersTitle: "Qu'est-ce qui te donne le plus envie d'écrire ?",
@@ -45,6 +47,14 @@ export const fr = {
     reasonPh: ["Pour retrouver ma paix", "Parce que je mérite mieux", "Pour me retrouver"],
   },
   options: {
+    hardest: {
+      text_urge: "J'ai envie de lui écrire et je sais que je ne devrais pas",
+      rumination: "Je n'arrive pas à arrêter de penser à cette personne",
+      lost: "Je ne sais pas par où commencer pour aller mieux",
+      guilt: "J'ai rompu le no contact et je me sens coupable",
+      pain: "Je ne comprends pas pourquoi ça fait si mal",
+      overwhelmed: "Mes émotions prennent le dessus",
+    },
     triggers: { evening: "Le soir", social_media: "Les réseaux", loneliness: "La solitude", alcohol: "L'alcool", argument: "Une dispute", anniversary: "Un anniversaire", other: "Autre" },
     duration: { lt_6m: "0 à 6 mois", "6_12m": "6 à 12 mois", "1_3y": "1 à 3 ans", gt_3y: "Plus de 3 ans" },
     endedBy: { me: "Moi", them_him: "Lui", them_her: "Elle", mutual: "Décision mutuelle" },
