@@ -29,6 +29,7 @@ const TOTAL = 13;
 const HARDSHIPS = ["text_urge", "rumination", "lost", "guilt", "pain", "overwhelmed"] as const;
 const TRIGGERS = ["evening", "social_media", "loneliness", "alcohol", "argument", "anniversary", "other"] as const;
 const DURATIONS = ["lt_6m", "6_12m", "1_3y", "gt_3y"] as const;
+const RECENCY = ["lt_week", "w1_4", "m1_3", "gt_3m"] as const;
 const SITUATIONS = ["infidelity_healing", "one_sided_love", "toxic", "blocked_ghosted", "divorce_long_term", "breakup", "situationship_ended", "mutual_breakup", "ex_moved_on", "first_love", "on_off", "long_relationship_ended"] as const;
 const MOTIVATIONS = ["take_back_control", "win_back", "move_on", "unsure"] as const;
 const EMOTIONS = ["calm", "disgust", "joy", "anger", "fear", "sadness"] as const;
@@ -53,6 +54,8 @@ function Onboarding() {
   const [triggers, setTriggers] = useState<string[]>([]);
   type S = { duration: string; endedBy: string; endedChoice?: string | undefined; firstBreakup: string; situation: string; motivation: string; emotion: string; gender: string };
   const [single, setSingle] = useState<S>({ duration: "", endedBy: "", firstBreakup: "", situation: "", motivation: "", emotion: "", gender: "" });
+  const [sub3, setSub3] = useState(0); // within step 3: 0 endedBy, 1 recency
+  const [recency, setRecency] = useState("");
   const [age, setAge] = useState(30);
   const [reasons, setReasons] = useState(["", "", ""]);
   const [reminder, setReminder] = useState({ enabled: false, time: "21:30" });
@@ -68,6 +71,9 @@ function Onboarding() {
     if (hasHardest && savedHardest) setHardest([savedHardest]);
     if (profile.name) { setName(profile.name); setSubStep(hasHardest ? 3 : 2); }
     if (profile.last_contact_at) setSubStep(4);
+    const savedRecency = localStorage.getItem(`hold_onboarding_recency_${profile.id}`);
+    if (savedRecency && RECENCY.some((v) => v === savedRecency)) setRecency(savedRecency);
+    if ((profile.onboarding_step ?? 0) === 3 && profile.ended_by) setSub3(1);
     setSingle({
       duration: profile.relationship_duration ?? "", endedBy: profile.ended_by ?? "",
       firstBreakup: profile.first_breakup == null ? "" : profile.first_breakup ? "yes" : "no",
