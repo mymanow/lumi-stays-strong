@@ -45,7 +45,7 @@ function Onboarding() {
   const navigate = useNavigate();
   const crisis = useCrisisLine();
   const [step, setStep] = useState(0);
-  const [subStep, setSubStep] = useState(0); // within step 1: intro, name, hardship, contact
+  const [subStep, setSubStep] = useState(0); // within step 1: intro, name, hardship, contact date, triggers
   const [hardest, setHardest] = useState<string[]>([]);
   const [init, setInit] = useState(false);
   const [name, setName] = useState("");
