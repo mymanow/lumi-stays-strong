@@ -32,6 +32,7 @@ const DURATIONS = ["lt_6m", "6_12m", "1_3y", "gt_3y"] as const;
 const RECENCY = ["lt_week", "w1_4", "m1_3", "gt_3m"] as const;
 const SITUATIONS = ["infidelity_healing", "one_sided_love", "toxic", "blocked_ghosted", "divorce_long_term", "breakup", "situationship_ended", "mutual_breakup", "ex_moved_on", "first_love", "on_off", "long_relationship_ended"] as const;
 const MOTIVATIONS = ["take_back_control", "win_back", "move_on", "unsure"] as const;
+const SOCIALS = ["sometimes", "several_daily", "never"] as const;
 const EMOTIONS = ["calm", "disgust", "joy", "anger", "fear", "sadness"] as const;
 const GENDERS = ["woman", "man", "undisclosed"] as const;
 
@@ -56,6 +57,8 @@ function Onboarding() {
   const [single, setSingle] = useState<S>({ duration: "", endedBy: "", firstBreakup: "", situation: "", motivation: "", emotion: "", gender: "" });
   const [sub3, setSub3] = useState(0); // within step 3: 0 endedBy, 1 recency
   const [recency, setRecency] = useState("");
+  const [sub6, setSub6] = useState(0); // within step 6: 0 motivation, 1 social media
+  const [socials, setSocials] = useState("");
   const [age, setAge] = useState(30);
   const [reasons, setReasons] = useState(["", "", ""]);
   const [reminder, setReminder] = useState({ enabled: false, time: "21:30" });
@@ -74,6 +77,10 @@ function Onboarding() {
     const savedRecency = localStorage.getItem(`hold_onboarding_recency_${profile.id}`);
     if (savedRecency && RECENCY.some((v) => v === savedRecency)) setRecency(savedRecency);
     if ((profile.onboarding_step ?? 0) === 3 && profile.ended_by) setSub3(1);
+    const savedSocials = localStorage.getItem(`hold_onboarding_socials_${profile.id}`);
+    const hasSocials = !!savedSocials && SOCIALS.some((v) => v === savedSocials);
+    if (savedSocials && hasSocials) setSocials(savedSocials);
+    if ((profile.onboarding_step ?? 0) === 6 && profile.motivation && hasSocials) setSub6(1);
     setSingle({
       duration: profile.relationship_duration ?? "", endedBy: profile.ended_by ?? "",
       firstBreakup: profile.first_breakup == null ? "" : profile.first_breakup ? "yes" : "no",
@@ -246,10 +253,26 @@ function Onboarding() {
       body = (<><Question id="q5" title={t("onb.situation")} /><ChoiceList labelledBy="q5" options={opts("situation", SITUATIONS)} value={[single.situation]} onChange={pick("situation")} /></>);
       canNext = !!single.situation; onNext = () => go(6, { situation_type: single.situation });
       break;
-    case 6:
+    case 6: {
+      if (sub6 === 1) {
+        body = (<><Question id="q6b" title={t("onb.socialsTitle")} />
+          <ChoiceList labelledBy="q6b" options={opts("socials", SOCIALS)} value={socials ? [socials] : []} onChange={(v) => setSocials(v[0] ?? "")} /></>);
+        canNext = !!socials;
+        onNext = () => {
+          if (profile && socials) localStorage.setItem(`hold_onboarding_socials_${profile.id}`, socials);
+          go(7);
+        };
+        break;
+      }
       body = (<><Question id="q6" title={t("onb.motivation")} sub={t("onb.motivationSub")} /><ChoiceList labelledBy="q6" options={opts("motivation", MOTIVATIONS)} value={[single.motivation]} onChange={pick("motivation")} /></>);
-      canNext = !!single.motivation; onNext = () => go(7, { motivation: single.motivation });
+      canNext = !!single.motivation;
+      onNext = async () => {
+        await updateProfile({ motivation: single.motivation });
+        setSub6(1);
+        window.scrollTo(0, 0);
+      };
       break;
+    }
     case 7:
       body = (<><Question id="q7" title={t("onb.emotion")} /><ChoiceList labelledBy="q7" options={opts("emotion", EMOTIONS)} value={[single.emotion]} onChange={pick("emotion")} /></>);
       canNext = !!single.emotion; onNext = () => go(8, { dominant_emotion: single.emotion });
@@ -320,7 +343,8 @@ function Onboarding() {
     <div className="mx-auto flex min-h-screen max-w-[480px] flex-col px-6 pb-8 pt-4">
       <div className="mb-6 flex items-center gap-3">
         <button type="button" onClick={() => {
-          if (step === 3) { if (sub3 > 0) { setSub3(0); window.scrollTo(0, 0); } else go(2); }
+          if (step === 6) { if (sub6 > 0) { setSub6(0); window.scrollTo(0, 0); } else go(5); }
+          else if (step === 3) { if (sub3 > 0) { setSub3(0); window.scrollTo(0, 0); } else go(2); }
           else if (step === 1 && subStep > 0) setSubStep(subStep - 1);
           else go(step - 1);
         }} aria-label={t("common.back")} className="flex h-11 w-11 items-center justify-center rounded-full text-muted-foreground hover:bg-surface"><BackIcon /></button>
