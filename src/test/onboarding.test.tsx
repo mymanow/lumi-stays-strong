@@ -86,6 +86,11 @@ describe("onboarding social media question", () => {
 });
 
 describe("onboarding reasons question removed", () => {
+  beforeEach(() => {
+    // jsdom doesn't implement Element.scrollTo, which the age picker calls on mount.
+    Element.prototype.scrollTo = (() => {}) as typeof Element.prototype.scrollTo;
+  });
+
   it("goes from the age straight to the commitment", () => {
     Object.assign(profile, { onboarding_step: 9 });
     const Component = Route.options.component as React.ComponentType;
