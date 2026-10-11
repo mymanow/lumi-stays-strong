@@ -82,5 +82,17 @@ describe("onboarding social media question", () => {
     expect(screen.getByRole("radio", { checked: true })).toHaveTextContent(en.options.socials.never);
     fireEvent.click(screen.getByRole("button", { name: "Back" }));
     expect(screen.getByRole("radio", { checked: true })).toHaveTextContent(en.options.motivation.move_on);
+});
+
+describe("onboarding reasons question removed", () => {
+  it("goes from the age straight to the commitment", () => {
+    Object.assign(profile, { onboarding_step: 9 });
+    const Component = Route.options.component as React.ComponentType;
+    render(<Component />);
+    expect(screen.getByRole("heading", { name: en.onb.age })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Continue" }));
+    expect(screen.getByRole("heading", { name: en.commit.title })).toBeInTheDocument();
+    expect(screen.queryByText("Why are you doing this?")).not.toBeInTheDocument();
   });
+});
 });

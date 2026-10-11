@@ -69,12 +69,14 @@ function Sos() {
 
         {step === "reasons" && (
           <div className="flex flex-1 flex-col gap-6 pt-4">
-            <div>
-              <h1 className="mb-4 text-xl text-muted-foreground">{t("sos.reasonsTitle")}</h1>
-              <ul className="flex flex-col gap-3">
-                {reasons.map((r) => <li key={r} className="font-display text-3xl leading-tight">{r}</li>)}
-              </ul>
-            </div>
+            {reasons.length > 0 && (
+              <div>
+                <h1 className="mb-4 text-xl text-muted-foreground">{t("sos.reasonsTitle")}</h1>
+                <ul className="flex flex-col gap-3">
+                  {reasons.map((r) => <li key={r} className="font-display text-3xl leading-tight">{r}</li>)}
+                </ul>
+              </div>
+            )}
             <div className="flex items-center gap-3 rounded-2xl border border-line bg-surface p-4">
               <Lumi size={36} stage={3} />
               <p>{t("sos.lumiLine")}</p>

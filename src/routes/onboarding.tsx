@@ -25,7 +25,7 @@ export const Route = createFileRoute("/onboarding")({
   component: Onboarding,
 });
 
-const TOTAL = 13;
+const TOTAL = 12;
 const HARDSHIPS = ["text_urge", "rumination", "lost", "guilt", "pain", "overwhelmed"] as const;
 const TRIGGERS = ["evening", "social_media", "loneliness", "alcohol", "argument", "anniversary", "other"] as const;
 const DURATIONS = ["lt_6m", "6_12m", "1_3y", "gt_3y"] as const;
@@ -60,7 +60,6 @@ function Onboarding() {
   const [sub6, setSub6] = useState(0); // within step 6: 0 motivation, 1 social media
   const [socials, setSocials] = useState("");
   const [age, setAge] = useState(30);
-  const [reasons, setReasons] = useState(["", "", ""]);
   const [reminder, setReminder] = useState({ enabled: false, time: "21:30" });
 
   useEffect(() => {
@@ -88,7 +87,6 @@ function Onboarding() {
       emotion: profile.dominant_emotion ?? "", gender: profile.gender ?? "",
     });
     if (profile.age) setAge(profile.age);
-    if (profile.reasons?.length) setReasons([0, 1, 2].map((i) => profile.reasons[i] ?? ""));
     setInit(true);
   }, [ready, profile, init, navigate]);
 
@@ -285,33 +283,17 @@ function Onboarding() {
       body = (<><Question id="q9" title={t("onb.age")} sub={t("onb.ageSub")} /><AgeWheel value={age} onChange={setAge} unit={t("onb.ageUnit")} labelledBy="q9" /></>);
       onNext = () => go(10, { age });
       break;
-    case 10: {
-      const ph = tl<string[]>("onb.reasonPh");
-      body = (<><Question id="q10" title={t("onb.reasons")} sub={t("onb.reasonsSub")} />
-        <div className="flex flex-col gap-4">
-          {reasons.map((r, i) => (
-            <label key={i} className="flex flex-col gap-1 text-sm text-muted-foreground">
-              {t("onb.reason", { n: i + 1 })}{i > 0 ? ` (${t("common.optional").toLowerCase()})` : ""}
-              <input value={r} maxLength={120} required={i === 0} placeholder={ph[i]} onChange={(e) => setReasons(reasons.map((x, j) => (j === i ? e.target.value : x)))}
-                className="min-h-12 rounded-xl border border-line bg-surface px-4 text-base text-foreground placeholder:text-muted-foreground/60" />
-            </label>
-          ))}
-        </div></>);
-      canNext = (reasons[0] ?? "").trim().length > 0;
-      onNext = () => go(11, { reasons: reasons.map((r) => r.trim()).filter(Boolean).slice(0, 3) });
-      break;
-    }
-    case 11:
+    case 10:
       body = (<>
         <Question id="q11" title={t("commit.title")} />
         <ul className="mb-10 flex flex-col gap-3">
           {commitPhrases.map((p) => <li key={p} className="font-display text-xl leading-snug">{p}</li>)}
         </ul>
-        <HoldButton onComplete={() => go(12, { commitment_at: new Date().toISOString() })} />
+        <HoldButton onComplete={() => go(11, { commitment_at: new Date().toISOString() })} />
       </>);
       canNext = false;
       break;
-    case 12:
+    case 11:
       body = (<>
         <Question id="q12" title={t("plan.title")} />
         <ul className="mb-8 flex flex-col gap-3">
@@ -326,9 +308,9 @@ function Onboarding() {
         </ul>
         <ReminderControl value={reminder} onChange={setReminder} />
       </>);
-      onNext = () => go(13, { reminder_enabled: false, reminder_time: reminder.time });
+      onNext = () => go(12, { reminder_enabled: false, reminder_time: reminder.time });
       break;
-    case 13:
+    case 12:
       body = (<>
         <div className="mb-6 flex justify-center"><Lumi size={60} stage={2} /></div>
         <Question id="q13" title={t("account.title")} sub={t("account.sub")} />
@@ -353,7 +335,7 @@ function Onboarding() {
         </div>
       </div>
       <div className="flex-1">{body}</div>
-      {(canNext || ![11, 13].includes(step)) && (
+      {(canNext || ![10, 12].includes(step)) && (
         <div className="sticky bottom-0 mt-8 bg-background pb-2 pt-3">
           <PrimaryButton disabled={!canNext} onClick={onNext}>{t("common.next")}</PrimaryButton>
         </div>

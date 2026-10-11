@@ -47,9 +47,6 @@ export const en: typeof fr = {
     emotion: "Which emotion comes back most often?",
     gender: "You are:", genderSub: "To adapt how we talk to you.",
     age: "How old are you?", ageSub: "From 18 to 100.", ageUnit: "years",
-    reasons: "Why are you doing this?", reasonsSub: "Three reasons of your own. {companion} will remind you when it gets hard.",
-    reason: "Reason {n}", reasonRequired: "The first reason is required.",
-    reasonPh: ["To find my peace again", "Because I deserve better", "To find myself"],
   },
   options: {
     hardest: {
