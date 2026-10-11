@@ -37,6 +37,8 @@ export const en: typeof fr = {
     triggersTitle: "What makes you want to text the most?",
     duration: "How long were you together?",
     endedBy: "Who ended the relationship?",
+    recencyTitle: "How long has it been since you broke up?",
+    recencySub: "The first few weeks are when most reachouts happen.",
     firstBreakup: "Is this your first breakup?",
     situation: "What kind of situation?",
     motivation: "Why did you decide to start no contact?",
@@ -60,6 +62,7 @@ export const en: typeof fr = {
     triggers: { evening: "Evenings", social_media: "Social media", loneliness: "Loneliness", alcohol: "Alcohol", argument: "An argument", anniversary: "An anniversary", other: "Other" },
     duration: { lt_6m: "0 to 6 months", "6_12m": "6 to 12 months", "1_3y": "1 to 3 years", gt_3y: "More than 3 years" },
     endedBy: { me: "Me", them_him: "Him", them_her: "Her", mutual: "Mutual decision" },
+    recency: { lt_week: "Less than a week", w1_4: "1 to 4 weeks", m1_3: "1 to 3 months", gt_3m: "More than 3 months" },
     firstBreakup: { yes: "Yes, it's our first breakup", no: "No, we've broken up before" },
     situation: {
       infidelity_healing: "Healing from infidelity", one_sided_love: "One-sided love", toxic: "Toxic relationship",

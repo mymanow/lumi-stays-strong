@@ -35,6 +35,8 @@ export const fr = {
     triggersTitle: "Qu'est-ce qui te donne le plus envie d'écrire ?",
     duration: "Combien de temps étiez-vous ensemble ?",
     endedBy: "Qui a mis fin à la relation ?",
+    recencyTitle: "Depuis combien de temps la rupture remonte-t-elle ?",
+    recencySub: "C'est pendant les premières semaines que la plupart recontactent leur ex.",
     firstBreakup: "Est-ce votre première rupture ?",
     situation: "Quel type de situation ?",
     motivation: "Pourquoi as-tu décidé de commencer le no contact ?",
@@ -58,6 +60,7 @@ export const fr = {
     triggers: { evening: "Le soir", social_media: "Les réseaux", loneliness: "La solitude", alcohol: "L'alcool", argument: "Une dispute", anniversary: "Un anniversaire", other: "Autre" },
     duration: { lt_6m: "0 à 6 mois", "6_12m": "6 à 12 mois", "1_3y": "1 à 3 ans", gt_3y: "Plus de 3 ans" },
     endedBy: { me: "Moi", them_him: "Lui", them_her: "Elle", mutual: "Décision mutuelle" },
+    recency: { lt_week: "Moins d'une semaine", w1_4: "1 à 4 semaines", m1_3: "1 à 3 mois", gt_3m: "Plus de 3 mois" },
     firstBreakup: { yes: "Oui, c'est notre première rupture", no: "Non, nous nous sommes déjà séparés" },
     situation: {
       infidelity_healing: "Guérir d'une infidélité", one_sided_love: "Amour à sens unique", toxic: "Relation toxique",

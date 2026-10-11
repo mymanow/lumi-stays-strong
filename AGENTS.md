@@ -14,4 +14,4 @@
 - Unsent "vault" messages are stored only in IndexedDB (src/lib/vault.ts) — they must never reach the server.
 - Coach AI runs in the /api/coach server route (bearer-verified, quota via ai_usage + subscriptions) — never call AI from the browser.
 - Whop: checkout config created in a server function; subscriptions written only by /api/public/whop-webhook with service role.
-- The onboarding hardship answer is kept locally under a profile-scoped key; this presentation-only question does not alter the server profile or coach context.
+- Onboarding presentation-only answers (hardship, time since breakup) are kept locally under profile-scoped keys; they do not alter the server profile or coach context.
