@@ -26,6 +26,8 @@ export const en: typeof fr = {
   },
   onb: {
     progress: "Step {n} of {total}",
+    introTitle: "Let's personalize your journey",
+    introSub: "A few questions to tailor everything to your situation.",
     lastContact: "When did you last talk to your ex?",
     date: "Date", time: "Time",
     triggersTitle: "What makes you want to text the most?",

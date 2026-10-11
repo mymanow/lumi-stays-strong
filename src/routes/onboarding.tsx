@@ -42,6 +42,7 @@ function Onboarding() {
   const navigate = useNavigate();
   const crisis = useCrisisLine();
   const [step, setStep] = useState(0);
+  const [introDone, setIntroDone] = useState(false);
   const [init, setInit] = useState(false);
   const [contact, setContact] = useState(() => toLocalInput(new Date()));
   const [triggers, setTriggers] = useState<string[]>([]);
