@@ -10,6 +10,7 @@ import { useApp } from "@/lib/app-state";
 import { supabase } from "@/integrations/supabase/client";
 import { localDateString, lumiStageForDays, splitDuration, timeOfDay } from "@/lib/domain";
 import { MILESTONE_DAYS } from "@/config/app";
+import { needsExtraSupport } from "@/lib/score";
 import { logEvent } from "@/lib/events";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
@@ -87,7 +88,7 @@ function Home() {
           </div>
           <p className="mt-4 text-sm text-muted-foreground">{t("home.best", { n: bestDays })}</p>
         </Card>
-        <SosButton />
+        <SosButton className={needsExtraSupport(profile?.difficulty_level) ? "min-h-20 ring-2 ring-primary/40 ring-offset-4 ring-offset-background" : ""} />
         <button type="button" onClick={() => setOpen(true)} className="min-h-11 self-center text-reset underline-offset-4 hover:underline">{t("home.relapse")}</button>
       </div>
 

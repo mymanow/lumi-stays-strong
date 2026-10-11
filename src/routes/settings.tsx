@@ -5,6 +5,7 @@ import { AppShell } from "@/components/hold/AppShell";
 import { Card, LangSwitch, PageTitle } from "@/components/hold/Common";
 import { ChevronIcon } from "@/components/hold/Icons";
 import { AccountLinker } from "@/components/hold/AccountLinker";
+import { OwnReasons } from "@/components/hold/OwnReasons";
 import { ReminderControl } from "@/components/hold/ReminderControl";
 import { useI18n } from "@/i18n";
 import { useApp } from "@/lib/app-state";
@@ -57,6 +58,7 @@ function Settings() {
         <LangSwitch onChange={(l) => updateProfile({ language: l })} />
       </Card>
       <ReminderControl value={reminder} onChange={setReminder} />
+      <section><OwnReasons showList /></section>
       <Card>
         <h2 className="mb-1 text-xl font-semibold">{t("settings.saveAccount")}</h2>
         <p className="mb-4 text-sm text-muted-foreground">{t("account.sub")}</p>
