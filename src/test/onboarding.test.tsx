@@ -33,8 +33,8 @@ describe("onboarding hardship question", () => {
     const next = screen.getByRole("button", { name: "Continue" });
     expect(next).toBeDisabled();
     expect(screen.getAllByRole("radio")).toHaveLength(6);
-    fireEvent.click(screen.getAllByRole("radio")[0]);
-    fireEvent.click(screen.getAllByRole("radio")[1]);
+    fireEvent.click(screen.getByRole("radio", { name: en.options.hardest.text_urge }));
+    fireEvent.click(screen.getByRole("radio", { name: en.options.hardest.rumination }));
     expect(screen.getAllByRole("radio", { checked: true })).toHaveLength(1);
     expect(next).toBeEnabled();
     fireEvent.click(next);
