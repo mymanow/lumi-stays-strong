@@ -59,6 +59,7 @@ function Onboarding() {
     setStep(profile.onboarding_step ?? 0);
     if (profile.last_contact_at) setContact(toLocalInput(new Date(profile.last_contact_at)));
     setTriggers(profile.triggers ?? []);
+    if (profile.name) { setName(profile.name); setSubStep(2); }
     setSingle({
       duration: profile.relationship_duration ?? "", endedBy: profile.ended_by ?? "",
       firstBreakup: profile.first_breakup == null ? "" : profile.first_breakup ? "yes" : "no",
@@ -122,7 +123,7 @@ function Onboarding() {
         </div>
       );
     case 1:
-      if (!introDone) {
+      if (subStep === 0) {
         return (
           <div className="mx-auto flex min-h-screen max-w-[480px] flex-col px-6 pb-6 pt-6">
             <div>
@@ -134,10 +135,25 @@ function Onboarding() {
               <p className="mt-4 text-lg text-muted-foreground">{t("onb.introSub")}</p>
             </div>
             <div className="sticky bottom-0 bg-background pb-2 pt-3">
-              <PrimaryButton onClick={() => { setIntroDone(true); window.scrollTo(0, 0); }}>{t("common.next")}</PrimaryButton>
+              <PrimaryButton onClick={() => { setSubStep(1); window.scrollTo(0, 0); }}>{t("common.next")}</PrimaryButton>
             </div>
           </div>
         );
+      }
+      if (subStep === 1) {
+        body = (<>
+          <Question id="q-name" title={t("onb.nameTitle")} />
+          <input value={name} maxLength={40} aria-label={t("onb.nameTitle")} placeholder={t("onb.namePh")}
+            onChange={(e) => setName(e.target.value)}
+            className="min-h-12 w-full rounded-xl border border-line bg-surface px-4 text-base text-foreground placeholder:text-muted-foreground/60" />
+        </>);
+        canNext = name.trim().length > 0;
+        onNext = async () => {
+          await updateProfile({ name: name.trim() });
+          setSubStep(2);
+          window.scrollTo(0, 0);
+        };
+        break;
       }
       body = (<>
         <Question id="q1" title={t("onb.lastContact")} />
