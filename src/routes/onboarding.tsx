@@ -42,8 +42,9 @@ function Onboarding() {
   const navigate = useNavigate();
   const crisis = useCrisisLine();
   const [step, setStep] = useState(0);
-  const [introDone, setIntroDone] = useState(false);
+  const [subStep, setSubStep] = useState(0); // within step 1: 0 intro, 1 name, 2 questions
   const [init, setInit] = useState(false);
+  const [name, setName] = useState("");
   const [contact, setContact] = useState(() => toLocalInput(new Date()));
   const [triggers, setTriggers] = useState<string[]>([]);
   type S = { duration: string; endedBy: string; endedChoice?: string | undefined; firstBreakup: string; situation: string; motivation: string; emotion: string; gender: string };
