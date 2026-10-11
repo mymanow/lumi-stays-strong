@@ -8,6 +8,8 @@ import type { LumiStage } from "@/lib/domain";
 export const Route = createFileRoute("/lumi")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Lumi — Hold" },
       { name: "description", content: "Lumi grandit avec chaque jour sans contact. Si tu craques, elle ne s'éteint pas." },
       { property: "og:title", content: "Lumi — Hold" },

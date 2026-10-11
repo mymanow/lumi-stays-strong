@@ -10,12 +10,15 @@ import { useApp } from "@/lib/app-state";
 import { supabase } from "@/integrations/supabase/client";
 import { localDateString, lumiStageForDays, splitDuration, timeOfDay } from "@/lib/domain";
 import { MILESTONE_DAYS } from "@/config/app";
+import { needsExtraSupport } from "@/lib/score";
 import { logEvent } from "@/lib/events";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Hold — tiens bon, sans contact" },
       { name: "description", content: "Compteur sans contact, SOS quand l'envie d'écrire revient, et Lumi pour t'accompagner." },
       { property: "og:title", content: "Hold — tiens bon, sans contact" },
@@ -87,7 +90,7 @@ function Home() {
           </div>
           <p className="mt-4 text-sm text-muted-foreground">{t("home.best", { n: bestDays })}</p>
         </Card>
-        <SosButton />
+        <SosButton className={needsExtraSupport(profile?.difficulty_level) ? "min-h-20 ring-2 ring-primary/40 ring-offset-4 ring-offset-background" : ""} />
         <button type="button" onClick={() => setOpen(true)} className="min-h-11 self-center text-reset underline-offset-4 hover:underline">{t("home.relapse")}</button>
       </div>
 
@@ -99,6 +102,7 @@ function Home() {
         <Card>
           <h2 className="text-xl font-semibold">{t("home.checkinTitle")}</h2>
           <p className="mt-1 text-sm text-muted-foreground">{checkin.data ? t("home.checkinDone") : "30 s"}</p>
+          {needsExtraSupport(profile?.difficulty_level) && !checkin.data && <p className="mt-2 text-sm text-muted-foreground">{t("profileScore.encourage")}</p>}
           <Link to="/checkin" className="mt-4 flex min-h-12 items-center justify-center rounded-2xl border border-secondary/50 font-medium text-secondary">
             {checkin.data ? t("home.checkinEdit") : t("home.checkinCta")}
           </Link>

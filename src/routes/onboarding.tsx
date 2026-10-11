@@ -9,6 +9,8 @@ import { HoldButton } from "@/components/hold/HoldButton";
 import { AccountLinker } from "@/components/hold/AccountLinker";
 import { APP_NAME } from "@/config/app";
 import { commitmentPhraseKeys } from "@/lib/domain";
+import { ScoreCalculation, ScoreProfile } from "@/components/hold/ScoreScreens";
+import { calculateScore, readScoreFactors, defaultReminderTime, levelForScore, type ScoreResult } from "@/lib/score";
 import { ReminderControl } from "@/components/hold/ReminderControl";
 
 export const Route = createFileRoute("/onboarding")({
@@ -47,6 +49,9 @@ function Onboarding() {
   const navigate = useNavigate();
   const crisis = useCrisisLine();
   const [step, setStep] = useState(0);
+  const [scoreScreen, setScoreScreen] = useState<"calculate" | "profile" | null>(null);
+  const [scoreResult, setScoreResult] = useState<ScoreResult | null>(null);
+  const [animateProfile, setAnimateProfile] = useState(false);
   const [subStep, setSubStep] = useState(0); // within step 1: intro, name, hardship, contact date, triggers
   const [hardest, setHardest] = useState<string[]>([]);
   const [init, setInit] = useState(false);
@@ -87,6 +92,12 @@ function Onboarding() {
       emotion: profile.dominant_emotion ?? "", gender: profile.gender ?? "",
     });
     if (profile.age) setAge(profile.age);
+    setReminder({ enabled: false, time: defaultReminderTime(profile.triggers ?? []) });
+    const factors = readScoreFactors(profile.score_factors);
+    if (profile.difficulty_score != null && factors) {
+      setScoreResult({ score: profile.difficulty_score, level: levelForScore(profile.difficulty_score), factors, points: 0, computedAt: profile.score_computed_at ?? "" });
+      if (profile.onboarding_step === 10 && !profile.commitment_at) setScoreScreen("profile");
+    }
     setInit(true);
   }, [ready, profile, init, navigate]);
 
@@ -94,6 +105,16 @@ function Onboarding() {
     setStep(next);
     window.scrollTo(0, 0);
     await updateProfile({ ...patch, onboarding_step: next });
+  };
+
+  const prepareScore = (selectedAge: number, replay = true) => {
+    if (!profile) return;
+    const result = calculateScore(profile);
+    setScoreResult(result);
+    setScoreScreen(replay ? "calculate" : "profile");
+    setAnimateProfile(replay);
+    window.scrollTo(0, 0);
+    void updateProfile({ age: selectedAge, onboarding_step: 10, difficulty_score: result.score, difficulty_level: result.level, score_factors: result.factors, score_computed_at: result.computedAt });
   };
 
   const finish = async () => {
@@ -109,6 +130,9 @@ function Onboarding() {
   const commitPhrases = useMemo(() => commitmentPhraseKeys(single.motivation, single.situation).map((k) => t(k)), [single, t]);
 
   if (!ready || !init) return <FullLoader />;
+
+  if (scoreScreen === "calculate") return <ScoreCalculation onComplete={() => { setStep(10); setScoreScreen("profile"); }} />;
+  if (scoreScreen === "profile" && scoreResult) return <ScoreProfile result={scoreResult} animate={animateProfile} onBack={() => { setAnimateProfile(false); setScoreScreen(null); go(9); }} onContinue={() => { setAnimateProfile(false); setScoreScreen(null); go(10); }} />;
 
   const Question = ({ id, title, sub }: { id: string; title: string; sub?: string }) => (
     <div className="mb-6">
@@ -281,7 +305,7 @@ function Onboarding() {
       break;
     case 9:
       body = (<><Question id="q9" title={t("onb.age")} sub={t("onb.ageSub")} /><AgeWheel value={age} onChange={setAge} unit={t("onb.ageUnit")} labelledBy="q9" /></>);
-      onNext = () => go(10, { age });
+      onNext = () => prepareScore(age, !scoreResult);
       break;
     case 10:
       body = (<>
@@ -325,7 +349,8 @@ function Onboarding() {
     <div className="mx-auto flex min-h-screen max-w-[480px] flex-col px-6 pb-8 pt-4">
       <div className="mb-6 flex items-center gap-3">
         <button type="button" onClick={() => {
-          if (step === 6) { if (sub6 > 0) { setSub6(0); window.scrollTo(0, 0); } else go(5); }
+          if (step === 10 && scoreResult) { setScoreScreen("profile"); setAnimateProfile(false); }
+          else if (step === 6) { if (sub6 > 0) { setSub6(0); window.scrollTo(0, 0); } else go(5); }
           else if (step === 3) { if (sub3 > 0) { setSub3(0); window.scrollTo(0, 0); } else go(2); }
           else if (step === 1 && subStep > 0) setSubStep(subStep - 1);
           else go(step - 1);

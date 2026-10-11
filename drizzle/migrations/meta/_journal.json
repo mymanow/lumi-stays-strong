@@ -15,6 +15,13 @@
       "when": 1791707427011,
       "tag": "0001_add_profile_name",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791726547058,
+      "tag": "0002_profile_difficulty_score",
+      "breakpoints": true
     }
   ]
 }

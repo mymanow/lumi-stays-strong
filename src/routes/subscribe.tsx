@@ -17,6 +17,8 @@ export const Route = createFileRoute("/subscribe")({
   validateSearch: z.object({ from: z.string().optional() }),
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Coach illimité — Hold" },
       { name: "description", content: "Un coach quand l'envie est trop forte. Le compteur, le SOS et le journal restent gratuits." },
       { property: "og:title", content: "Coach illimité — Hold" },

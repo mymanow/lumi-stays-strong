@@ -8,6 +8,8 @@ import { Lumi } from "@/components/hold/Lumi";
 export const Route = createFileRoute("/subscribe/success")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Merci — Hold" },
       { name: "description", content: "Ton coach illimité est prêt." },
       { property: "og:title", content: "Merci — Hold" },

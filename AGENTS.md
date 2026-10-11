@@ -15,3 +15,7 @@
 - Coach AI runs in the /api/coach server route (bearer-verified, quota via ai_usage + subscriptions) — never call AI from the browser.
 - Whop: checkout config created in a server function; subscriptions written only by /api/public/whop-webhook with service role.
 - Onboarding presentation-only answers (hardship, time since breakup, social-media check) are kept locally under profile-scoped keys; they do not alter the server profile or coach context.
+
+- Indicative profile calculation stays in the pure browser-safe score module; persist only its result to owner-protected profiles and give the coach only the level, so raw scores never enter AI context.
+- Calculation and profile are transient onboarding views before commitment; the standalone profile route reuses the same presentation without animation, so existing step numbers and free access remain intact.
+- SOS derives localized reasons from optional own reasons and motivation/situation through a shared helper; own reason editing is shared with Settings to enforce one limit.

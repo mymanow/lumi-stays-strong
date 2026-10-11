@@ -5,6 +5,7 @@ import { AppShell } from "@/components/hold/AppShell";
 import { Card, LangSwitch, PageTitle } from "@/components/hold/Common";
 import { ChevronIcon } from "@/components/hold/Icons";
 import { AccountLinker } from "@/components/hold/AccountLinker";
+import { OwnReasons } from "@/components/hold/OwnReasons";
 import { ReminderControl } from "@/components/hold/ReminderControl";
 import { useI18n } from "@/i18n";
 import { useApp } from "@/lib/app-state";
@@ -17,6 +18,8 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 export const Route = createFileRoute("/settings")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Réglages — Hold" },
       { name: "description", content: "Langue, compte, abonnement, confidentialité et suppression de tes données." },
       { property: "og:title", content: "Réglages — Hold" },
@@ -57,6 +60,7 @@ function Settings() {
         <LangSwitch onChange={(l) => updateProfile({ language: l })} />
       </Card>
       <ReminderControl value={reminder} onChange={setReminder} />
+      <section><OwnReasons showList /></section>
       <Card>
         <h2 className="mb-1 text-xl font-semibold">{t("settings.saveAccount")}</h2>
         <p className="mb-4 text-sm text-muted-foreground">{t("account.sub")}</p>

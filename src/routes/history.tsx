@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { AppShell } from "@/components/hold/AppShell";
@@ -13,6 +13,8 @@ import { listVault, removeVault, type VaultItem } from "@/lib/vault";
 export const Route = createFileRoute("/history")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Historique — Hold" },
       { name: "description", content: "Tes check-ins, tes résistances et ton coffre de messages non envoyés." },
       { property: "og:title", content: "Historique — Hold" },
@@ -36,6 +38,7 @@ function History() {
   return (
     <div>
       <PageTitle>{t("history.title")}</PageTitle>
+      <Link to="/profile" className="mb-5 inline-flex min-h-11 items-center text-secondary underline underline-offset-4">{t("profileScore.link")}</Link>
       <Tabs defaultValue="checkins">
         <TabsList className="mb-6 flex h-auto w-full rounded-2xl border border-line bg-background p-1">
           <TabsTrigger value="checkins" className={tab}>{t("history.tabs.checkins")}</TabsTrigger>

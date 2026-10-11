@@ -22,6 +22,92 @@ export const fr = {
     sub: "Voici {companion}, elle veille avec toi. Un compteur, un SOS, un coach. Privé, sans compte obligatoire.",
     start: "Commencer", haveAccount: "J'ai déjà un compte",
   },
+  profileScore: {
+    "link": "Mon profil",
+    "title": "Ton profil no contact.",
+    "sub": "Indicatif, calculé à partir de tes réponses. Ce n’est pas un diagnostic.",
+    "preparing": "Je prépare ton profil…",
+    "local": "Calculé sur ton appareil à partir de tes réponses.",
+    "status": [
+        "Ton histoire",
+        "Tes moments difficiles",
+        "Ton plan personnalisé"
+    ],
+    "delay": "Environ 3 secondes",
+    "outOf": "sur 100",
+    "harder": "CE QUI REND ÇA PLUS DUR",
+    "helps": "CE QUI T’AIDE",
+    "line": "On y va étape par étape.",
+    "encourage": "Le SOS est là pour toi. Un petit check-in aujourd’hui, à ton rythme.",
+    "levels": {
+        "low": "Difficulté faible",
+        "moderate": "Difficulté modérée",
+        "high": "Difficulté élevée",
+        "very_high": "Difficulté très élevée"
+    },
+    "factors": {
+        "contact": {
+            "recent": "Le dernier contact est encore tout récent",
+            "week": "La première semaine peut remuer beaucoup de choses",
+            "month": "Le contact est encore récent",
+            "established": "Tu tiens déjà depuis plus d’un mois"
+        },
+        "duration": {
+            "lt_6m": "Votre relation était courte",
+            "6_12m": "Vous avez partagé plusieurs mois ensemble",
+            "1_3y": "Vous avez partagé entre un et trois ans",
+            "gt_3y": "Vous étiez ensemble depuis plus de 3 ans"
+        },
+        "endedBy": {
+            "me": "Tu as pris la décision toi-même",
+            "mutual": "Une décision partagée peut aussi laisser du manque",
+            "them": "Tu n’as pas choisi la fin de cette relation"
+        },
+        "firstBreakup": {
+            "yes": "C’est ta première rupture, tu pars sans habitudes de rechute",
+            "no": "Vous vous êtes déjà séparés auparavant"
+        },
+        "situation": {
+            "on_off": "Les allers-retours peuvent rendre la distance plus difficile",
+            "toxic": "Une relation qui t’a fait du mal peut laisser des liens forts",
+            "divorce_long_term": "Une longue histoire demande du temps pour se reconstruire",
+            "ex_moved_on": "Voir ton ex avancer peut réveiller le manque",
+            "one_sided_love": "Un amour à sens unique peut être difficile à laisser partir",
+            "blocked_ghosted": "Le silence sans réponse peut laisser des questions",
+            "infidelity_healing": "La blessure d’une infidélité prend du temps à apaiser",
+            "first_love": "Un premier amour peut laisser une empreinte forte",
+            "long_relationship_ended": "Une longue relation laisse des habitudes à dénouer",
+            "situationship_ended": "Une histoire sans contours clairs peut laisser du manque",
+            "breakup": "Une rupture peut faire revenir l’envie d’écrire",
+            "mutual_breakup": "Même une rupture mutuelle peut être douloureuse"
+        },
+        "motivation": {
+            "take_back_control": "Tu veux reprendre le contrôle de ta vie",
+            "move_on": "Tu as décidé de tourner la page",
+            "unsure": "Tu cherches encore ce qui est juste pour toi",
+            "win_back": "L’espoir de retrouver ton ex peut rendre la distance plus dure"
+        },
+        "emotion": {
+            "calm": "Tu gardes une base de calme",
+            "joy": "Tu gardes une base de calme",
+            "disgust": "Le dégoût peut encore prendre beaucoup de place",
+            "anger": "La colère peut donner envie de réagir",
+            "fear": "La peur peut rendre le silence plus difficile",
+            "sadness": "La tristesse peut faire revenir le manque"
+        },
+        "triggers": {
+            "evening": "Le soir est ton moment le plus fragile",
+            "selected": "Plusieurs moments peuvent réveiller l’envie d’écrire"
+        },
+        "fallback": {
+            "start": "Tu as fait le premier pas en commençant",
+            "lumi": "Lumi est avec toi",
+            "urge": "L’envie d’écrire peut revenir par moments",
+            "waves": "Certaines journées peuvent être plus sensibles"
+        }
+    }
+},
+  ownReasons: {"title": "Tes raisons de tenir.", "add": "Ajouter une raison", "placeholder": "Ce qui compte pour toi…", "limit": "Jusqu’à 3 raisons personnelles."},
   onb: {
     progress: "Étape {n} sur {total}",
     introTitle: "Personnalisons ton parcours",
@@ -193,16 +279,18 @@ export const fr = {
   legal: {
     privacyTitle: "Politique de confidentialité",
     privacy: [
+      "Le profil est une estimation indicative, non clinique et non validée, calculée sur ton appareil puis enregistrée dans ton profil privé. Ce n’est pas un diagnostic. Ni ton âge ni ton genre ne sont utilisés. Le coach reçoit uniquement le niveau de difficulté, jamais le score.",
       "{app} est réservé aux adultes (18 ans et plus).",
       "Nous stockons ton compteur, tes réponses d'onboarding, tes check-ins et tes événements, accessibles uniquement par toi.",
       "Tes messages non envoyés (le coffre) ne quittent jamais cet appareil.",
-      "Quand tu utilises le coach, nous envoyons au service d'IA : le mode choisi, le ton, tes raisons, ta motivation, ton type de situation, ton genre (pour les accords), le nombre de jours sans contact, la date de ta dernière rechute et tes 10 derniers messages. Jamais ton âge ni ton coffre.",
+      "Quand tu utilises le coach, nous envoyons au service d'IA : le mode choisi, le ton, tes raisons personnelles seulement si tu en as ajouté, ta motivation, ton type de situation, ton niveau de difficulté (jamais le score), le nombre de jours sans contact, la date de ta dernière rechute et tes 10 derniers messages. Jamais ton âge ni ton coffre.",
       "Les paiements sont traités par Whop.",
       "Tu peux tout supprimer à tout moment depuis les Réglages.",
       "[Texte à compléter : responsable du traitement, contact, durée de conservation.]",
     ],
     termsTitle: "Conditions d'utilisation",
     terms: [
+      "Le profil est une estimation indicative, non clinique et non validée, calculée sur ton appareil puis enregistrée dans ton profil privé. Ce n’est pas un diagnostic. Ni ton âge ni ton genre ne sont utilisés. Le coach reçoit uniquement le niveau de difficulté, jamais le score.",
       "{app} est réservé aux adultes (18 ans et plus).",
       "{app} n'est pas un service médical ou thérapeutique et ne remplace pas un professionnel de santé.",
       "{app} ne promet pas et n'encourage pas à récupérer un ex.",

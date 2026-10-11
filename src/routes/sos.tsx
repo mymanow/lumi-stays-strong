@@ -5,12 +5,16 @@ import { useApp } from "@/lib/app-state";
 import { Lumi } from "@/components/hold/Lumi";
 import { CrisisLink, PrimaryButton, SecondaryButton } from "@/components/hold/Common";
 import { CloseIcon } from "@/components/hold/Icons";
+import { OwnReasons } from "@/components/hold/OwnReasons";
+import { sosReasons } from "@/lib/reasons";
 import { addVault } from "@/lib/vault";
 import { logEvent } from "@/lib/events";
 
 export const Route = createFileRoute("/sos")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "SOS — Hold" },
       { name: "description", content: "L'envie d'écrire est là. Respire avec Lumi et relis tes raisons." },
       { property: "og:title", content: "SOS — Hold" },
@@ -29,12 +33,7 @@ function Sos() {
   const [step, setStep] = useState<"breathe" | "reasons" | "won">("breathe");
   const [elapsed, setElapsed] = useState(0);
   const [text, setText] = useState("");
-  const [reasons, setReasons] = useState<string[]>([]);
-
-  useEffect(() => {
-    if (profile?.reasons?.length) setReasons(profile.reasons);
-    else { try { setReasons(JSON.parse(localStorage.getItem("hold_reasons") ?? "[]")); } catch { /* none */ } }
-  }, [profile]);
+  const reasons = sosReasons(profile?.reasons ?? [], profile?.motivation, profile?.situation_type, t);
 
   useEffect(() => {
     if (step !== "breathe") return;
@@ -71,12 +70,13 @@ function Sos() {
           <div className="flex flex-1 flex-col gap-6 pt-4">
             {reasons.length > 0 && (
               <div>
-                <h1 className="mb-4 text-xl text-muted-foreground">{t("sos.reasonsTitle")}</h1>
+                <h1 className="mb-4 text-xl text-muted-foreground">{t("ownReasons.title")}</h1>
                 <ul className="flex flex-col gap-3">
                   {reasons.map((r) => <li key={r} className="font-display text-3xl leading-tight">{r}</li>)}
                 </ul>
               </div>
             )}
+            <OwnReasons />
             <div className="flex items-center gap-3 rounded-2xl border border-line bg-surface p-4">
               <Lumi size={36} stage={3} />
               <p>{t("sos.lumiLine")}</p>

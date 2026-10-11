@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, cleanup } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { en } from "@/i18n/en";
 
 const { updateProfile, profile } = vi.hoisted(() => ({
@@ -91,13 +91,14 @@ describe("onboarding reasons question removed", () => {
     Element.prototype.scrollTo = (() => {}) as typeof Element.prototype.scrollTo;
   });
 
-  it("goes from the age straight to the commitment", () => {
+  it("goes from age to local calculation before commitment", () => {
+    window.matchMedia = vi.fn().mockReturnValue({ matches: false });
     Object.assign(profile, { onboarding_step: 9 });
     const Component = Route.options.component as React.ComponentType;
     render(<Component />);
     expect(screen.getByRole("heading", { name: en.onb.age })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Continue" }));
-    expect(screen.getByRole("heading", { name: en.commit.title })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: en.profileScore.preparing })).toBeInTheDocument();
     expect(screen.queryByText("Why are you doing this?")).not.toBeInTheDocument();
   });
 });

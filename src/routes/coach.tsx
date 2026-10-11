@@ -16,6 +16,8 @@ export const Route = createFileRoute("/coach")({
   validateSearch: search,
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Coach — Hold" },
       { name: "description", content: "Parle à Lumi quand l'envie d'écrire est trop forte." },
       { property: "og:title", content: "Coach — Hold" },

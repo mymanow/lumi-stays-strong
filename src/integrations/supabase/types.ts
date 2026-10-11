@@ -105,6 +105,8 @@ export type Database = {
           coach_tone: string
           commitment_at: string | null
           created_at: string
+          difficulty_level: string | null
+          difficulty_score: number | null
           dominant_emotion: string | null
           ended_by: string | null
           first_breakup: boolean | null
@@ -120,6 +122,8 @@ export type Database = {
           relationship_duration: string | null
           reminder_enabled: boolean
           reminder_time: string
+          score_computed_at: string | null
+          score_factors: Json | null
           situation_type: string | null
           triggers: string[]
         }
@@ -129,6 +133,8 @@ export type Database = {
           coach_tone?: string
           commitment_at?: string | null
           created_at?: string
+          difficulty_level?: string | null
+          difficulty_score?: number | null
           dominant_emotion?: string | null
           ended_by?: string | null
           first_breakup?: boolean | null
@@ -144,6 +150,8 @@ export type Database = {
           relationship_duration?: string | null
           reminder_enabled?: boolean
           reminder_time?: string
+          score_computed_at?: string | null
+          score_factors?: Json | null
           situation_type?: string | null
           triggers?: string[]
         }
@@ -153,6 +161,8 @@ export type Database = {
           coach_tone?: string
           commitment_at?: string | null
           created_at?: string
+          difficulty_level?: string | null
+          difficulty_score?: number | null
           dominant_emotion?: string | null
           ended_by?: string | null
           first_breakup?: boolean | null
@@ -168,6 +178,8 @@ export type Database = {
           relationship_duration?: string | null
           reminder_enabled?: boolean
           reminder_time?: string
+          score_computed_at?: string | null
+          score_factors?: Json | null
           situation_type?: string | null
           triggers?: string[]
         }
