@@ -82,6 +82,7 @@ describe("onboarding social media question", () => {
     expect(screen.getByRole("radio", { checked: true })).toHaveTextContent(en.options.socials.never);
     fireEvent.click(screen.getByRole("button", { name: "Back" }));
     expect(screen.getByRole("radio", { checked: true })).toHaveTextContent(en.options.motivation.move_on);
+  });
 });
 
 describe("onboarding reasons question removed", () => {
@@ -94,5 +95,4 @@ describe("onboarding reasons question removed", () => {
     expect(screen.getByRole("heading", { name: en.commit.title })).toBeInTheDocument();
     expect(screen.queryByText("Why are you doing this?")).not.toBeInTheDocument();
   });
-});
 });
