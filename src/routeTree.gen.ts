@@ -17,6 +17,7 @@ import { Route as HistoryRouteImport } from './routes/history'
 import { Route as LumiRouteImport } from './routes/lumi'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SigninRouteImport } from './routes/signin'
 import { Route as SosRouteImport } from './routes/sos'
@@ -64,6 +65,11 @@ const OnboardingRoute = OnboardingRouteImport.update({
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SettingsRoute = SettingsRouteImport.update({
@@ -116,6 +122,7 @@ export interface FileRoutesByFullPath {
   '/lumi': typeof LumiRoute
   '/onboarding': typeof OnboardingRoute
   '/privacy': typeof PrivacyRoute
+  '/profile': typeof ProfileRoute
   '/settings': typeof SettingsRoute
   '/signin': typeof SigninRoute
   '/sos': typeof SosRoute
@@ -134,6 +141,7 @@ export interface FileRoutesByTo {
   '/lumi': typeof LumiRoute
   '/onboarding': typeof OnboardingRoute
   '/privacy': typeof PrivacyRoute
+  '/profile': typeof ProfileRoute
   '/settings': typeof SettingsRoute
   '/signin': typeof SigninRoute
   '/sos': typeof SosRoute
@@ -153,6 +161,7 @@ export interface FileRoutesById {
   '/lumi': typeof LumiRoute
   '/onboarding': typeof OnboardingRoute
   '/privacy': typeof PrivacyRoute
+  '/profile': typeof ProfileRoute
   '/settings': typeof SettingsRoute
   '/signin': typeof SigninRoute
   '/sos': typeof SosRoute
@@ -173,6 +182,7 @@ export interface FileRouteTypes {
     | '/lumi'
     | '/onboarding'
     | '/privacy'
+    | '/profile'
     | '/settings'
     | '/signin'
     | '/sos'
@@ -191,6 +201,7 @@ export interface FileRouteTypes {
     | '/lumi'
     | '/onboarding'
     | '/privacy'
+    | '/profile'
     | '/settings'
     | '/signin'
     | '/sos'
@@ -209,6 +220,7 @@ export interface FileRouteTypes {
     | '/lumi'
     | '/onboarding'
     | '/privacy'
+    | '/profile'
     | '/settings'
     | '/signin'
     | '/sos'
@@ -228,6 +240,7 @@ export interface RootRouteChildren {
   LumiRoute: typeof LumiRoute
   OnboardingRoute: typeof OnboardingRoute
   PrivacyRoute: typeof PrivacyRoute
+  ProfileRoute: typeof ProfileRoute
   SettingsRoute: typeof SettingsRoute
   SigninRoute: typeof SigninRoute
   SosRoute: typeof SosRoute
@@ -293,6 +306,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/settings': {
@@ -375,6 +395,7 @@ const rootRouteChildren: RootRouteChildren = {
   LumiRoute: LumiRoute,
   OnboardingRoute: OnboardingRoute,
   PrivacyRoute: PrivacyRoute,
+  ProfileRoute: ProfileRoute,
   SettingsRoute: SettingsRoute,
   SigninRoute: SigninRoute,
   SosRoute: SosRoute,
