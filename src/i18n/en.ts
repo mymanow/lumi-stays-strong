@@ -24,6 +24,92 @@ export const en: typeof fr = {
     sub: "Meet {companion}, she watches over you. A counter, an SOS, a coach. Private, no account required.",
     start: "Get started", haveAccount: "I already have an account",
   },
+  profileScore: {
+    "link": "My profile",
+    "title": "Your no-contact profile.",
+    "sub": "An indication based on your answers. This is not a diagnosis.",
+    "preparing": "I’m preparing your profile…",
+    "local": "Calculated on your device from your answers.",
+    "status": [
+        "Your story",
+        "Your difficult moments",
+        "Your personalized plan"
+    ],
+    "delay": "About 3 seconds",
+    "outOf": "out of 100",
+    "harder": "WHAT MAKES IT HARDER",
+    "helps": "WHAT HELPS YOU",
+    "line": "We’ll take it step by step.",
+    "encourage": "SOS is here for you. A small check-in today, at your own pace.",
+    "levels": {
+        "low": "Low difficulty",
+        "moderate": "Moderate difficulty",
+        "high": "High difficulty",
+        "very_high": "Very high difficulty"
+    },
+    "factors": {
+        "contact": {
+            "recent": "Your last contact is still very recent",
+            "week": "The first week can bring up a lot",
+            "month": "Contact is still recent",
+            "established": "You’ve already held on for over a month"
+        },
+        "duration": {
+            "lt_6m": "Your relationship was short",
+            "6_12m": "You shared several months together",
+            "1_3y": "You shared between one and three years",
+            "gt_3y": "You were together for over 3 years"
+        },
+        "endedBy": {
+            "me": "You made the decision yourself",
+            "mutual": "A shared decision can still leave you missing them",
+            "them": "You didn’t choose the end of this relationship"
+        },
+        "firstBreakup": {
+            "yes": "This is your first breakup, without a pattern of returning",
+            "no": "You have separated before"
+        },
+        "situation": {
+            "on_off": "An on-and-off pattern can make distance harder",
+            "toxic": "A hurtful relationship can still leave strong ties",
+            "divorce_long_term": "A long shared history takes time to rebuild from",
+            "ex_moved_on": "Seeing your ex move on can bring back longing",
+            "one_sided_love": "One-sided love can be hard to let go of",
+            "blocked_ghosted": "Silence without answers can leave questions",
+            "infidelity_healing": "The hurt of infidelity takes time to settle",
+            "first_love": "A first love can leave a strong impression",
+            "long_relationship_ended": "A long relationship leaves habits to untangle",
+            "situationship_ended": "An undefined relationship can still leave longing",
+            "breakup": "A breakup can bring back the urge to text",
+            "mutual_breakup": "Even a mutual breakup can hurt"
+        },
+        "motivation": {
+            "take_back_control": "You want to take back control of your life",
+            "move_on": "You’ve decided to move on",
+            "unsure": "You’re still finding what feels right for you",
+            "win_back": "Hoping to reunite can make distance harder"
+        },
+        "emotion": {
+            "calm": "You’re keeping a foundation of calm",
+            "joy": "You’re keeping a foundation of calm",
+            "disgust": "Disgust can still take up a lot of space",
+            "anger": "Anger can make you want to react",
+            "fear": "Fear can make silence harder",
+            "sadness": "Sadness can bring back longing"
+        },
+        "triggers": {
+            "evening": "Evenings are your most fragile moment",
+            "selected": "Several moments can bring back the urge to text"
+        },
+        "fallback": {
+            "start": "You took the first step by starting",
+            "lumi": "Lumi is with you",
+            "urge": "The urge to text may return at times",
+            "waves": "Some days may feel more sensitive"
+        }
+    }
+},
+  ownReasons: {"title": "Your reasons to hold on.", "add": "Add a reason", "placeholder": "What matters to you…", "limit": "Up to 3 personal reasons."},
   onb: {
     progress: "Step {n} of {total}",
     introTitle: "Let's personalize your journey",
@@ -195,16 +281,18 @@ export const en: typeof fr = {
   legal: {
     privacyTitle: "Privacy policy",
     privacy: [
+      "The profile is an indicative, non-clinical and unvalidated estimate, computed on your device then saved to your private profile. It is not a diagnosis. Neither age nor gender is used. The coach receives only the difficulty level, never the score.",
       "{app} is for adults only (18+).",
       "We store your counter, onboarding answers, check-ins and events, readable only by you.",
       "Your unsent messages (the vault) never leave this device.",
-      "When you use the coach, we send the AI service: the chosen mode, tone, your reasons, motivation, situation type, gender (for wording), days without contact, your last relapse date and your last 10 messages. Never your age or your vault.",
+      "When you use the coach, we send the AI service: the chosen mode, tone, your own reasons only if you added any, motivation, situation type, difficulty level (never the score), days without contact, your last relapse date and your last 10 messages. Never your age or your vault.",
       "Payments are processed by Whop.",
       "You can delete everything at any time from Settings.",
       "[Placeholder: data controller, contact, retention period.]",
     ],
     termsTitle: "Terms of use",
     terms: [
+      "The profile is an indicative, non-clinical and unvalidated estimate, computed on your device then saved to your private profile. It is not a diagnosis. Neither age nor gender is used. The coach receives only the difficulty level, never the score.",
       "{app} is for adults only (18+).",
       "{app} is not a medical or therapeutic service and does not replace a health professional.",
       "{app} does not promise or encourage getting an ex back.",
