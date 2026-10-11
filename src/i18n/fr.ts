@@ -45,9 +45,6 @@ export const fr = {
     emotion: "Quelle émotion dominante revient le plus souvent ?",
     gender: "Tu es :", genderSub: "Pour adapter notre communication.",
     age: "Quel âge as-tu ?", ageSub: "De 18 à 100 ans.", ageUnit: "ans",
-    reasons: "Pourquoi tu fais ça ?", reasonsSub: "Trois raisons à toi. {companion} te les rappellera quand ce sera dur.",
-    reason: "Raison {n}", reasonRequired: "La première raison est nécessaire.",
-    reasonPh: ["Pour retrouver ma paix", "Parce que je mérite mieux", "Pour me retrouver"],
   },
   options: {
     hardest: {
