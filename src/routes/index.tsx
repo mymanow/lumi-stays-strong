@@ -17,6 +17,8 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Hold — tiens bon, sans contact" },
       { name: "description", content: "Compteur sans contact, SOS quand l'envie d'écrire revient, et Lumi pour t'accompagner." },
       { property: "og:title", content: "Hold — tiens bon, sans contact" },

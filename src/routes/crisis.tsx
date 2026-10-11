@@ -5,6 +5,8 @@ import { BackIcon, PhoneIcon } from "@/components/hold/Icons";
 export const Route = createFileRoute("/crisis")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Ressources d'urgence — Hold" },
       { name: "description", content: "Lignes d'écoute gratuites : 3114 en France, 988 aux États-Unis, Samaritans 116 123 au Royaume-Uni et en Irlande." },
       { property: "og:title", content: "Ressources d'urgence — Hold" },

@@ -18,6 +18,8 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 export const Route = createFileRoute("/settings")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Réglages — Hold" },
       { name: "description", content: "Langue, compte, abonnement, confidentialité et suppression de tes données." },
       { property: "og:title", content: "Réglages — Hold" },

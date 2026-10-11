@@ -13,6 +13,8 @@ import { listVault, removeVault, type VaultItem } from "@/lib/vault";
 export const Route = createFileRoute("/history")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Historique — Hold" },
       { name: "description", content: "Tes check-ins, tes résistances et ton coffre de messages non envoyés." },
       { property: "og:title", content: "Historique — Hold" },

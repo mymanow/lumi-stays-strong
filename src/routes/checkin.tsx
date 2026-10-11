@@ -12,6 +12,8 @@ import { detectCrisis, localDateString } from "@/lib/domain";
 export const Route = createFileRoute("/checkin")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Check-in du jour — Hold" },
       { name: "description", content: "30 secondes pour noter ton humeur, ton envie et tes déclencheurs." },
       { property: "og:title", content: "Check-in du jour — Hold" },

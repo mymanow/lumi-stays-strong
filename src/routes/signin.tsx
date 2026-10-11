@@ -9,6 +9,8 @@ import { BackIcon } from "@/components/hold/Icons";
 export const Route = createFileRoute("/signin")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Connexion — Hold" },
       { name: "description", content: "Retrouve ton compteur et tes raisons avec un lien de connexion." },
       { property: "og:title", content: "Connexion — Hold" },

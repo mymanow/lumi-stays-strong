@@ -13,6 +13,8 @@ import { logEvent } from "@/lib/events";
 export const Route = createFileRoute("/sos")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "SOS — Hold" },
       { name: "description", content: "L'envie d'écrire est là. Respire avec Lumi et relis tes raisons." },
       { property: "og:title", content: "SOS — Hold" },
