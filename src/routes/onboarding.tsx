@@ -42,6 +42,7 @@ function Onboarding() {
   const navigate = useNavigate();
   const crisis = useCrisisLine();
   const [step, setStep] = useState(0);
+  const [introDone, setIntroDone] = useState(false);
   const [init, setInit] = useState(false);
   const [contact, setContact] = useState(() => toLocalInput(new Date()));
   const [triggers, setTriggers] = useState<string[]>([]);
@@ -120,6 +121,23 @@ function Onboarding() {
         </div>
       );
     case 1:
+      if (!introDone) {
+        return (
+          <div className="mx-auto flex min-h-screen max-w-[480px] flex-col px-6 pb-6 pt-6">
+            <div>
+              <button type="button" onClick={() => go(0)} aria-label={t("common.back")} className="flex h-11 w-11 items-center justify-center rounded-full text-muted-foreground hover:bg-surface"><BackIcon /></button>
+            </div>
+            <div className="flex flex-1 flex-col items-center justify-center text-center">
+              <Lumi size={110} stage={3} />
+              <h1 className="mt-8 text-3xl font-semibold leading-tight md:text-4xl">{t("onb.introTitle")}</h1>
+              <p className="mt-4 text-lg text-muted-foreground">{t("onb.introSub")}</p>
+            </div>
+            <div className="sticky bottom-0 bg-background pb-2 pt-3">
+              <PrimaryButton onClick={() => { setIntroDone(true); window.scrollTo(0, 0); }}>{t("common.next")}</PrimaryButton>
+            </div>
+          </div>
+        );
+      }
       body = (<>
         <Question id="q1" title={t("onb.lastContact")} />
         <div className="mb-8 grid grid-cols-2 gap-3">

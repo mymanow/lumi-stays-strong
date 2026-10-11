@@ -24,6 +24,8 @@ export const fr = {
   },
   onb: {
     progress: "Étape {n} sur {total}",
+    introTitle: "Personnalisons ton parcours",
+    introSub: "Quelques questions pour tout adapter à ta situation.",
     lastContact: "Quand as-tu parlé à ton ex pour la dernière fois ?",
     date: "Date", time: "Heure",
     triggersTitle: "Qu'est-ce qui te donne le plus envie d'écrire ?",
