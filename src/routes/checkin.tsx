@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { Frown, Heart, Meh, Smile, Sparkles, type LucideIcon } from "lucide-react";
 import { AppShell } from "@/components/hold/AppShell";
 import { ChoiceList, PageTitle, PrimaryButton } from "@/components/hold/Common";
 import { useI18n } from "@/i18n";
@@ -25,19 +26,36 @@ export const Route = createFileRoute("/checkin")({
 
 const TRIGGERS = ["evening", "social_media", "loneliness", "alcohol", "argument", "anniversary", "other"];
 
-function Scale({ label, id, value, onChange, labels }: { label: string; id: string; value: number; onChange: (n: number) => void; labels: string[] }) {
+const MOOD_ICONS: { Icon: LucideIcon; color: string }[] = [
+  { Icon: Frown, color: "#C0443B" },
+  { Icon: Meh, color: "#B83C7A" },
+  { Icon: Smile, color: "#5252C9" },
+  { Icon: Heart, color: "#7440D1" },
+  { Icon: Sparkles, color: "#0B7F70" },
+];
+
+function Scale({ label, id, value, onChange, labels, icons }: { label: string; id: string; value: number; onChange: (n: number) => void; labels: string[]; icons?: typeof MOOD_ICONS }) {
   return (
     <fieldset className="mb-8">
       <legend id={id} className="mb-3 text-lg font-semibold">{label}</legend>
       <div role="radiogroup" aria-labelledby={id} className="grid grid-cols-5 gap-2">
-        {[1, 2, 3, 4, 5].map((n) => (
-          <button key={n} type="button" role="radio" aria-checked={value === n} aria-label={`${n} — ${labels[n - 1]}`} onClick={() => onChange(n)}
-            className={`flex min-h-14 flex-col items-center justify-center rounded-[24px] border font-display text-xl ${value === n ? "border-white bg-white text-[#2e3865]" : "glass"}`}>
-            {n}
-          </button>
-        ))}
+        {[1, 2, 3, 4, 5].map((n) => {
+          const selected = value === n;
+          const ic = icons?.[n - 1];
+          return (
+            <button key={n} type="button" role="radio" aria-checked={selected} aria-label={`${n} — ${labels[n - 1]}`} onClick={() => onChange(n)}
+              className={`flex flex-col items-center justify-center gap-1.5 rounded-[24px] border transition-transform active:scale-95 ${ic ? "min-h-[92px] px-1 py-3" : "min-h-14 font-display text-xl"} ${selected ? "border-white bg-white text-[#2e3865] shadow-[0_8px_22px_-8px_rgba(46,56,101,0.5)]" : "glass"}`}>
+              {ic ? (
+                <>
+                  <ic.Icon aria-hidden className={`h-7 w-7 transition-transform ${selected ? "scale-110" : ""}`} style={{ color: ic.color }} strokeWidth={2.25} />
+                  <span className="text-[11px] font-semibold leading-tight sm:text-xs">{labels[n - 1]}</span>
+                </>
+              ) : n}
+            </button>
+          );
+        })}
       </div>
-      <div className="mt-1 flex justify-between text-xs text-muted-foreground"><span>{labels[0]}</span><span>{labels[4]}</span></div>
+      {!icons && <div className="mt-1 flex justify-between text-xs text-muted-foreground"><span>{labels[0]}</span><span>{labels[4]}</span></div>}
     </fieldset>
   );
 }
@@ -76,7 +94,7 @@ function Checkin() {
   return (
     <div className="mx-auto max-w-[520px]">
       <PageTitle>{t("checkin.title")}</PageTitle>
-      <Scale id="mood" label={t("checkin.mood")} value={mood} onChange={setMood} labels={tl<string[]>("checkin.moodScale")} />
+      <Scale id="mood" label={t("checkin.mood")} value={mood} onChange={setMood} labels={tl<string[]>("checkin.moodScale")} icons={MOOD_ICONS} />
       <Scale id="urge" label={t("checkin.urge")} value={urge} onChange={setUrge} labels={tl<string[]>("checkin.urgeScale")} />
       <h2 id="ctrig" className="mb-3 text-lg font-semibold">{t("checkin.triggers")}</h2>
       <ChoiceList multi labelledBy="ctrig" options={TRIGGERS.map((k) => ({ value: k, label: t(`options.triggers.${k}`) }))} value={triggers} onChange={setTriggers} />
