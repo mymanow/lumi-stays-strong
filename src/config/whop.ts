@@ -5,4 +5,4 @@ export const WHOP_PLANS: Record<PlanKey, string> = {
   yearly: (import.meta.env["VITE_WHOP_PLAN_YEARLY"] as string | undefined) || "plan_67890",
 };
 
-export const WHOP_ACCENT = "#E8A55B";
+export const WHOP_ACCENT = "#F4B94E";

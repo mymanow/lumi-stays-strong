@@ -11,9 +11,9 @@ export const Route = createFileRoute("/lumi")({
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { title: "Lumi — Hold" },
-      { name: "description", content: "Lumi grandit avec chaque jour sans contact. Si tu craques, elle ne s'éteint pas." },
+      { name: "description", content: "Lumi grandit avec chaque jour sans contact. Si tu craques, il ne t'en veut pas. On repart ensemble." },
       { property: "og:title", content: "Lumi — Hold" },
-      { property: "og:description", content: "Lumi grandit avec chaque jour sans contact. Si tu craques, elle ne s'éteint pas." },
+      { property: "og:description", content: "Lumi grandit avec chaque jour sans contact. Si tu craques, il ne t'en veut pas. On repart ensemble." },
     ],
   }),
   component: () => <AppShell><LumiPage /></AppShell>,
@@ -34,7 +34,7 @@ function LumiPage() {
           </Card>
         ))}
       </div>
-      <p className="mt-8 rounded-2xl border border-lumi/40 bg-lumi/10 p-5 font-display text-xl">{t("lumiPage.rule")}</p>
+      <p className="mt-8 rounded-[24px] border border-white bg-white/60 p-5 font-display text-xl">{t("lumiPage.rule")}</p>
     </div>
   );
 }

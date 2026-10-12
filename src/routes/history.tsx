@@ -34,13 +34,13 @@ function History() {
   useEffect(() => { listVault().then(setVault); }, []);
   const ev = events.data ?? [];
 
-  const tab = "min-h-11 flex-1 rounded-xl data-[state=active]:bg-surface data-[state=active]:text-foreground";
+  const tab = "min-h-11 flex-1 rounded-full data-[state=active]:bg-white data-[state=active]:text-[#2e3865]";
   return (
     <div>
       <PageTitle>{t("history.title")}</PageTitle>
-      <Link to="/profile" className="mb-5 inline-flex min-h-11 items-center text-secondary underline underline-offset-4">{t("profileScore.link")}</Link>
+      <Link to="/profile" className="mb-5 inline-flex min-h-11 items-center font-semibold text-foreground underline underline-offset-4">{t("profileScore.link")}</Link>
       <Tabs defaultValue="checkins">
-        <TabsList className="mb-6 flex h-auto w-full rounded-2xl border border-line bg-background p-1">
+        <TabsList className="mb-6 flex h-auto w-full glass rounded-full p-1">
           <TabsTrigger value="checkins" className={tab}>{t("history.tabs.checkins")}</TabsTrigger>
           <TabsTrigger value="events" className={tab}>{t("history.tabs.events")}</TabsTrigger>
           <TabsTrigger value="vault" className={tab}>{t("history.tabs.vault")}</TabsTrigger>
@@ -60,13 +60,13 @@ function History() {
         </TabsContent>
         <TabsContent value="events" className="flex flex-col gap-3">
           <div className="mb-2 flex gap-3 text-sm">
-            <span className="rounded-full bg-secondary/15 px-3 py-1 text-secondary">{t("history.resistances", { n: ev.filter((e) => e.type === "resistance").length })}</span>
-            <span className="rounded-full bg-reset/15 px-3 py-1 text-reset">{t("history.relapses", { n: ev.filter((e) => e.type === "relapse").length })}</span>
+            <span className="rounded-full bg-white/60 px-3 py-1 font-semibold text-foreground">{t("history.resistances", { n: ev.filter((e) => e.type === "resistance").length })}</span>
+            <span className="rounded-full bg-reset/40 px-3 py-1 font-semibold text-foreground">{t("history.relapses", { n: ev.filter((e) => e.type === "relapse").length })}</span>
           </div>
           {ev.length === 0 && <p className="text-muted-foreground">{t("history.noEvents")}</p>}
           {ev.map((e) => (
             <Card key={e.id} className="flex items-center justify-between p-4">
-              <span className={e.type === "resistance" ? "text-secondary" : "text-reset"}>{t(`history.${e.type}`)}{e.trigger ? ` · ${t(`options.triggers.${e.trigger}`)}` : ""}</span>
+              <span className={e.type === "resistance" ? "font-semibold text-foreground" : "font-semibold text-foreground"}>{t(`history.${e.type}`)}{e.trigger ? ` · ${t(`options.triggers.${e.trigger}`)}` : ""}</span>
               <span className="text-sm text-muted-foreground">{fmt(e.occurred_at, true)}</span>
             </Card>
           ))}
@@ -79,7 +79,7 @@ function History() {
               <div className="flex items-start justify-between gap-3">
                 <p className="whitespace-pre-wrap break-words">{v.text}</p>
                 <button type="button" aria-label={t("common.delete")} onClick={async () => { await removeVault(v.id); setVault(await listVault()); }}
-                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:bg-background"><TrashIcon /></button>
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:bg-white/40"><TrashIcon /></button>
               </div>
               <p className="mt-2 text-xs text-muted-foreground">{fmt(v.createdAt, true)}</p>
             </Card>

@@ -37,9 +37,9 @@ function Success() {
   return (
     <div className="mx-auto flex min-h-screen max-w-[480px] flex-col items-center justify-center px-6 text-center">
       <Lumi size={100} stage={state === "active" ? 4 : 3} />
-      <h1 className="mt-8 text-3xl font-semibold">{state === "active" ? t("subscribe.successTitle") : t("subscribe.successPending")}</h1>
+      <h1 className="mt-8 text-4xl">{state === "active" ? t("subscribe.successTitle") : t("subscribe.successPending")}</h1>
       <p className="mt-3 text-muted-foreground" aria-live="polite">{state === "active" ? t("subscribe.successBody") : state === "late" ? t("subscribe.successLate") : ""}</p>
-      <Link to="/coach" className="mt-10 flex min-h-12 w-full items-center justify-center rounded-2xl bg-primary font-semibold text-primary-foreground">{t("subscribe.toCoach")}</Link>
+      <Link to="/coach" className="mt-10 flex min-h-12 w-full items-center justify-center rounded-full bg-primary font-semibold text-primary-foreground">{t("subscribe.toCoach")}</Link>
     </div>
   );
 }

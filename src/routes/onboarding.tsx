@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useI18n, interpolate } from "@/i18n";
 import { useApp, type ProfilePatch } from "@/lib/app-state";
 import { Lumi } from "@/components/hold/Lumi";
-import { ChoiceList, FullLoader, LangSwitch, PrimaryButton, useCrisisLine } from "@/components/hold/Common";
+import { ChoiceList, FullLoader, LangSwitch, PrimaryButton, Stage, useCrisisLine } from "@/components/hold/Common";
 import { BackIcon } from "@/components/hold/Icons";
 import { HoldButton } from "@/components/hold/HoldButton";
 import { AccountLinker } from "@/components/hold/AccountLinker";
@@ -136,7 +136,7 @@ function Onboarding() {
 
   const Question = ({ id, title, sub }: { id: string; title: string; sub?: string }) => (
     <div className="mb-6">
-      <h1 id={id} className="text-2xl font-semibold leading-snug md:text-3xl">{title}</h1>
+      <h1 id={id} className="text-[32px] leading-tight md:text-4xl">{title}</h1>
       {sub && <p className="mt-2 text-muted-foreground">{sub}</p>}
     </div>
   );
@@ -148,14 +148,14 @@ function Onboarding() {
   switch (step) {
     case 0:
       return (
-        <div className="mx-auto flex min-h-screen max-w-[480px] flex-col px-6 pb-8 pt-6">
+        <Stage tone="dusk"><div className="mx-auto flex min-h-svh max-w-[480px] flex-col px-6 pb-8 pt-6">
           <div className="flex items-center justify-between">
             <span className="font-display text-2xl">{APP_NAME}</span>
             <LangSwitch onChange={(l) => updateProfile({ language: l })} />
           </div>
           <div className="flex flex-1 flex-col items-center justify-center text-center">
-            <Lumi size={110} stage={3} />
-            <h1 className="mt-8 text-3xl font-semibold leading-tight md:text-4xl">{t("welcome.headline")}</h1>
+            <Lumi size={120} stage={3} emotion="happy" />
+            <h1 className="mt-8 text-4xl leading-tight md:text-5xl">{t("welcome.headline")}</h1>
             <p className="mt-4 text-lg text-muted-foreground">{t("welcome.sub")}</p>
           </div>
           <PrimaryButton onClick={() => go(1, { language: lang })}>{t("welcome.start")}</PrimaryButton>
@@ -163,24 +163,24 @@ function Onboarding() {
           <p className="mt-4 text-center text-xs text-muted-foreground">
             <a href={`tel:${crisis.tel}`} className="underline-offset-4 hover:underline">{t("crisis.disclaimer", { number: crisis.number })}</a>
           </p>
-        </div>
+        </div></Stage>
       );
     case 1:
       if (subStep === 0) {
         return (
-          <div className="mx-auto flex min-h-screen max-w-[480px] flex-col px-6 pb-6 pt-6">
+          <Stage tone="dusk"><div className="mx-auto flex min-h-svh max-w-[480px] flex-col px-6 pb-6 pt-6">
             <div>
-              <button type="button" onClick={() => go(0)} aria-label={t("common.back")} className="flex h-11 w-11 items-center justify-center rounded-full text-muted-foreground hover:bg-surface"><BackIcon /></button>
+              <button type="button" onClick={() => go(0)} aria-label={t("common.back")} className="glass flex h-11 w-11 items-center justify-center rounded-full text-foreground"><BackIcon /></button>
             </div>
             <div className="flex flex-1 flex-col items-center justify-center text-center">
-              <Lumi size={110} stage={3} />
-              <h1 className="mt-8 text-3xl font-semibold leading-tight md:text-4xl">{t("onb.introTitle")}</h1>
+              <Lumi size={120} stage={3} emotion="happy" />
+              <h1 className="mt-8 text-4xl leading-tight md:text-5xl">{t("onb.introTitle")}</h1>
               <p className="mt-4 text-lg text-muted-foreground">{t("onb.introSub")}</p>
             </div>
-            <div className="sticky bottom-0 bg-background pb-2 pt-3">
+            <div className="sticky bottom-0 pb-2 pt-3">
               <PrimaryButton onClick={() => { setSubStep(1); window.scrollTo(0, 0); }}>{t("common.next")}</PrimaryButton>
             </div>
-          </div>
+          </div></Stage>
         );
       }
       if (subStep === 1) {
@@ -188,7 +188,7 @@ function Onboarding() {
           <Question id="q-name" title={t("onb.nameTitle")} />
           <input value={name} maxLength={40} aria-label={t("onb.nameTitle")} placeholder={t("onb.namePh")}
             onChange={(e) => setName(e.target.value)}
-            className="min-h-12 w-full rounded-xl border border-line bg-surface px-4 text-base text-foreground placeholder:text-muted-foreground/60" />
+            className="glass min-h-14 w-full rounded-[28px] px-5 text-base text-foreground placeholder:text-muted-foreground/70" />
         </>);
         canNext = name.trim().length > 0;
         onNext = async () => {
@@ -218,7 +218,7 @@ function Onboarding() {
           <Question id="q1" title={t("onb.lastContact")} />
           <label className="flex flex-col gap-1 text-sm text-muted-foreground">{t("onb.date")}
             <input type="date" value={contact.date} max={toLocalInput(new Date()).date} onChange={(e) => setContact({ ...contact, date: e.target.value })}
-              className="min-h-12 rounded-xl border border-line bg-surface px-3 text-base text-foreground [color-scheme:dark]" />
+              className="glass min-h-14 rounded-[28px] px-4 text-base text-foreground [color-scheme:light]" />
           </label>
         </>);
         canNext = !!contact.date;
@@ -229,7 +229,7 @@ function Onboarding() {
         break;
       }
       body = (<>
-        <h2 id="q1b" className="mb-4 text-xl font-semibold">{t("onb.triggersTitle")}</h2>
+        <h2 id="q1b" className="mb-4 text-2xl">{t("onb.triggersTitle")}</h2>
         <ChoiceList multi labelledBy="q1b" options={opts("triggers", TRIGGERS)} value={triggers} onChange={setTriggers} />
       </>);
       canNext = true;
@@ -322,8 +322,8 @@ function Onboarding() {
         <Question id="q12" title={t("plan.title")} />
         <ul className="mb-8 flex flex-col gap-3">
           {tl<string[]>("plan.rows").map((r) => (
-            <li key={r} className="flex items-center gap-3 rounded-2xl border border-line bg-surface p-4">
-              <span aria-hidden className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-secondary text-secondary-foreground">
+            <li key={r} className="flex items-center gap-3 glass rounded-[24px] p-4">
+              <span aria-hidden className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M5 12l5 5 9-10" /></svg>
               </span>
               {interpolate(r)}
@@ -336,7 +336,7 @@ function Onboarding() {
       break;
     case 12:
       body = (<>
-        <div className="mb-6 flex justify-center"><Lumi size={60} stage={2} /></div>
+        <div className="mb-6 flex justify-center"><Lumi size={64} stage={2} emotion="happy" /></div>
         <Question id="q13" title={t("account.title")} sub={t("account.sub")} />
         <AccountLinker />
         <button type="button" onClick={finish} className="mt-6 min-h-12 w-full text-foreground underline-offset-4 hover:underline">{t("account.skip")}</button>
@@ -346,7 +346,8 @@ function Onboarding() {
   }
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-[480px] flex-col px-6 pb-8 pt-4">
+    <Stage tone={step === 10 ? "night" : "light"}>
+    <div className="mx-auto flex min-h-svh max-w-[480px] flex-col px-6 pb-8 pt-4">
       <div className="mb-6 flex items-center gap-3">
         <button type="button" onClick={() => {
           if (step === 10 && scoreResult) { setScoreScreen("profile"); setAnimateProfile(false); }
@@ -354,18 +355,19 @@ function Onboarding() {
           else if (step === 3) { if (sub3 > 0) { setSub3(0); window.scrollTo(0, 0); } else go(2); }
           else if (step === 1 && subStep > 0) setSubStep(subStep - 1);
           else go(step - 1);
-        }} aria-label={t("common.back")} className="flex h-11 w-11 items-center justify-center rounded-full text-muted-foreground hover:bg-surface"><BackIcon /></button>
-        <div className="h-1 flex-1 overflow-hidden rounded-full bg-line" role="progressbar" aria-valuemin={0} aria-valuemax={TOTAL} aria-valuenow={step} aria-label={t("onb.progress", { n: step, total: TOTAL })}>
-          <div className="h-full rounded-full bg-secondary transition-all" style={{ width: `${(step / TOTAL) * 100}%` }} />
+        }} aria-label={t("common.back")} className="glass flex h-11 w-11 items-center justify-center rounded-full text-foreground"><BackIcon /></button>
+        <div className="h-2 flex-1 overflow-hidden rounded-full bg-white/50" role="progressbar" aria-valuemin={0} aria-valuemax={TOTAL} aria-valuenow={step} aria-label={t("onb.progress", { n: step, total: TOTAL })}>
+          <div className="h-full rounded-full bg-[var(--progress)] transition-all" style={{ width: `${(step / TOTAL) * 100}%` }} />
         </div>
       </div>
       <div className="flex-1">{body}</div>
       {(canNext || ![10, 12].includes(step)) && (
-        <div className="sticky bottom-0 mt-8 bg-background pb-2 pt-3">
+        <div className="sticky bottom-0 mt-8 pb-2 pt-3">
           <PrimaryButton disabled={!canNext} onClick={onNext}>{t("common.next")}</PrimaryButton>
         </div>
       )}
     </div>
+    </Stage>
   );
 }
 
@@ -377,9 +379,9 @@ function AgeWheel({ value, onChange, unit, labelledBy }: { value: number; onChan
   const timer = useRef<number | null>(null);
   return (
     <div className="relative mx-auto w-48">
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-1/2 h-[52px] -translate-y-1/2 rounded-xl border border-secondary bg-secondary/10" />
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-1/2 h-[52px] -translate-y-1/2 rounded-[28px] border border-white bg-white/60" />
       <div ref={ref} role="listbox" tabIndex={0} aria-labelledby={labelledBy} aria-activedescendant={`age-${value}`}
-        className="h-[260px] snap-y snap-mandatory overflow-y-auto py-[104px] focus-visible:outline-2 focus-visible:outline-lumi [scrollbar-width:none]"
+        className="h-[260px] snap-y snap-mandatory overflow-y-auto py-[104px] focus-visible:outline-2 focus-visible:outline-foreground [scrollbar-width:none]"
         onScroll={(e) => {
           const el = e.currentTarget;
           if (timer.current) clearTimeout(timer.current);
@@ -393,7 +395,7 @@ function AgeWheel({ value, onChange, unit, labelledBy }: { value: number; onChan
         }}>
         {ages.map((a) => (
           <div key={a} id={`age-${a}`} role="option" aria-selected={a === value} onClick={() => { onChange(a); ref.current?.scrollTo({ top: (a - 18) * ITEM, behavior: "smooth" }); }}
-            className={`flex h-[52px] snap-center items-center justify-center font-display text-2xl ${a === value ? "text-foreground" : "text-muted-foreground/50"}`}>
+            className={`flex h-[52px] snap-center items-center justify-center font-display text-2xl ${a === value ? "text-foreground" : "text-muted-foreground/60"}`}>
             {a} {a === value && <span className="ml-2 font-sans text-sm text-muted-foreground">{unit}</span>}
           </div>
         ))}

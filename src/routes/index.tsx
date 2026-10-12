@@ -76,8 +76,8 @@ function Home() {
           <p className="text-sm text-muted-foreground">{t("home.since")}</p>
           <div className="relative mt-4 flex h-64 w-64 items-center justify-center">
             <svg className="absolute inset-0 -rotate-90" viewBox="0 0 260 260" aria-hidden>
-              <circle cx="130" cy="130" r={R} stroke="var(--line)" strokeWidth="6" fill="none" />
-              <circle cx="130" cy="130" r={R} stroke="var(--secondary)" strokeWidth="6" fill="none" strokeLinecap="round" strokeDasharray={C} strokeDashoffset={C * (1 - dayFrac)} />
+              <circle cx="130" cy="130" r={R} stroke="var(--line)" strokeWidth="8" fill="none" />
+              <circle cx="130" cy="130" r={R} stroke="var(--progress)" strokeWidth="8" fill="none" strokeLinecap="round" strokeDasharray={C} strokeDashoffset={C * (1 - dayFrac)} />
             </svg>
             <div className="text-center" aria-live="off">
               <p className="font-display text-7xl leading-none">{parts.d}</p>
@@ -90,31 +90,31 @@ function Home() {
           </div>
           <p className="mt-4 text-sm text-muted-foreground">{t("home.best", { n: bestDays })}</p>
         </Card>
-        <SosButton className={needsExtraSupport(profile?.difficulty_level) ? "min-h-20 ring-2 ring-primary/40 ring-offset-4 ring-offset-background" : ""} />
-        <button type="button" onClick={() => setOpen(true)} className="min-h-11 self-center text-reset underline-offset-4 hover:underline">{t("home.relapse")}</button>
+        <SosButton className={needsExtraSupport(profile?.difficulty_level) ? "min-h-20 ring-2 ring-white ring-offset-4 ring-offset-transparent" : ""} />
+        <button type="button" onClick={() => setOpen(true)} className="min-h-11 self-center font-medium text-foreground underline underline-offset-4">{t("home.relapse")}</button>
       </div>
 
       <div className="flex flex-col gap-6">
         <Card className="flex items-center gap-4">
-          <Lumi size={44} stage={stage} />
+          <Lumi size={52} stage={stage} emotion="happy" interactive />
           <p className="font-display text-lg leading-snug">{line}</p>
         </Card>
         <Card>
-          <h2 className="text-xl font-semibold">{t("home.checkinTitle")}</h2>
+          <h2 className="text-2xl">{t("home.checkinTitle")}</h2>
           <p className="mt-1 text-sm text-muted-foreground">{checkin.data ? t("home.checkinDone") : "30 s"}</p>
           {needsExtraSupport(profile?.difficulty_level) && !checkin.data && <p className="mt-2 text-sm text-muted-foreground">{t("profileScore.encourage")}</p>}
-          <Link to="/checkin" className="mt-4 flex min-h-12 items-center justify-center rounded-2xl border border-secondary/50 font-medium text-secondary">
+          <Link to="/checkin" className="mt-4 flex min-h-12 items-center justify-center rounded-full bg-white font-bold text-[#2e3865]">
             {checkin.data ? t("home.checkinEdit") : t("home.checkinCta")}
           </Link>
         </Card>
         <Card>
-          <h2 className="mb-4 text-xl font-semibold">{t("home.milestones")}</h2>
+          <h2 className="mb-4 text-2xl">{t("home.milestones")}</h2>
           <ol className="flex flex-wrap justify-between gap-2">
             {MILESTONE_DAYS.map((d) => {
               const reached = parts.d >= d;
               return (
                 <li key={d} className="flex flex-col items-center gap-1">
-                  <span aria-hidden className={`h-4 w-4 rounded-full ${reached ? "bg-secondary shadow-[0_0_10px_var(--secondary)]" : "border border-line"}`} />
+                  <span aria-hidden className={`h-4 w-4 rounded-full ${reached ? "bg-primary shadow-[0_0_10px_var(--primary)]" : "border border-line"}`} />
                   <span className="text-xs text-muted-foreground">{d}</span>
                   <span className="sr-only">{t("home.milestoneDay", { n: d })} — {reached ? t("home.milestoneReached") : t("home.milestoneNext")}</span>
                 </li>
@@ -125,24 +125,24 @@ function Home() {
       </div>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="rounded-2xl border-line bg-surface">
+        <DialogContent className="rounded-[28px] border-white/70 bg-[#e9e6fb] text-[#2e3865]">
           <DialogHeader>
-            <div className="mb-2 flex justify-center"><Lumi size={50} stage={stage} /></div>
+            <div className="mb-2 flex justify-center"><Lumi size={56} stage={stage} emotion="support" /></div>
             <DialogTitle className="font-display text-2xl">{t("home.relapseTitle")}</DialogTitle>
-            <DialogDescription className="text-muted-foreground">{t("home.relapseBody")}</DialogDescription>
+            <DialogDescription className="text-[#3a4474]">{t("home.relapseBody")}</DialogDescription>
           </DialogHeader>
-          <p id="rtrig" className="text-sm text-muted-foreground">{t("home.relapseTrigger")}</p>
+          <p id="rtrig" className="text-sm text-[#3a4474]">{t("home.relapseTrigger")}</p>
           <div role="radiogroup" aria-labelledby="rtrig" className="flex flex-wrap gap-2">
             {TRIGGERS.map((k) => (
               <button key={k} type="button" role="radio" aria-checked={trigger === k} onClick={() => setTrigger(trigger === k ? null : k)}
-                className={`min-h-11 rounded-full border px-4 text-sm ${trigger === k ? "border-secondary bg-secondary/15" : "border-line"}`}>
+                className={`min-h-11 rounded-full border px-4 text-sm ${trigger === k ? "border-[#2e3865] bg-[#2e3865] text-white" : "border-[#2e3865]/40"}`}>
                 {t(`options.triggers.${k}`)}
               </button>
             ))}
           </div>
           <DialogFooter className="gap-2">
-            <button type="button" onClick={() => setOpen(false)} className="min-h-12 rounded-2xl border border-line px-5">{t("common.cancel")}</button>
-            <button type="button" onClick={relapse} className="min-h-12 rounded-2xl bg-reset px-5 font-semibold text-reset-foreground">{t("home.relapseConfirm")}</button>
+            <button type="button" onClick={() => setOpen(false)} className="min-h-12 rounded-full border border-[#2e3865]/40 px-5">{t("common.cancel")}</button>
+            <button type="button" onClick={relapse} className="min-h-12 rounded-full bg-reset px-5 font-bold text-reset-foreground">{t("home.relapseConfirm")}</button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

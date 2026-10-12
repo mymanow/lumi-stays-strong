@@ -93,16 +93,16 @@ function Coach() {
 
   return (
     <div className="mx-auto flex max-w-[720px] flex-col" style={{ minHeight: "calc(100dvh - 9rem)" }}>
-      <header className="mb-4 flex flex-wrap items-center gap-3 border-b border-line pb-4">
+      <header className="mb-4 flex flex-wrap items-center gap-3 border-b border-white/60 pb-4">
         <Lumi size={36} stage={lumiStageForDays(Math.max(days, Math.floor((profile?.best_streak_seconds ?? 0) / 86400)))} />
         <div className="flex-1">
-          <h1 className="text-2xl font-semibold">{t("coach.title")}</h1>
+          <h1 className="text-3xl">{t("coach.title")}</h1>
           <p className="text-sm text-muted-foreground">{premium ? t("coach.unlimited") : t("coach.remaining", { n: remaining ?? FREE_COACH_MESSAGES_PER_DAY })}</p>
         </div>
-        <div role="radiogroup" aria-label={t("coach.tone")} className="inline-flex rounded-full border border-line bg-surface p-1">
+        <div role="radiogroup" aria-label={t("coach.tone")} className="glass inline-flex rounded-full p-1">
           {(["gentle", "direct"] as const).map((k) => (
             <button key={k} type="button" role="radio" aria-checked={tone === k} onClick={() => updateProfile({ coach_tone: k })}
-              className={`min-h-9 rounded-full px-4 text-sm ${tone === k ? "bg-secondary text-secondary-foreground" : "text-muted-foreground"}`}>{t(`coach.${k}`)}</button>
+              className={`min-h-9 rounded-full px-4 text-sm ${tone === k ? "bg-white text-[#2e3865]" : "text-muted-foreground"}`}>{t(`coach.${k}`)}</button>
           ))}
         </div>
       </header>
@@ -110,34 +110,34 @@ function Coach() {
       <div role="radiogroup" aria-label="Mode" className="mb-4 flex flex-wrap gap-2">
         {(["urge", "relapse", "bad"] as const).map((m) => (
           <button key={m} type="button" role="radio" aria-checked={mode === m} onClick={() => setMode(m)}
-            className={`min-h-11 rounded-full border px-4 text-sm ${mode === m ? "border-secondary bg-secondary/15" : "border-line"}`}>{t(`coach.modes.${m}`)}</button>
+            className={`min-h-11 rounded-full border px-4 text-sm ${mode === m ? "border-white bg-white text-[#2e3865]" : "border-white/70"}`}>{t(`coach.modes.${m}`)}</button>
         ))}
       </div>
 
       {crisis && (
-        <div role="alert" className="mb-4 rounded-2xl border border-lumi/40 bg-lumi/10 p-4">
+        <div role="alert" className="mb-4 rounded-[24px] border border-white bg-white/60 p-4">
           <p>{t("crisis.notice")}</p>
-          <Link to="/crisis" className="mt-2 inline-flex min-h-11 items-center font-semibold text-lumi underline">{t("crisis.see")}</Link>
+          <Link to="/crisis" className="mt-2 inline-flex min-h-11 items-center font-bold text-foreground underline">{t("crisis.see")}</Link>
         </div>
       )}
 
       <div className="flex flex-1 flex-col gap-4" aria-live="polite">
         {messages.length === 0 && <p className="font-display text-xl text-foreground/90">{t("coach.intro")}</p>}
         {messages.map((m, i) => m.role === "user" ? (
-          <div key={i} className="max-w-[85%] self-end whitespace-pre-wrap break-words rounded-2xl rounded-br-md bg-primary px-4 py-3 text-primary-foreground">{m.content}</div>
+          <div key={i} className="max-w-[85%] self-end whitespace-pre-wrap break-words rounded-[24px] rounded-br-md bg-primary px-4 py-3 text-primary-foreground">{m.content}</div>
         ) : (
           <div key={i} className="flex max-w-[90%] gap-2 self-start">
             <span className="mt-1 shrink-0"><Lumi size={14} stage={3} breathe={false} label="" /></span>
             <p className="whitespace-pre-wrap break-words leading-relaxed">{m.content || <span className="text-muted-foreground">…</span>}</p>
           </div>
         ))}
-        {error && <p role="alert" className="text-reset">{error}</p>}
+        {error && <p role="alert" className="font-semibold text-foreground">{error}</p>}
         {limitReached && (
-          <div className="rounded-2xl border border-line bg-surface p-4">
+          <div className="glass rounded-[24px] p-4">
             <p>{t("coach.limit")}</p>
             <div className="mt-3 flex flex-wrap gap-3">
-              <Link to="/sos" className="inline-flex min-h-11 items-center rounded-xl border border-line px-4">SOS</Link>
-              <Link to="/subscribe" className="inline-flex min-h-11 items-center rounded-xl bg-primary px-4 font-semibold text-primary-foreground">{t("coach.upgrade")}</Link>
+              <Link to="/sos" className="inline-flex min-h-11 items-center rounded-full border border-white/80 px-4">SOS</Link>
+              <Link to="/subscribe" className="inline-flex min-h-11 items-center rounded-full bg-primary px-4 font-semibold text-primary-foreground">{t("coach.upgrade")}</Link>
             </div>
           </div>
         )}
@@ -145,13 +145,13 @@ function Coach() {
       </div>
 
       <form onSubmit={(e) => { e.preventDefault(); void send(input); }} className="sticky bottom-20 mt-4 md:bottom-4">
-        <div className="flex items-end gap-2 rounded-2xl border border-line bg-surface p-2">
+        <div className="flex items-end gap-2 glass rounded-[24px] p-2">
           <label htmlFor="coach-input" className="sr-only">{t("coach.placeholder")}</label>
           <textarea id="coach-input" rows={1} value={input} disabled={limitReached} onChange={(e) => setInput(e.target.value)} placeholder={t("coach.placeholder")}
             onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void send(input); } }}
             className="max-h-40 min-h-11 flex-1 resize-none bg-transparent px-3 py-2.5 text-base outline-none placeholder:text-muted-foreground/70" />
           <button type="submit" aria-label={t("coach.send")} disabled={busy || !input.trim() || limitReached}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground disabled:opacity-40"><SendIcon /></button>
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground disabled:opacity-40"><SendIcon /></button>
         </div>
         <p className="mt-1 text-center text-xs text-muted-foreground">{t("coach.privacy")}</p>
       </form>

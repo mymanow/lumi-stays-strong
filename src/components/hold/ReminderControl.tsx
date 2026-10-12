@@ -4,7 +4,7 @@ export function ReminderControl({ value, onChange }: { value: { enabled: boolean
   const { t } = useI18n();
   // Web push needs a push backend not included in this version: toggle is shown disabled.
   return (
-    <div className="rounded-2xl border border-line bg-surface p-4">
+    <div className="glass rounded-[24px] p-4">
       <div className="flex items-center justify-between gap-4">
         <div>
           <p id="rem-label" className="font-medium">{t("plan.reminder")}</p>
@@ -17,7 +17,7 @@ export function ReminderControl({ value, onChange }: { value: { enabled: boolean
       </div>
       <label className="mt-3 flex items-center justify-between text-sm text-muted-foreground">{t("plan.reminderTime")}
         <input type="time" value={value.time} disabled onChange={(e) => onChange({ ...value, time: e.target.value })}
-          className="min-h-11 rounded-xl border border-line bg-background px-3 text-foreground opacity-60 [color-scheme:dark]" />
+          className="glass min-h-11 rounded-full px-3 text-foreground opacity-60 [color-scheme:light]" />
       </label>
     </div>
   );

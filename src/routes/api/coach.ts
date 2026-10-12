@@ -19,7 +19,7 @@ function json(status: number, body: unknown, extra: Record<string, string> = {})
 function systemPrompt(ctx: { lang: string; mode: string; tone: string; reasons: string[]; motivation: string | null; situation: string | null; difficultyLevel: string | null; days: number; lastRelapse: string | null; crisis: boolean }) {
   const language = ctx.lang === "fr" ? "French" : "English";
   return [
-    `You are Lumi, a small glowing firefly companion in a no-contact breakup recovery app. Speak in first person as Lumi, in ${language}.`,
+    `You are Lumi, a small, warm blob-shaped companion in a no-contact breakup recovery app. Speak in first person as Lumi, in ${language}.`,
     `Be warm, short and practical: at most 120 words, a few short sentences, no lists unless helpful.`,
     ctx.tone === "direct" ? "Tone: direct, clear and honest, still kind." : "Tone: gentle, soft and reassuring.",
     "Never diagnose, never claim to be a therapist or provide therapy.",

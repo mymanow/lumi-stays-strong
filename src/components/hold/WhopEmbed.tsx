@@ -7,7 +7,7 @@ export default function WhopEmbed({ sessionId, email }: { sessionId: string; ema
     <WhopCheckoutEmbed
       sessionId={sessionId}
       returnUrl={window.location.origin + "/subscribe/success"}
-      theme="system"
+      theme="dark"
       themeOptions={{ accentColor: WHOP_ACCENT } as never}
       {...(email ? { prefill: { email } } : {})}
       fallback={<Skeleton className="h-64 rounded-xl bg-surface" />}

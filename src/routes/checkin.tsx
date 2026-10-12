@@ -32,7 +32,7 @@ function Scale({ label, id, value, onChange, labels }: { label: string; id: stri
       <div role="radiogroup" aria-labelledby={id} className="grid grid-cols-5 gap-2">
         {[1, 2, 3, 4, 5].map((n) => (
           <button key={n} type="button" role="radio" aria-checked={value === n} aria-label={`${n} — ${labels[n - 1]}`} onClick={() => onChange(n)}
-            className={`flex min-h-14 flex-col items-center justify-center rounded-2xl border font-display text-xl ${value === n ? "border-secondary bg-secondary/15" : "border-line bg-surface"}`}>
+            className={`flex min-h-14 flex-col items-center justify-center rounded-[24px] border font-display text-xl ${value === n ? "border-white bg-white text-[#2e3865]" : "glass"}`}>
             {n}
           </button>
         ))}
@@ -83,13 +83,13 @@ function Checkin() {
       <label className="mt-8 flex flex-col gap-2">
         <span className="text-lg font-semibold">{t("checkin.note")}</span>
         <textarea value={note} maxLength={500} rows={4} onChange={(e) => setNote(e.target.value)} placeholder={t("checkin.notePh")}
-          className="rounded-2xl border border-line bg-surface p-4 text-base placeholder:text-muted-foreground/60" />
+          className="glass rounded-[24px] p-4 text-base placeholder:text-muted-foreground/60" />
         <span className="self-end text-xs text-muted-foreground">{t("checkin.count", { n: note.length })}</span>
       </label>
       {showCrisis && (
-        <div role="alert" className="mt-6 rounded-2xl border border-lumi/40 bg-lumi/10 p-4">
+        <div role="alert" className="mt-6 rounded-[24px] border border-white bg-white/60 p-4">
           <p>{t("crisis.notice")}</p>
-          <Link to="/crisis" className="mt-3 inline-flex min-h-11 items-center font-semibold text-lumi underline">{t("crisis.see")}</Link>
+          <Link to="/crisis" className="mt-3 inline-flex min-h-11 items-center font-bold text-foreground underline">{t("crisis.see")}</Link>
         </div>
       )}
       <PrimaryButton className="mt-6" onClick={save} disabled={saving}>{t("checkin.save")}</PrimaryButton>

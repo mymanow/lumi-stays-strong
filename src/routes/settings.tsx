@@ -31,7 +31,7 @@ export const Route = createFileRoute("/settings")({
 
 function Row({ to, label }: { to: "/lumi" | "/privacy" | "/terms" | "/crisis"; label: string }) {
   return (
-    <Link to={to} className="flex min-h-13 items-center justify-between border-b border-line py-3 last:border-0">
+    <Link to={to} className="flex min-h-13 items-center justify-between border-b border-white/60 py-3 last:border-0">
       <span>{label}</span><ChevronIcon className="text-muted-foreground" />
     </Link>
   );
@@ -62,17 +62,17 @@ function Settings() {
       <ReminderControl value={reminder} onChange={setReminder} />
       <section><OwnReasons showList /></section>
       <Card>
-        <h2 className="mb-1 text-xl font-semibold">{t("settings.saveAccount")}</h2>
+        <h2 className="mb-1 text-2xl">{t("settings.saveAccount")}</h2>
         <p className="mb-4 text-sm text-muted-foreground">{t("account.sub")}</p>
         <AccountLinker />
       </Card>
       <Card>
-        <h2 className="mb-1 text-xl font-semibold">{t("settings.subscription")}</h2>
-        <p className={`mb-4 ${premium ? "text-secondary" : "text-muted-foreground"}`}>{premium ? t("settings.active") : t("settings.inactive")}</p>
+        <h2 className="mb-1 text-2xl">{t("settings.subscription")}</h2>
+        <p className={`mb-4 ${premium ? "font-semibold text-foreground" : "text-muted-foreground"}`}>{premium ? t("settings.active") : t("settings.inactive")}</p>
         {premium ? (
-          <a href={MANAGE_SUBSCRIPTION_URL} target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center rounded-xl border border-line px-4">{t("settings.manage")}</a>
+          <a href={MANAGE_SUBSCRIPTION_URL} target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center rounded-full border border-white/80 px-4">{t("settings.manage")}</a>
         ) : (
-          <Link to="/subscribe" className="inline-flex min-h-11 items-center rounded-xl bg-primary px-4 font-semibold text-primary-foreground">{t("settings.subscribe")}</Link>
+          <Link to="/subscribe" className="inline-flex min-h-11 items-center rounded-full bg-primary px-4 font-semibold text-primary-foreground">{t("settings.subscribe")}</Link>
         )}
       </Card>
       <Card className="py-1">
@@ -82,19 +82,19 @@ function Settings() {
         <Row to="/terms" label={t("settings.terms")} />
       </Card>
       {!isAnonymous && (
-        <button type="button" onClick={async () => { await supabase.auth.signOut(); window.location.href = "/"; }} className="min-h-12 rounded-2xl border border-line">{t("settings.signOut")}</button>
+        <button type="button" onClick={async () => { await supabase.auth.signOut(); window.location.href = "/"; }} className="min-h-12 glass rounded-full">{t("settings.signOut")}</button>
       )}
-      <button type="button" onClick={() => setConfirm(true)} className="min-h-12 rounded-2xl border border-reset/50 text-reset">{t("settings.delete")}</button>
+      <button type="button" onClick={() => setConfirm(true)} className="min-h-12 rounded-full border border-reset bg-white/40 font-semibold text-foreground">{t("settings.delete")}</button>
 
       <AlertDialog open={confirm} onOpenChange={setConfirm}>
-        <AlertDialogContent className="rounded-2xl border-line bg-surface">
+        <AlertDialogContent className="rounded-[28px] border-white/70 bg-[#e9e6fb] text-[#2e3865]">
           <AlertDialogHeader>
             <AlertDialogTitle className="font-display">{t("settings.deleteTitle")}</AlertDialogTitle>
             <AlertDialogDescription>{t("settings.deleteBody")}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="min-h-11 rounded-xl">{t("common.cancel")}</AlertDialogCancel>
-            <AlertDialogAction onClick={doDelete} className="min-h-11 rounded-xl bg-reset text-reset-foreground">{t("settings.deleteConfirm")}</AlertDialogAction>
+            <AlertDialogCancel className="min-h-11 rounded-full">{t("common.cancel")}</AlertDialogCancel>
+            <AlertDialogAction onClick={doDelete} className="min-h-11 rounded-full bg-reset text-reset-foreground">{t("settings.deleteConfirm")}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

@@ -4,8 +4,8 @@
   "description": "No contact, avec Lumi.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#12151C",
-  "theme_color": "#12151C",
+  "background_color": "#C3BAF3",
+  "theme_color": "#C3BAF3",
   "lang": "fr",
   "icons": [
     { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }

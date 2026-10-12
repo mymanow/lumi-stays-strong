@@ -5,10 +5,10 @@ Build a responsive web app (works great on phones, tablets and desktop; mobile-f
 ## Product goal
 Help a user keep no contact with an ex. The core moment is the urge to write to the ex: the SOS flow must be reachable in one tap from every main screen.
 
-## Design system (dark-first, calm, minimal)
-- Colors as tokens: background #12151C, surface #1C212C, line #2C3444, text #F1EDE6, muted text #A3ABBA, primary accent amber #E8A55B (primary buttons, SOS - text inside must be #12151C for WCAG AA contrast), secondary accent sage #8FC9A9 (progress, selected states, checks), Lumi light #F6D08A (glow effects, highlights), soft reset #D97466 (gentle terracotta for break/reset action, non-punitive). Dark by default; optionally a light theme with the same token names.
-- Fonts: Fraunces (headings, counter, big numbers) and DM Sans (body, UI), loaded from Google Fonts with fallbacks.
-- Large tap targets (min 44px), generous spacing, rounded corners (14-18px), no clutter, no gamified guilt, no dark patterns, no emoji in the UI (use inline SVG icons).
+## Design system ("crépuscule": periwinkle gradients, calm, premium)
+- Colors as tokens (src/styles.css). Three scene tones swapped via CSS variables with `<Stage tone="light|dusk|night">`: light gradient (#C6D0F6 → #BCB2F0) with navy text #2E3865; dusk (#5450AA → #4560AE) and night (#2F3873 → #4B4A9E) with white text. Glass cards (translucent white + blur), primary accent amber #F4B94E (pill CTAs, navy text inside for WCAG AA), soft reset #F2998D (non-punitive), subtle grain overlay.
+- Fonts: DM Serif Display (headings, counter, big numbers) and Figtree (body, UI), loaded from Google Fonts with fallbacks.
+- Large tap targets (min 44px), generous spacing, rounded corners (20-28px, pill buttons), no clutter, no gamified guilt, no dark patterns, no emoji in the UI (use inline SVG icons).
 - Respect prefers-reduced-motion and keep contrast accessible (WCAG AA). Real buttons, labels and aria attributes everywhere.
 
 ## Responsive layout
@@ -33,10 +33,10 @@ Help a user keep no contact with an ex. The core moment is the urge to write to 
 - Save onboarding answers progressively (after each step) so a refresh resumes where the user left off.
 
 ## Lumi, the companion
-- A small glowing light (a firefly), drawn in CSS/SVG as a reusable <Lumi size stage /> component: round orb in Lumi light (#F6D08A), two tiny dark dot eyes, soft glow (box-shadow) and a slow breathing animation.
+- A friendly blob character, drawn in SVG as a reusable <Lumi size stage emotion interactive /> component: periwinkle gradient body, white outline, 5 expressions (neutral, happy, support, proud, tired), a 3s levitation, squash & stretch on tap / expression change (400ms), and stars + halo that only increase with the 4 stages. All motion is disabled with prefers-reduced-motion.
 - Stage depends on days without contact: day 1 (small spark), day 7 (stronger), day 30 (lights up around), day 90 (shines fully). It only grows brighter over time.
 - Rules: Lumi NEVER punishes. After a relapse she does not go out and never looks sad: she stays, and the copy says "On repart ensemble." She never tells the user to contact the ex, and her messages bring the user back to the SOS flow, their own reasons and their real friends or family; she accompanies, she does not replace people.
-- Where she appears: welcome screen (large), Home (small, with one short line like "Ce soir, je reste avec toi." chosen from a local list by time of day), SOS breathing (the orb expands for 4s and shrinks for 6s to guide breathing), commitment screen, coach header (the coach speaks AS Lumi), and a /lumi page in Settings showing the 4 stages and the rule "Si tu craques, Lumi ne s'éteint pas."
+- Where she appears: welcome screen (large), Home (small, with one short line like "Ce soir, je reste avec toi." chosen from a local list by time of day), SOS breathing (Lumi expands for 4s and shrinks for 6s to guide breathing), commitment screen, coach header (the coach speaks AS Lumi), and a /lumi page in Settings showing the 4 stages and the rule "Si tu craques, Lumi ne t'en veut pas. On repart ensemble."
 - Short phrases are fixed local text (no AI call).
 
 ## Onboarding (one question per screen, thin progress bar over 13 steps, Back button, answers saved as you go)
