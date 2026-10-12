@@ -32,7 +32,7 @@ export function AccountLinker({ redirectPath = "/settings" }: { redirectPath?: s
           <input type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} aria-invalid={state === "invalid"}
             className="min-h-12 glass rounded-[20px] px-4 text-base text-foreground" />
         </label>
-        <PrimaryButton type="submit" disabled={state === "sending"}>{t("account.send")}</PrimaryButton>
+        <PrimaryButton arrow={false} type="submit" disabled={state === "sending"}>{t("account.send")}</PrimaryButton>
         <p aria-live="polite" className="text-sm text-muted-foreground">
           {state === "sent" && t("account.sent")}{state === "error" && t("account.error")}{state === "invalid" && t("account.invalid")}
         </p>

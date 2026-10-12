@@ -92,7 +92,7 @@ function Sos() {
               <SecondaryButton disabled={!text.trim()} onClick={async () => { setText(""); await win(); }}>{t("sos.del")}</SecondaryButton>
             </div>
             <SecondaryButton onClick={async () => { await logEvent({ type: "resistance", occurred_at: new Date().toISOString() }); navigate({ to: "/coach", search: { mode: "urge" } }); }}>{t("sos.coach")}</SecondaryButton>
-            <PrimaryButton onClick={win}>{t("sos.done")}</PrimaryButton>
+            <PrimaryButton arrow={false} onClick={win}>{t("sos.done")}</PrimaryButton>
           </div>
         )}
 

@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { useI18n, type Lang } from "@/i18n";
 import { crisisLineFor } from "@/lib/domain";
+import { ArrowRight } from "lucide-react";
 import { PhoneIcon } from "./Icons";
 import { useHydrated } from "@tanstack/react-router";
 
@@ -41,10 +42,12 @@ export function FullLoader() {
   return <div className="flex min-h-screen items-center justify-center text-muted-foreground" role="status">{t("common.loading")}</div>;
 }
 
-export function PrimaryButton({ children, className = "", ...rest }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+/** Main CTA: indigo→violet gradient with glow when active, soft periwinkle gradient when disabled. */
+export function PrimaryButton({ children, className = "", arrow = true, ...rest }: React.ButtonHTMLAttributes<HTMLButtonElement> & { arrow?: boolean }) {
   return (
-    <button {...rest} className={`min-h-14 w-full rounded-full bg-primary px-6 text-base font-bold text-primary-foreground shadow-[0_8px_24px_-10px_rgba(46,56,101,0.55)] transition-[opacity,transform] active:scale-[0.98] disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground ${className}`}>
+    <button {...rest} className={`group flex min-h-[68px] w-full items-center justify-center gap-3 rounded-[26px] border border-white/25 bg-[linear-gradient(90deg,#6366F1_0%,#8B7CF8_100%)] px-6 text-lg font-bold text-white shadow-[0_14px_34px_-10px_rgba(99,102,241,0.65)] transition-[transform,box-shadow,filter] hover:brightness-110 active:scale-[0.98] disabled:cursor-not-allowed disabled:border-transparent disabled:bg-[linear-gradient(135deg,#9A9AF4_0%,#B4A6FA_100%)] disabled:shadow-[0_10px_30px_-12px_rgba(154,154,244,0.55)] disabled:hover:brightness-100 disabled:active:scale-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${className}`}>
       {children}
+      {arrow && <ArrowRight aria-hidden className="h-5 w-5 shrink-0 transition-transform group-enabled:group-hover:translate-x-0.5" strokeWidth={2.5} />}
     </button>
   );
 }

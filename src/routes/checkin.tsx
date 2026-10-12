@@ -92,7 +92,7 @@ function Checkin() {
           <Link to="/crisis" className="mt-3 inline-flex min-h-11 items-center font-bold text-foreground underline">{t("crisis.see")}</Link>
         </div>
       )}
-      <PrimaryButton className="mt-6" onClick={save} disabled={saving}>{t("checkin.save")}</PrimaryButton>
+      <PrimaryButton arrow={false} className="mt-6" onClick={save} disabled={saving}>{t("checkin.save")}</PrimaryButton>
     </div>
   );
 }

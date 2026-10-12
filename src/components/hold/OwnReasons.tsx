@@ -16,7 +16,7 @@ export function OwnReasons({ showList = false }: { showList?: boolean }) {
     {!editing && reasons.length < MAX_OWN_REASONS && <SecondaryButton onClick={() => setEditing(true)} className="flex items-center justify-center gap-2"><Plus className="h-4 w-4" />{t('ownReasons.add')}</SecondaryButton>}
     {editing && <form className="flex flex-col gap-3" onSubmit={async e => { e.preventDefault(); if (saving) return; setSaving(true); try { await updateProfile({ reasons: addOwnReason(reasons, value) }); setValue(''); setEditing(false); } finally { setSaving(false); } }}>
       <input autoFocus value={value} onChange={e => setValue(e.target.value)} maxLength={200} aria-label={t('ownReasons.add')} placeholder={t('ownReasons.placeholder')} className="min-h-12 glass rounded-[20px] px-3" />
-      <div className="flex gap-2"><SecondaryButton type="button" onClick={() => setEditing(false)}>{t('common.cancel')}</SecondaryButton><PrimaryButton disabled={!value.trim() || saving || reasons.length >= MAX_OWN_REASONS}>{t('common.save')}</PrimaryButton></div>
+      <div className="flex gap-2"><SecondaryButton type="button" onClick={() => setEditing(false)}>{t('common.cancel')}</SecondaryButton><PrimaryButton arrow={false} disabled={!value.trim() || saving || reasons.length >= MAX_OWN_REASONS}>{t('common.save')}</PrimaryButton></div>
     </form>}
   </div>;
 }
