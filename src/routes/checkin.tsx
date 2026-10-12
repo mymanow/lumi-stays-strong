@@ -34,7 +34,21 @@ const MOOD_ICONS: { Icon: LucideIcon; color: string }[] = [
   { Icon: Sparkles, color: "#0B7F70" },
 ];
 
-function Scale({ label, id, value, onChange, labels, icons }: { label: string; id: string; value: number; onChange: (n: number) => void; labels: string[]; icons?: typeof MOOD_ICONS }) {
+/** Signal-bar style intensity icon: n of 5 bars filled, darker as intensity rises. */
+function Bars({ n }: { n: number }) {
+  const shades = ["#8F95F0", "#7F7FE8", "#6C63DE", "#5A4BCF", "#4733B8"];
+  return (
+    <svg aria-hidden viewBox="0 0 28 28" className="h-7 w-7" fill="none">
+      {[0, 1, 2, 3, 4].map((i) => {
+        const h = 6 + i * 4.5;
+        const on = i < n;
+        return <rect key={i} x={1.5 + i * 5.2} y={26 - h} width="3.6" height={h} rx="1.8" fill={on ? shades[n - 1] : "#2e3865"} fillOpacity={on ? 1 : 0.18} />;
+      })}
+    </svg>
+  );
+}
+
+function Scale({ label, id, value, onChange, labels, icons, bars }: { label: string; id: string; value: number; onChange: (n: number) => void; labels: string[]; icons?: typeof MOOD_ICONS; bars?: boolean }) {
   return (
     <fieldset className="mb-8">
       <legend id={id} className="mb-3 text-lg font-semibold">{label}</legend>
@@ -42,12 +56,13 @@ function Scale({ label, id, value, onChange, labels, icons }: { label: string; i
         {[1, 2, 3, 4, 5].map((n) => {
           const selected = value === n;
           const ic = icons?.[n - 1];
+          const rich = !!ic || !!bars;
           return (
             <button key={n} type="button" role="radio" aria-checked={selected} aria-label={`${n} — ${labels[n - 1]}`} onClick={() => onChange(n)}
-              className={`flex flex-col items-center justify-center gap-1.5 rounded-[24px] border transition-transform active:scale-95 ${ic ? "min-h-[92px] px-1 py-3" : "min-h-14 font-display text-xl"} ${selected ? "border-white bg-white text-[#2e3865] shadow-[0_8px_22px_-8px_rgba(46,56,101,0.5)]" : "glass"}`}>
-              {ic ? (
+              className={`flex flex-col items-center justify-center gap-1.5 rounded-[24px] border transition-transform active:scale-95 ${rich ? "min-h-[92px] px-1 py-3" : "min-h-14 font-display text-xl"} ${selected ? "border-white bg-white text-[#2e3865] shadow-[0_8px_22px_-8px_rgba(46,56,101,0.5)]" : "glass"}`}>
+              {rich ? (
                 <>
-                  <ic.Icon aria-hidden className={`h-7 w-7 transition-transform ${selected ? "scale-110" : ""}`} style={{ color: ic.color }} strokeWidth={2.25} />
+                  {ic ? <ic.Icon aria-hidden className={`h-7 w-7 transition-transform ${selected ? "scale-110" : ""}`} style={{ color: ic.color }} strokeWidth={2.25} /> : <Bars n={n} />}
                   <span className="text-[11px] font-semibold leading-tight sm:text-xs">{labels[n - 1]}</span>
                 </>
               ) : n}
@@ -55,7 +70,7 @@ function Scale({ label, id, value, onChange, labels, icons }: { label: string; i
           );
         })}
       </div>
-      {!icons && <div className="mt-1 flex justify-between text-xs text-muted-foreground"><span>{labels[0]}</span><span>{labels[4]}</span></div>}
+      {!icons && !bars && <div className="mt-1 flex justify-between text-xs text-muted-foreground"><span>{labels[0]}</span><span>{labels[4]}</span></div>}
     </fieldset>
   );
 }
@@ -95,7 +110,7 @@ function Checkin() {
     <div className="mx-auto max-w-[520px]">
       <PageTitle>{t("checkin.title")}</PageTitle>
       <Scale id="mood" label={t("checkin.mood")} value={mood} onChange={setMood} labels={tl<string[]>("checkin.moodScale")} icons={MOOD_ICONS} />
-      <Scale id="urge" label={t("checkin.urge")} value={urge} onChange={setUrge} labels={tl<string[]>("checkin.urgeScale")} />
+      <Scale id="urge" label={t("checkin.urge")} value={urge} onChange={setUrge} labels={tl<string[]>("checkin.urgeScale")} bars />
       <h2 id="ctrig" className="mb-3 text-lg font-semibold">{t("checkin.triggers")}</h2>
       <ChoiceList multi labelledBy="ctrig" options={TRIGGERS.map((k) => ({ value: k, label: t(`options.triggers.${k}`) }))} value={triggers} onChange={setTriggers} />
       <label className="mt-8 flex flex-col gap-2">
