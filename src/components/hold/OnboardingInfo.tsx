@@ -12,7 +12,7 @@ const BIO_ICONS: LucideIcon[] = [HeartCrack, Flame, Zap, RefreshCw, TrendingUp];
 
 function Title({ children, sub }: { children: React.ReactNode; sub?: string }) {
   return (
-    <div className="mb-8 text-center">
+    <div className="fade-up mb-8 text-center">
       <h1 className="text-[34px] leading-tight md:text-4xl">{children}</h1>
       {sub && <p className="mx-auto mt-3 max-w-[340px] text-lg text-muted-foreground">{sub}</p>}
     </div>
@@ -46,8 +46,8 @@ function Slips({ name }: { name: string }) {
   return (
     <>
       <Title sub={t("info.slips.sub")}>{t("info.slips.title", { name })}</Title>
-      <RainyLumi />
-      <p className="glass mt-6 rounded-[28px] p-5 text-base leading-snug">{t("info.slips.card")}</p>
+      <div className="fade-up" style={{ "--d": "200ms" } as React.CSSProperties}><RainyLumi /></div>
+      <p className="fade-up glass mt-6 rounded-[28px] p-5 text-base leading-snug" style={{ "--d": "500ms" } as React.CSSProperties}>{t("info.slips.card")}</p>
     </>
   );
 }
@@ -58,7 +58,7 @@ function Bio() {
   return (
     <>
       <Title sub={t("info.bio.sub")}>{t("info.bio.title")}</Title>
-      <ul className="flex flex-col gap-3">
+      <ul className="cascade flex flex-col gap-3">
         {rows.map((row, i) => {
           const Icon = BIO_ICONS[i] ?? Zap;
           return (
@@ -69,7 +69,7 @@ function Bio() {
           );
         })}
       </ul>
-      <p className="mt-4 text-center text-xs text-muted-foreground">{t("info.bio.note")}</p>
+      <p className="fade-up mt-4 text-center text-xs text-muted-foreground" style={{ "--d": "800ms" } as React.CSSProperties}>{t("info.bio.note")}</p>
     </>
   );
 }
@@ -88,7 +88,7 @@ function Compare() {
   return (
     <>
       <Title sub={t("info.compare.sub")}>{t("info.compare.title")}</Title>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="fade-up grid grid-cols-2 gap-3" style={{ "--d": "150ms" } as React.CSSProperties}>
         <div className="relative rounded-[28px] border border-white/60 bg-white/20 p-4 pt-6 text-center">
           <span className="absolute -top-3 left-3 rounded-full bg-white px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-[#2e3865]">{t("info.compare.badge")}</span>
           <div className="flex items-center justify-center gap-2"><Lumi size={26} stage={2} emotion="happy" breathe={false} label="" /><span className="font-display text-2xl">{APP_NAME}</span></div>
@@ -102,7 +102,7 @@ function Compare() {
         </div>
       </div>
 
-      <h2 className="mb-2 mt-10 text-2xl">{t("info.compare.tableTitle")}</h2>
+      <h2 className="fade-up mb-2 mt-10 text-2xl" style={{ "--d": "350ms" } as React.CSSProperties}>{t("info.compare.tableTitle")}</h2>
       <table className="w-full border-collapse text-left">
         <thead>
           <tr className="border-b border-white/30">
@@ -113,7 +113,7 @@ function Compare() {
         </thead>
         <tbody>
           {rows.map((row, i) => (
-            <tr key={row} className="border-b border-white/20">
+            <tr key={row} className="fade-up border-b border-white/20" style={{ "--d": `${450 + i * 60}ms` } as React.CSSProperties}>
               <th scope="row" className="py-4 pr-2 text-left text-[15px] font-semibold leading-snug">{row}</th>
               <td className="text-center"><X aria-label={t("info.compare.no")} className="mx-auto h-5 w-5 text-white/60" strokeWidth={2.5} /></td>
               <td className={`bg-[#2e3865]/60 text-center ${i === rows.length - 1 ? "rounded-b-2xl" : ""}`}><Check aria-label={t("info.compare.yes")} className="mx-auto h-5 w-5" strokeWidth={3} /></td>
@@ -129,7 +129,7 @@ function Compare() {
 function Sketch() {
   const { t } = useI18n();
   return (
-    <figure className="mx-auto w-full max-w-[360px]">
+    <figure className="fade-up mx-auto w-full max-w-[360px]" style={{ "--d": "150ms" } as React.CSSProperties}>
       <svg viewBox="0 0 320 200" role="img" aria-label={t("info.science.sketchAlt")} className="w-full">
         <line x1="40" y1="20" x2="40" y2="160" stroke="#fff" strokeOpacity=".7" strokeWidth="1.5" />
         <line x1="40" y1="160" x2="300" y2="160" stroke="#fff" strokeOpacity=".7" strokeWidth="1.5" />
@@ -150,9 +150,9 @@ function Science() {
     <>
       <Title sub={t("info.science.sub")}>{t("info.science.title")}</Title>
       <Sketch />
-      <p className="glass mt-6 rounded-[28px] p-5 text-base leading-snug">{t("info.science.finding")}</p>
-      <p className="mt-3 text-sm leading-snug text-muted-foreground">{t("info.science.caveat")}</p>
-      <p className="mt-6 text-xs leading-snug text-muted-foreground">
+      <p className="fade-up glass mt-6 rounded-[28px] p-5 text-base leading-snug" style={{ "--d": "400ms" } as React.CSSProperties}>{t("info.science.finding")}</p>
+      <p className="fade-up mt-3 text-sm leading-snug text-muted-foreground" style={{ "--d": "600ms" } as React.CSSProperties}>{t("info.science.caveat")}</p>
+      <p className="fade-up mt-6 text-xs leading-snug text-muted-foreground" style={{ "--d": "800ms" } as React.CSSProperties}>
         {t("info.science.source")}{" "}
         <a href="https://doi.org/10.1177/2167702620916454" target="_blank" rel="noreferrer" className="underline underline-offset-2">doi.org/10.1177/2167702620916454</a>
       </p>

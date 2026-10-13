@@ -36,7 +36,7 @@ beforeEach(() => {
   // jsdom doesn't implement Element.scrollTo, which the age picker calls on mount.
   Element.prototype.scrollTo = (() => {}) as typeof Element.prototype.scrollTo;
   window.scrollTo = (() => {}) as typeof window.scrollTo;
-  window.matchMedia = vi.fn().mockReturnValue({ matches: false });
+  window.matchMedia = vi.fn().mockReturnValue({ matches: true });
 });
 afterEach(() => { cleanup(); vi.clearAllMocks(); for (const k of Object.keys(profile)) delete profile[k]; Object.assign(profile, { id: "test-profile", name: "Alex", onboarding_step: 2, onboarding_completed: false }); });
 

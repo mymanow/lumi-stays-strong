@@ -36,6 +36,17 @@ const GENDERS = ["woman", "man", "undisclosed"] as const;
 const only = <T extends string>(list: readonly T[], value?: string | null) => (list.some((v) => v === value) ? (value as string) : "");
 const onlyMany = <T extends string>(list: readonly T[], values?: string[] | null) => (values ?? []).filter((v) => list.some((x) => x === v));
 
+function Question({ id, title, sub }: { id: string; title: string; sub?: string }) {
+  return (
+    <div className="fade-up mb-6">
+      <h1 id={id} className="text-[32px] leading-tight md:text-4xl">{title}</h1>
+      {sub && <p className="mt-2 text-muted-foreground">{sub}</p>}
+    </div>
+  );
+}
+
+const prefersReducedMotion = () => typeof window !== "undefined" && !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+
 function Onboarding() {
   const { t, tl, lang } = useI18n();
   const { ready, profile, updateProfile } = useApp();
@@ -53,6 +64,8 @@ function Onboarding() {
   const [goal, setGoal] = useState("");
   const [gender, setGender] = useState("");
   const [age, setAge] = useState(30);
+  const [leaving, setLeaving] = useState<"fwd" | "back" | null>(null);
+  const [dir, setDir] = useState<"fwd" | "back">("fwd");
   const [infoStep, setInfoStep] = useState(0); // within step 9: 0 = age, 1..4 = information screens
   const [reminder, setReminder] = useState({ enabled: false, time: DEFAULT_REMINDER_TIME });
 
@@ -71,6 +84,16 @@ function Onboarding() {
     if (profile.age) setAge(profile.age);
     setInit(true);
   }, [ready, profile, init, navigate]);
+
+  /** Fade the current screen out (160ms), then run the change; the next screen fades in. Instant with reduced motion. */
+  const transition = (action: () => void, direction: "fwd" | "back" = "fwd") => {
+    if (leaving) return;
+    setDir(direction);
+    if (prefersReducedMotion()) { action(); return; }
+    setLeaving(direction);
+    window.setTimeout(() => { action(); setLeaving(null); }, 160);
+  };
+  const outClass = leaving ? `screen-out-${leaving}` : `screen-in-${dir}`;
 
   const go = async (next: number, patch: ProfilePatch = {}) => {
     setStep(next);
@@ -91,12 +114,6 @@ function Onboarding() {
 
   if (!ready || !init) return <FullLoader />;
 
-  const Question = ({ id, title, sub }: { id: string; title: string; sub?: string }) => (
-    <div className="mb-6">
-      <h1 id={id} className="text-[32px] leading-tight md:text-4xl">{title}</h1>
-      {sub && <p className="mt-2 text-muted-foreground">{sub}</p>}
-    </div>
-  );
 
   let body: React.ReactNode = null;
   let canNext = true;
@@ -106,17 +123,17 @@ function Onboarding() {
   switch (step) {
     case 0:
       return (
-        <Stage tone="dusk"><div className="mx-auto flex min-h-svh max-w-[480px] flex-col px-6 pb-8 pt-6">
+        <Stage key="welcome" tone="dusk"><div className={`${outClass} mx-auto flex min-h-svh max-w-[480px] flex-col px-6 pb-8 pt-6`}>
           <div className="flex items-center justify-between">
             <span className="font-display text-2xl">{APP_NAME}</span>
             <LangSwitch onChange={(l) => updateProfile({ language: l })} />
           </div>
           <div className="flex flex-1 flex-col items-center justify-center text-center">
-            <Lumi size={120} stage={3} emotion="happy" />
-            <h1 className="mt-8 text-4xl leading-tight md:text-5xl">{t("welcome.headline")}</h1>
-            <p className="mt-4 text-lg text-muted-foreground">{t("welcome.sub")}</p>
+            <div className="fade-up"><Lumi size={120} stage={3} emotion="happy" /></div>
+            <h1 className="fade-up mt-8 text-4xl leading-tight md:text-5xl" style={{ "--d": "200ms" } as React.CSSProperties}>{t("welcome.headline")}</h1>
+            <p className="fade-up mt-4 text-lg text-muted-foreground" style={{ "--d": "350ms" } as React.CSSProperties}>{t("welcome.sub")}</p>
           </div>
-          <PrimaryButton onClick={() => go(1, { language: lang })}>{t("welcome.start")}</PrimaryButton>
+          <PrimaryButton onClick={() => transition(() => go(1, { language: lang }))}>{t("welcome.start")}</PrimaryButton>
           <button type="button" onClick={() => navigate({ to: "/signin" })} className="mt-3 min-h-11 text-foreground underline-offset-4 hover:underline">{t("welcome.haveAccount")}</button>
           <p className="mt-4 text-center text-xs text-muted-foreground">
             <a href={`tel:${crisis.tel}`} className="underline-offset-4 hover:underline">{t("crisis.disclaimer", { number: crisis.number })}</a>
@@ -126,17 +143,17 @@ function Onboarding() {
     case 1:
       if (subStep === 0) {
         return (
-          <Stage tone="dusk"><div className="mx-auto flex min-h-svh max-w-[480px] flex-col px-6 pb-6 pt-6">
+          <Stage key="intro" tone="dusk"><div className={`${outClass} mx-auto flex min-h-svh max-w-[480px] flex-col px-6 pb-6 pt-6`}>
             <div>
-              <button type="button" onClick={() => go(0)} aria-label={t("common.back")} className="glass flex h-11 w-11 items-center justify-center rounded-full text-foreground"><BackIcon /></button>
+              <button type="button" onClick={() => transition(() => go(0), "back")} aria-label={t("common.back")} className="glass flex h-11 w-11 items-center justify-center rounded-full text-foreground"><BackIcon /></button>
             </div>
             <div className="flex flex-1 flex-col items-center justify-center text-center">
-              <Lumi size={120} stage={3} emotion="happy" />
-              <h1 className="mt-8 text-4xl leading-tight md:text-5xl">{t("onb.introTitle")}</h1>
-              <p className="mt-4 text-lg text-muted-foreground">{t("onb.introSub")}</p>
+              <div className="fade-up"><Lumi size={120} stage={3} emotion="happy" /></div>
+              <h1 className="fade-up mt-8 text-4xl leading-tight md:text-5xl" style={{ "--d": "200ms" } as React.CSSProperties}>{t("onb.introTitle")}</h1>
+              <p className="fade-up mt-4 text-lg text-muted-foreground" style={{ "--d": "350ms" } as React.CSSProperties}>{t("onb.introSub")}</p>
             </div>
             <div className="sticky bottom-0 pb-2 pt-3">
-              <PrimaryButton onClick={() => { setSubStep(1); window.scrollTo(0, 0); }}>{t("common.next")}</PrimaryButton>
+              <PrimaryButton onClick={() => transition(() => { setSubStep(1); window.scrollTo(0, 0); })}>{t("common.next")}</PrimaryButton>
             </div>
           </div></Stage>
         );
@@ -247,24 +264,26 @@ function Onboarding() {
   }
 
   return (
-    <Stage tone={tone}>
+    <Stage key="flow" tone={tone}>
     <div className="mx-auto flex min-h-svh max-w-[480px] flex-col px-6 pb-8 pt-4">
       <div className="mb-6 flex items-center gap-3">
-        <button type="button" onClick={() => {
+        <button type="button" onClick={() => transition(() => {
           if (step === 9 && infoStep > 0) { setInfoStep(infoStep - 1); window.scrollTo(0, 0); }
           else if (step === 1 && subStep > 0) setSubStep(subStep - 1);
           else go(step - 1);
-        }} aria-label={t("common.back")} className="glass flex h-11 w-11 items-center justify-center rounded-full text-foreground"><BackIcon /></button>
+        }, "back")} aria-label={t("common.back")} className="glass flex h-11 w-11 items-center justify-center rounded-full text-foreground"><BackIcon /></button>
         <div className="h-2 flex-1 overflow-hidden rounded-full bg-white/50" role="progressbar" aria-valuemin={0} aria-valuemax={TOTAL} aria-valuenow={step} aria-label={t("onb.progress", { n: step, total: TOTAL })}>
           <div className="h-full rounded-full bg-[var(--progress)] transition-all" style={{ width: `${((step + (step === 9 ? infoStep / (INFO_KINDS.length + 1) : 0)) / TOTAL) * 100}%` }} />
         </div>
       </div>
-      <div className="flex-1">{body}</div>
+      <div key={`${step}-${subStep}-${infoStep}`} className={`${outClass} flex flex-1 flex-col`}>
+        <div className="flex-1">{body}</div>
       {(canNext || ![10, 12].includes(step)) && (
-        <div className="sticky bottom-0 mt-8 pb-2 pt-3">
-          <PrimaryButton disabled={!canNext} onClick={onNext}>{t("common.next")}</PrimaryButton>
+        <div className="fade-up sticky bottom-0 mt-8 pb-2 pt-3" style={{ "--d": "450ms" } as React.CSSProperties}>
+          <PrimaryButton disabled={!canNext} onClick={() => transition(onNext)}>{t("common.next")}</PrimaryButton>
         </div>
       )}
+      </div>
     </div>
     </Stage>
   );

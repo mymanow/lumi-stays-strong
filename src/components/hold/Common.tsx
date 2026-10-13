@@ -81,7 +81,7 @@ export function ChoiceList<T extends string>({ options, value, onChange, multi =
   options: { value: T; label: string }[]; value: T[]; onChange: (v: T[]) => void; multi?: boolean; labelledBy?: string;
 }) {
   return (
-    <div role={multi ? "group" : "radiogroup"} aria-labelledby={labelledBy} className="flex flex-col gap-3">
+    <div role={multi ? "group" : "radiogroup"} aria-labelledby={labelledBy} className="cascade flex flex-col gap-3">
       {options.map((o) => {
         const selected = value.includes(o.value);
         return (
