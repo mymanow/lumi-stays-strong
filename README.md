@@ -48,6 +48,13 @@ Help a user keep no contact with an ex. The core moment is the urge to write to 
 - Daily reminder: a notification while the app is open (no push server yet, so it cannot wake a closed app); the copy says so.
 - Migrations to run: 0004 (no_contact_rules) and 0005 (frank tone, contact_events.note).
 
+## Calming motion
+- Slow living background (two glows drifting over 70s, a few stars at night), a halo that breathes every 10s behind the counter, counter digits where only the seconds rise (minutes and hours fade).
+- SOS: the overlay fades in, a ring follows the breath (4s in, 6s out), and the daylight layer fades in slowly when the reasons appear. No vibration.
+- Milestones (1, 3, 7, 14, 30, 60, 90 days): one soft light and one warm line from Lumi, shown once per streak (src/lib/milestones.ts), never a modal. Past progress of a streak is recorded silently.
+- The commitment hold grows a warm light with the press; a saved check-in sends a small spark to Lumi.
+- Everything is transform/opacity only and disabled by prefers-reduced-motion (the check-in then goes straight home).
+
 ## Onboarding (one question per screen, thin progress bar over 13 steps, Back button, answers saved as you go)
 0. Welcome: logo, language selector (FR/EN) top right, large Lumi, headline "Tiens bon quand l'envie d'écrire revient.", sub "Voici Lumi, elle veille avec toi. Un compteur, un SOS, un coach. Privé, sans compte obligatoire.", primary "Commencer", link "J'ai déjà un compte", small disclaimer "Pas un avis médical. En danger, appelle le 3114." (crisis number localized by language/region).
 1. Intro "Personnalisons ton parcours", then "Comment souhaite-tu qu'on t'appelles ?" (first name or nickname).

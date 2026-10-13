@@ -96,3 +96,18 @@ describe("msUntilNext", () => {
     expect(msUntilNext("21:30", at(21, 30))).toBe(24 * 60 * 60 * 1000);
   });
 });
+
+import { highestReached, milestoneToCelebrate } from "@/lib/milestones";
+describe("milestones", () => {
+  it("celebrates the highest new milestone once", () => {
+    expect(milestoneToCelebrate(0, 0)).toBeNull();
+    expect(milestoneToCelebrate(1, 0)).toBe(1);
+    expect(milestoneToCelebrate(8, 3)).toBe(7);
+    expect(milestoneToCelebrate(8, 7)).toBeNull();
+    expect(milestoneToCelebrate(400, 90)).toBeNull();
+  });
+  it("records past progress silently", () => {
+    expect(highestReached(20)).toBe(14);
+    expect(highestReached(0)).toBe(0);
+  });
+});

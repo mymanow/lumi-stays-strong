@@ -26,6 +26,7 @@ export const Route = createFileRoute("/sos")({
 });
 
 const BREATH_TOTAL = 60;
+const RING = 2 * Math.PI * 104;
 
 function Sos() {
   const { t } = useI18n();
@@ -35,6 +36,8 @@ function Sos() {
   const [elapsed, setElapsed] = useState(0);
   const [text, setText] = useState("");
   const [flags, setFlags] = useState<RedFlag[]>([]);
+  const [armed, setArmed] = useState(false);
+  useEffect(() => { const id = requestAnimationFrame(() => setArmed(true)); return () => cancelAnimationFrame(id); }, []);
   useEffect(() => { listFlags().then((all) => setFlags(pickRedFlags(all, 3))).catch(() => {}); }, []);
   const reasons = sosReasons(profile?.reasons ?? [], profile?.motivation, profile?.situation_type, t);
 
@@ -51,8 +54,10 @@ function Sos() {
   };
 
   return (
-    <div className={`${step === "reasons" ? "stage-light" : "stage-night"} fixed inset-0 z-50 overflow-y-auto`} role="dialog" aria-modal="true" aria-label="SOS">
-      <div className="mx-auto flex min-h-full max-w-xl flex-col px-6 py-5">
+    <div className={`stage-night sos-enter fixed inset-0 z-50 overflow-y-auto`} role="dialog" aria-modal="true" aria-label="SOS">
+      {/* Daylight layer: fades in slowly when the reasons appear, and out again at the end. */}
+      <div aria-hidden className="stage-light pointer-events-none fixed inset-0 transition-opacity duration-[900ms] ease-in-out" style={{ opacity: step === "reasons" ? 1 : 0 }} />
+      <div key={step} className={`fade-up relative mx-auto flex min-h-full max-w-xl flex-col px-6 py-5 ${step === "reasons" ? "tone-light" : ""}`} style={{ "--d": step === "breathe" ? "0ms" : "350ms" } as React.CSSProperties}>
         <div className="flex justify-end">
           <Link to="/" aria-label={t("sos.exit")} className="glass flex h-11 w-11 items-center justify-center rounded-full text-foreground"><CloseIcon /></Link>
         </div>
@@ -60,7 +65,14 @@ function Sos() {
         {step === "breathe" && (
           <div className="flex flex-1 flex-col items-center justify-center text-center">
             <h1 className="text-4xl">{t("sos.breatheTitle")}</h1>
-            <div className="my-12 flex h-72 items-center justify-center">
+            <div className="relative my-12 flex h-72 w-72 items-center justify-center">
+              {/* Ring that follows the breath: fills over 4s, empties over 6s. */}
+              <svg aria-hidden viewBox="0 0 220 220" className="absolute inset-0 h-full w-full -rotate-90">
+                <circle cx="110" cy="110" r="104" fill="none" stroke="var(--line)" strokeWidth="3" />
+                <circle cx="110" cy="110" r="104" fill="none" stroke="var(--progress)" strokeWidth="4" strokeLinecap="round"
+                  strokeDasharray={RING} strokeDashoffset={armed && phase === "in" ? 0 : RING}
+                  style={{ transition: `stroke-dashoffset ${phase === "in" ? 4000 : 6000}ms ease-in-out` }} />
+              </svg>
               <Lumi size={110} stage={3} emotion={phase === "in" ? "support" : "neutral"} breathe={false} scale={phase === "in" ? 1.45 : 0.85} transitionMs={phase === "in" ? 4000 : 6000} />
             </div>
             <p className="font-display text-2xl" aria-live="polite">{phase === "in" ? t("sos.inhale") : t("sos.exhale")}</p>

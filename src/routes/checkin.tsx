@@ -9,6 +9,7 @@ import { useI18n } from "@/i18n";
 import { useApp } from "@/lib/app-state";
 import { supabase } from "@/integrations/supabase/client";
 import { detectCrisis, localDateString } from "@/lib/domain";
+import { Lumi } from "@/components/hold/Lumi";
 
 export const Route = createFileRoute("/checkin")({
   head: () => ({
@@ -87,6 +88,8 @@ function Checkin() {
   const [note, setNote] = useState("");
   const [saving, setSaving] = useState(false);
   const [showCrisis, setShowCrisis] = useState(false);
+  const [thanks, setThanks] = useState(false);
+  const [glad, setGlad] = useState(false);
 
   useEffect(() => {
     supabase.from("checkins").select("*").eq("date", today).maybeSingle().then(({ data }) => {
@@ -103,7 +106,12 @@ function Checkin() {
     if (error) { toast.error(error.message); return; }
     qc.invalidateQueries();
     toast(t("checkin.saved"));
-    if (mood === 1 || detectCrisis(note)) setShowCrisis(true); else navigate({ to: "/" });
+    if (mood === 1 || detectCrisis(note)) { setShowCrisis(true); return; }
+    // A small spark travels to Lumi, then we go home. With reduced motion we go straight away.
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) { navigate({ to: "/" }); return; }
+    setThanks(true);
+    window.setTimeout(() => setGlad(true), 650);
+    window.setTimeout(() => navigate({ to: "/" }), 1600);
   };
 
   return (
@@ -125,7 +133,16 @@ function Checkin() {
           <Link to="/crisis" className="mt-3 inline-flex min-h-11 items-center font-bold text-foreground underline">{t("crisis.see")}</Link>
         </div>
       )}
-      <PrimaryButton arrow={false} className="mt-6" onClick={save} disabled={saving}>{t("checkin.save")}</PrimaryButton>
+      <PrimaryButton arrow={false} className="mt-6" onClick={save} disabled={saving || thanks}>{t("checkin.save")}</PrimaryButton>
+      {thanks && (
+        <div role="status" className="sos-enter fixed inset-0 z-50 flex flex-col items-center justify-center gap-5 bg-[rgba(46,56,101,0.35)] backdrop-blur-sm">
+          <div className="relative flex h-40 w-40 items-center justify-center">
+            <span aria-hidden className="spark-fly absolute bottom-0 h-3 w-3 rounded-full bg-[#f4b94e] shadow-[0_0_18px_6px_rgba(244,185,78,0.7)]" />
+            <Lumi size={72} stage={2} emotion={glad ? "happy" : "neutral"} scale={glad ? 1.15 : 1} transitionMs={500} />
+          </div>
+          <p className="font-display text-2xl text-white">{t("checkin.thanks")}</p>
+        </div>
+      )}
     </div>
   );
 }

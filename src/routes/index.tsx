@@ -5,6 +5,8 @@ import { toast } from "sonner";
 import { AppShell } from "@/components/hold/AppShell";
 import { Card, SosButton } from "@/components/hold/Common";
 import { DailyTask } from "@/components/hold/DailyTask";
+import { MilestoneBanner } from "@/components/hold/MilestoneBanner";
+import { checkMilestone } from "@/lib/milestones";
 import { streakStats } from "@/lib/streaks";
 import { Lumi } from "@/components/hold/Lumi";
 import { useI18n } from "@/i18n";
@@ -31,6 +33,15 @@ export const Route = createFileRoute("/")({
 
 const TRIGGERS = ["evening", "social_media", "loneliness", "alcohol", "argument", "anniversary", "other"];
 
+/** One digit of the counter: remounts on change so its CSS animation replays. Seconds rise, the rest only fades. */
+function Digit({ value, slide = false }: { value: string; slide?: boolean }) {
+  return <span key={value} className={slide ? "digit-slide" : "digit-fade"}>{value}</span>;
+}
+const Pair = ({ n, slide = false }: { n: number; slide?: boolean }) => {
+  const s = String(n).padStart(2, "0");
+  return <><Digit key={`a${s[0]}`} value={s[0]!} slide={slide} /><Digit key={`b${s[1]}`} value={s[1]!} slide={slide} /></>;
+};
+
 function Home() {
   const { t, tl } = useI18n();
   const { profile, updateProfile, session } = useApp();
@@ -39,6 +50,7 @@ function Home() {
   const [open, setOpen] = useState(false);
   const [trigger, setTrigger] = useState<string | null>(null);
   const [note, setNote] = useState("");
+  const [celebrate, setCelebrate] = useState<number | null>(null);
   useEffect(() => { const id = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(id); }, []);
 
   const since = profile?.last_contact_at ? new Date(profile.last_contact_at).getTime() : now;
@@ -51,6 +63,14 @@ function Home() {
     const lines = tl<Record<string, string[]>>("home.lines")[timeOfDay(new Date().getHours())] ?? [];
     return lines[new Date().getDate() % Math.max(1, lines.length)] ?? "";
   }, [tl]);
+
+  const startKey = profile?.last_contact_at ?? null;
+  const wholeDays = parts.d;
+  useEffect(() => {
+    if (!startKey) return;
+    const m = checkMilestone(startKey, wholeDays);
+    if (m !== null) setCelebrate(m);
+  }, [startKey, wholeDays]);
 
   const today = localDateString();
   const checkin = useQuery({
@@ -72,7 +92,7 @@ function Home() {
     await logEvent({ type: "relapse", occurred_at: new Date().toISOString(), trigger, previous_streak_seconds: prev, ...(reflection ? { note: reflection } : {}) });
     await updateProfile({ last_contact_at: new Date().toISOString(), best_streak_seconds: Math.max(profile?.best_streak_seconds ?? 0, prev) });
     qc.invalidateQueries({ queryKey: ["events"] });
-    setOpen(false); setTrigger(null); setNote("");
+    setOpen(false); setTrigger(null); setNote(""); setCelebrate(null);
     toast(t("home.together"));
   };
 
@@ -81,19 +101,22 @@ function Home() {
 
   return (
     <div className="grid gap-6 md:grid-cols-2 md:gap-8">
+      {celebrate !== null && <MilestoneBanner days={celebrate} onClose={() => setCelebrate(null)} />}
       <div className="flex flex-col gap-6">
         <Card className="flex flex-col items-center py-8">
           <p className="text-sm text-muted-foreground">{t("home.since")}</p>
           <div className="relative mt-4 flex h-64 w-64 items-center justify-center">
+            <span aria-hidden className="halo pointer-events-none absolute -inset-6 rounded-full"
+              style={{ background: "radial-gradient(circle, rgba(255,255,255,0.55) 0%, rgba(139,124,248,0.22) 45%, transparent 72%)" }} />
             <svg className="absolute inset-0 -rotate-90" viewBox="0 0 260 260" aria-hidden>
               <circle cx="130" cy="130" r={R} stroke="var(--line)" strokeWidth="8" fill="none" />
               <circle cx="130" cy="130" r={R} stroke="var(--progress)" strokeWidth="8" fill="none" strokeLinecap="round" strokeDasharray={C} strokeDashoffset={C * (1 - dayFrac)} />
             </svg>
-            <div className="text-center" aria-live="off">
+            <div className="relative text-center" aria-live="off">
               <p className="font-display text-7xl leading-none">{parts.d}</p>
               <p className="mt-1 text-muted-foreground">{t("home.units.d")}</p>
-              <p className="mt-3 font-display text-lg tabular-nums">
-                {String(parts.h).padStart(2, "0")}:{String(parts.m).padStart(2, "0")}:{String(parts.s).padStart(2, "0")}
+              <p aria-hidden className="mt-3 font-display text-lg tabular-nums">
+                <Pair n={parts.h} />:<Pair n={parts.m} />:<Pair n={parts.s} slide />
               </p>
               <p className="sr-only">{parts.d} {t("home.units.d")}, {parts.h} {t("home.units.h")}, {parts.m} {t("home.units.m")}</p>
             </div>

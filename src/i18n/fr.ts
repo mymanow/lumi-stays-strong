@@ -205,6 +205,7 @@ export const fr = {
     home: "Retour à l'accueil",
   },
   checkin: {
+    thanks: "Merci. À demain.",
     title: "Check-in du jour", mood: "Ton humeur", urge: "Ton envie d'écrire", triggers: "Déclencheurs aujourd'hui",
     note: "Une note (optionnel)", notePh: "Ce qui t'aide, ce qui pèse…", count: "{n}/500",
     moodScale: ["Très bas", "Bas", "Moyen", "Bien", "Très bien"], urgeScale: ["Aucune", "Faible", "Moyenne", "Forte", "Très forte"],
@@ -294,6 +295,18 @@ export const fr = {
     trendUp: "plus haute que la semaine d'avant", trendDown: "plus basse que la semaine d'avant", trendFlat: "stable par rapport à la semaine d'avant",
     triggers: "Tes déclencheurs les plus fréquents", triggersEmpty: "Aucun déclencheur noté pour l'instant.",
     note: "Un graphique ne juge pas. Certains jours sont plus durs, et ça ne remet pas en cause le chemin parcouru.",
+  },
+  milestone: {
+    grow: "Et regarde : je grandis avec toi.",
+    lines: {
+      "1": "Un jour. Le plus dur est souvent de commencer, et tu l'as fait.",
+      "3": "Trois jours. Chaque jour compte, même quand il paraît long.",
+      "7": "Une semaine. Je suis fière de toi.",
+      "14": "Deux semaines. Tu avances, à ton rythme.",
+      "30": "Un mois. Regarde le chemin que tu as fait.",
+      "60": "Deux mois. Tu t'es donné du temps, et ça se voit.",
+      "90": "Trois mois. Prends un instant pour toi : c'est beaucoup.",
+    },
   },
   legal: {
     privacyTitle: "Politique de confidentialité",

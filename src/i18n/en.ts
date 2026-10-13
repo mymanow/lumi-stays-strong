@@ -207,6 +207,7 @@ export const en: typeof fr = {
     home: "Back home",
   },
   checkin: {
+    thanks: "Thank you. See you tomorrow.",
     title: "Today's check-in", mood: "Your mood", urge: "Your urge to text", triggers: "Triggers today",
     note: "A note (optional)", notePh: "What helps, what weighs on you…", count: "{n}/500",
     moodScale: ["Very low", "Low", "Okay", "Good", "Very good"], urgeScale: ["None", "Low", "Medium", "Strong", "Very strong"],
@@ -296,6 +297,18 @@ export const en: typeof fr = {
     trendUp: "higher than the week before", trendDown: "lower than the week before", trendFlat: "steady compared with the week before",
     triggers: "Your most frequent triggers", triggersEmpty: "No triggers noted yet.",
     note: "A chart doesn't judge. Some days are harder, and that doesn't undo the ground you've covered.",
+  },
+  milestone: {
+    grow: "And look: I'm growing with you.",
+    lines: {
+      "1": "One day. Starting is often the hardest part, and you did it.",
+      "3": "Three days. Every day counts, even when it feels long.",
+      "7": "One week. I'm proud of you.",
+      "14": "Two weeks. You're moving forward, at your own pace.",
+      "30": "One month. Look at the road you've covered.",
+      "60": "Two months. You gave yourself time, and it shows.",
+      "90": "Three months. Take a moment for yourself: that's a lot.",
+    },
   },
   legal: {
     privacyTitle: "Privacy policy",

@@ -88,6 +88,12 @@
 .stage-dusk { --stage-bg: var(--grad-dusk); }
 .stage-night { --stage-bg: var(--grad-night); --muted-foreground: #dde0f8; }
 .stage-light, .stage-dusk, .stage-night { background: var(--stage-bg); }
+/* Light palette inside a dark scene (used by the SOS while its daylight layer fades in). */
+.tone-light {
+  --foreground: #2e3865; --muted-foreground: #3a4474; --surface: rgba(255, 255, 255, 0.42); --line: rgba(255, 255, 255, 0.72);
+  --secondary: #2e3865; --secondary-foreground: #ffffff; --progress: #2e3865; --popover: #e9e6fb;
+  color: var(--foreground);
+}
 
 @layer base {
   * { border-color: var(--color-border); }
@@ -143,6 +149,64 @@
 .cascade > :nth-child(4) { --i: 3; } .cascade > :nth-child(5) { --i: 4; } .cascade > :nth-child(6) { --i: 5; }
 .cascade > :nth-child(7) { --i: 6; } .cascade > :nth-child(8) { --i: 7; } .cascade > :nth-child(9) { --i: 8; }
 .cascade > :nth-child(n + 10) { --i: 9; }
+
+/* Living background: two soft glows drifting very slowly behind everything (transform only, 70s). */
+:root { --glow-a: rgba(255, 255, 255, 0.34); --glow-b: rgba(139, 124, 248, 0.26); }
+.stage-dusk, .stage-night { --glow-a: rgba(180, 166, 250, 0.22); --glow-b: rgba(99, 102, 241, 0.26); }
+.stage-light, .stage-dusk, .stage-night { isolation: isolate; }
+body::before, .stage-light::before, .stage-dusk::before, .stage-night::before {
+  content: ""; position: fixed; inset: -25%; z-index: -1; pointer-events: none; will-change: transform;
+  background:
+    radial-gradient(38% 34% at 24% 28%, var(--glow-a) 0%, transparent 70%),
+    radial-gradient(34% 30% at 76% 72%, var(--glow-b) 0%, transparent 70%);
+  animation: aurora-drift 70s ease-in-out infinite alternate;
+}
+@keyframes aurora-drift {
+  from { transform: translate3d(-3%, -2%, 0) scale(1); }
+  to { transform: translate3d(4%, 3%, 0) scale(1.12); }
+}
+/* A few stars on the night scenes. */
+.stage-night::after {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: 0.55;
+  background-image:
+    radial-gradient(1.5px 1.5px at 12% 18%, #fff 50%, transparent 52%), radial-gradient(1px 1px at 82% 12%, #fff 50%, transparent 52%),
+    radial-gradient(1.5px 1.5px at 66% 34%, #fff 50%, transparent 52%), radial-gradient(1px 1px at 28% 52%, #fff 50%, transparent 52%),
+    radial-gradient(1.5px 1.5px at 90% 58%, #fff 50%, transparent 52%), radial-gradient(1px 1px at 8% 82%, #fff 50%, transparent 52%),
+    radial-gradient(1.5px 1.5px at 54% 90%, #fff 50%, transparent 52%);
+  animation: star-twinkle 7s ease-in-out infinite alternate;
+}
+@keyframes star-twinkle { from { opacity: 0.25; } to { opacity: 0.7; } }
+
+/* Slow halo behind the counter: one breath every 10s (4s in, 6s out). */
+.halo { animation: halo-breathe 10s ease-in-out infinite; }
+@keyframes halo-breathe {
+  0%, 100% { transform: scale(0.94); opacity: 0.45; }
+  40% { transform: scale(1.1); opacity: 0.95; }
+}
+/* Counter digits: seconds rise gently, minutes and hours only fade. */
+.digit-slide { display: inline-block; animation: digit-slide 520ms cubic-bezier(0.22, 0.8, 0.3, 1) both; }
+.digit-fade { display: inline-block; animation: digit-fade 700ms ease-out both; }
+@keyframes digit-slide { from { opacity: 0; transform: translateY(45%); } to { opacity: 1; transform: none; } }
+@keyframes digit-fade { from { opacity: 0.2; } to { opacity: 1; } }
+
+/* SOS: the overlay arrives as a fade, and the scene wakes up slowly when the reasons appear. */
+.sos-enter { animation: sos-enter 800ms ease-out both; }
+@keyframes sos-enter { from { opacity: 0; } to { opacity: 1; } }
+
+/* Milestone: a soft light that grows once and fades. Never blocks the screen. */
+.milestone-glow { animation: milestone-glow 2800ms ease-out both; }
+@keyframes milestone-glow {
+  0% { opacity: 0; transform: scale(0.6); }
+  35% { opacity: 0.85; }
+  100% { opacity: 0; transform: scale(1.8); }
+}
+/* Check-in saved: a small spark travels up to the companion. */
+.spark-fly { animation: spark-fly 900ms cubic-bezier(0.4, 0, 0.2, 1) both; }
+@keyframes spark-fly {
+  0% { opacity: 0; transform: translateY(110px) scale(1); }
+  20% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(8px) scale(0.3); }
+}
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
