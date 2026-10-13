@@ -105,6 +105,7 @@ export type Database = {
           coach_tone: string
           commitment_at: string | null
           created_at: string
+          current_feelings: string[]
           difficulty_level: string | null
           difficulty_score: number | null
           dominant_emotion: string | null
@@ -114,8 +115,11 @@ export type Database = {
           id: string
           language: string
           last_contact_at: string | null
+          last_contact_feelings: string[]
+          last_contact_range: string | null
           motivation: string | null
           name: string | null
+          no_contact_goal: string | null
           onboarding_completed: boolean
           onboarding_step: number
           reasons: string[]
@@ -133,6 +137,7 @@ export type Database = {
           coach_tone?: string
           commitment_at?: string | null
           created_at?: string
+          current_feelings?: string[]
           difficulty_level?: string | null
           difficulty_score?: number | null
           dominant_emotion?: string | null
@@ -142,8 +147,11 @@ export type Database = {
           id: string
           language?: string
           last_contact_at?: string | null
+          last_contact_feelings?: string[]
+          last_contact_range?: string | null
           motivation?: string | null
           name?: string | null
+          no_contact_goal?: string | null
           onboarding_completed?: boolean
           onboarding_step?: number
           reasons?: string[]
@@ -161,6 +169,7 @@ export type Database = {
           coach_tone?: string
           commitment_at?: string | null
           created_at?: string
+          current_feelings?: string[]
           difficulty_level?: string | null
           difficulty_score?: number | null
           dominant_emotion?: string | null
@@ -170,8 +179,11 @@ export type Database = {
           id?: string
           language?: string
           last_contact_at?: string | null
+          last_contact_feelings?: string[]
+          last_contact_range?: string | null
           motivation?: string | null
           name?: string | null
+          no_contact_goal?: string | null
           onboarding_completed?: boolean
           onboarding_step?: number
           reasons?: string[]
