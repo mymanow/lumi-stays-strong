@@ -114,10 +114,6 @@ export type Database = {
           id: string
           language: string
           last_contact_at: string | null
-          last_contact_range: string | null
-          last_contact_feelings: string[]
-          current_feelings: string[]
-          no_contact_goal: string | null
           motivation: string | null
           name: string | null
           onboarding_completed: boolean
@@ -146,10 +142,6 @@ export type Database = {
           id: string
           language?: string
           last_contact_at?: string | null
-          last_contact_range?: string | null
-          last_contact_feelings?: string[]
-          current_feelings?: string[]
-          no_contact_goal?: string | null
           motivation?: string | null
           name?: string | null
           onboarding_completed?: boolean
@@ -178,10 +170,6 @@ export type Database = {
           id?: string
           language?: string
           last_contact_at?: string | null
-          last_contact_range?: string | null
-          last_contact_feelings?: string[]
-          current_feelings?: string[]
-          no_contact_goal?: string | null
           motivation?: string | null
           name?: string | null
           onboarding_completed?: boolean
