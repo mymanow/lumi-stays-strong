@@ -70,6 +70,7 @@ export type Database = {
           created_at: string
           id: string
           mood: number | null
+          note: string | null
           occurred_at: string
           previous_streak_seconds: number | null
           trigger: string | null
@@ -80,6 +81,7 @@ export type Database = {
           created_at?: string
           id?: string
           mood?: number | null
+          note?: string | null
           occurred_at?: string
           previous_streak_seconds?: number | null
           trigger?: string | null
@@ -90,6 +92,7 @@ export type Database = {
           created_at?: string
           id?: string
           mood?: number | null
+          note?: string | null
           occurred_at?: string
           previous_streak_seconds?: number | null
           trigger?: string | null
