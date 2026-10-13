@@ -4,6 +4,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { AppShell } from "@/components/hold/AppShell";
 import { Card, SosButton } from "@/components/hold/Common";
+import { DailyTask } from "@/components/hold/DailyTask";
+import { streakStats } from "@/lib/streaks";
 import { Lumi } from "@/components/hold/Lumi";
 import { useI18n } from "@/i18n";
 import { useApp } from "@/lib/app-state";
@@ -36,6 +38,7 @@ function Home() {
   const [now, setNow] = useState(() => Date.now());
   const [open, setOpen] = useState(false);
   const [trigger, setTrigger] = useState<string | null>(null);
+  const [note, setNote] = useState("");
   useEffect(() => { const id = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(id); }, []);
 
   const since = profile?.last_contact_at ? new Date(profile.last_contact_at).getTime() : now;
@@ -56,12 +59,20 @@ function Home() {
     queryFn: async () => (await supabase.from("checkins").select("id").eq("date", today).maybeSingle()).data,
   });
 
+  const events = useQuery({
+    queryKey: ["events", session?.user.id],
+    enabled: !!session,
+    queryFn: async () => (await supabase.from("contact_events").select("*").order("occurred_at", { ascending: false }).limit(200)).data ?? [],
+  });
+  const stats = useMemo(() => streakStats(events.data ?? [], profile?.last_contact_at, profile?.best_streak_seconds ?? 0, now), [events.data, profile?.last_contact_at, profile?.best_streak_seconds, now]);
+
   const relapse = async () => {
     const prev = Math.floor(seconds);
-    await logEvent({ type: "relapse", occurred_at: new Date().toISOString(), trigger, previous_streak_seconds: prev });
+    const reflection = note.trim().slice(0, 500);
+    await logEvent({ type: "relapse", occurred_at: new Date().toISOString(), trigger, previous_streak_seconds: prev, ...(reflection ? { note: reflection } : {}) });
     await updateProfile({ last_contact_at: new Date().toISOString(), best_streak_seconds: Math.max(profile?.best_streak_seconds ?? 0, prev) });
     qc.invalidateQueries({ queryKey: ["events"] });
-    setOpen(false); setTrigger(null);
+    setOpen(false); setTrigger(null); setNote("");
     toast(t("home.together"));
   };
 
@@ -88,6 +99,14 @@ function Home() {
             </div>
           </div>
           <p className="mt-4 text-sm text-muted-foreground">{t("home.best", { n: bestDays })}</p>
+          <dl className="mt-5 grid w-full grid-cols-3 gap-2 text-center">
+            {([["progress.best", `${Math.floor(stats.bestSeconds / 86400)} ${t("home.units.d")}`], ["progress.attempts", String(stats.attempts)], ["progress.resistances", String(stats.resistances)]] as const).map(([k, v]) => (
+              <div key={k} className="rounded-[18px] bg-white/40 px-1 py-2">
+                <dd className="font-display text-xl leading-none">{v}</dd>
+                <dt className="mt-1 text-xs text-muted-foreground">{t(k)}</dt>
+              </div>
+            ))}
+          </dl>
         </Card>
         <SosButton />
         <button type="button" onClick={() => setOpen(true)} className="min-h-11 self-center font-medium text-foreground underline underline-offset-4">{t("home.relapse")}</button>
@@ -98,12 +117,18 @@ function Home() {
           <Lumi size={52} stage={stage} emotion="happy" interactive />
           <p className="font-display text-lg leading-snug">{line}</p>
         </Card>
+        <DailyTask days={parts.d} />
         <Card>
           <h2 className="text-2xl">{t("home.checkinTitle")}</h2>
           <p className="mt-1 text-sm text-muted-foreground">{checkin.data ? t("home.checkinDone") : "30 s"}</p>
           <Link to="/checkin" className="mt-4 flex min-h-12 items-center justify-center rounded-full bg-white font-bold text-[#2e3865]">
             {checkin.data ? t("home.checkinEdit") : t("home.checkinCta")}
           </Link>
+        </Card>
+        <Card>
+          <h2 className="text-2xl">{t("home.remindersTitle")}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">{t("home.remindersSub")}</p>
+          <Link to="/reminders" className="mt-4 flex min-h-12 items-center justify-center rounded-full border border-white/80 font-semibold">{t("home.remindersOpen")}</Link>
         </Card>
         <Card>
           <h2 className="mb-4 text-2xl">{t("home.milestones")}</h2>
@@ -138,6 +163,10 @@ function Home() {
               </button>
             ))}
           </div>
+          <label className="flex flex-col gap-2 text-sm text-[#3a4474]">{t("home.relapseNote")}
+            <textarea value={note} onChange={(e) => setNote(e.target.value)} maxLength={500} rows={3} placeholder={t("home.relapseNotePh")}
+              className="rounded-[18px] border border-[#2e3865]/30 bg-white/70 p-3 text-base text-[#2e3865] placeholder:text-[#3a4474]/60" />
+          </label>
           <DialogFooter className="gap-2">
             <button type="button" onClick={() => setOpen(false)} className="min-h-12 rounded-full border border-[#2e3865]/40 px-5">{t("common.cancel")}</button>
             <button type="button" onClick={relapse} className="min-h-12 rounded-full bg-reset px-5 font-bold text-reset-foreground">{t("home.relapseConfirm")}</button>

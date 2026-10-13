@@ -9,6 +9,7 @@ import { useI18n } from "@/i18n";
 import { useApp } from "@/lib/app-state";
 import { supabase } from "@/integrations/supabase/client";
 import { listVault, removeVault, type VaultItem } from "@/lib/vault";
+import { ProgressTab } from "@/components/hold/Progress";
 
 export const Route = createFileRoute("/history")({
   head: () => ({
@@ -26,7 +27,7 @@ export const Route = createFileRoute("/history")({
 
 function History() {
   const { t, lang } = useI18n();
-  const { session } = useApp();
+  const { session, profile } = useApp();
   const fmt = (d: string, time = false) => new Date(d).toLocaleDateString(lang, time ? { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" } : { weekday: "short", day: "numeric", month: "short" });
   const checkins = useQuery({ queryKey: ["checkins", session?.user.id], enabled: !!session, queryFn: async () => (await supabase.from("checkins").select("*").order("date", { ascending: false }).limit(100)).data ?? [] });
   const events = useQuery({ queryKey: ["events", session?.user.id], enabled: !!session, queryFn: async () => (await supabase.from("contact_events").select("*").order("occurred_at", { ascending: false }).limit(200)).data ?? [] });
@@ -38,12 +39,16 @@ function History() {
   return (
     <div>
       <PageTitle>{t("history.title")}</PageTitle>
-      <Tabs defaultValue="checkins">
+      <Tabs defaultValue="progress">
         <TabsList className="mb-6 flex h-auto w-full glass rounded-full p-1">
+          <TabsTrigger value="progress" className={tab}>{t("history.tabs.progress")}</TabsTrigger>
           <TabsTrigger value="checkins" className={tab}>{t("history.tabs.checkins")}</TabsTrigger>
           <TabsTrigger value="events" className={tab}>{t("history.tabs.events")}</TabsTrigger>
           <TabsTrigger value="vault" className={tab}>{t("history.tabs.vault")}</TabsTrigger>
         </TabsList>
+        <TabsContent value="progress">
+          <ProgressTab checkins={checkins.data ?? []} events={ev} lastContactAt={profile?.last_contact_at ?? null} bestSeconds={profile?.best_streak_seconds ?? 0} />
+        </TabsContent>
         <TabsContent value="checkins" className="flex flex-col gap-3">
           {checkins.data?.length === 0 && <p className="text-muted-foreground">{t("history.noCheckins")}</p>}
           {checkins.data?.map((c) => (
@@ -64,9 +69,12 @@ function History() {
           </div>
           {ev.length === 0 && <p className="text-muted-foreground">{t("history.noEvents")}</p>}
           {ev.map((e) => (
-            <Card key={e.id} className="flex items-center justify-between p-4">
-              <span className={e.type === "resistance" ? "font-semibold text-foreground" : "font-semibold text-foreground"}>{t(`history.${e.type}`)}{e.trigger ? ` · ${t(`options.triggers.${e.trigger}`)}` : ""}</span>
-              <span className="text-sm text-muted-foreground">{fmt(e.occurred_at, true)}</span>
+            <Card key={e.id} className="p-4">
+              <div className="flex items-center justify-between gap-3">
+                <span className="font-semibold text-foreground">{t(`history.${e.type}`)}{e.trigger ? ` · ${t(`options.triggers.${e.trigger}`)}` : ""}</span>
+                <span className="text-sm text-muted-foreground">{fmt(e.occurred_at, true)}</span>
+              </div>
+              {e.note && <p className="mt-2 break-words text-muted-foreground">{e.note}</p>}
             </Card>
           ))}
         </TabsContent>

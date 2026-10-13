@@ -12,6 +12,7 @@
 ## Hold architecture
 - All UI strings live in src/i18n/{fr,en}.ts; components read them via useI18n() — keeps FR/EN in sync.
 - Unsent "vault" messages are stored only in IndexedDB (src/lib/vault.ts) — they must never reach the server.
+- Red flags and the photos/voice notes/videos of "Mes rappels" live only in IndexedDB (src/lib/keepsakes.ts), like the vault: never upload them, never send them to the coach.
 - Coach AI runs in the /api/coach server route (bearer-verified, quota via ai_usage + subscriptions) — never call AI from the browser.
 - Whop: checkout config created in a server function; subscriptions written only by /api/public/whop-webhook with service role.
 - Onboarding has six breakup questions (situation, last contact range, feelings after, current feelings, hope, goal) saved to owner-only profile columns after each step (see drizzle/migrations/0003_onboarding_v2_answers.sql). Only motivation and situation type reach the coach context; feelings never do.

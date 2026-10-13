@@ -14,9 +14,11 @@ import { Route as CheckinRouteImport } from './routes/checkin'
 import { Route as CoachRouteImport } from './routes/coach'
 import { Route as CrisisRouteImport } from './routes/crisis'
 import { Route as HistoryRouteImport } from './routes/history'
+import { Route as JourneyRouteImport } from './routes/journey'
 import { Route as LumiRouteImport } from './routes/lumi'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as RemindersRouteImport } from './routes/reminders'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SigninRouteImport } from './routes/signin'
 import { Route as SosRouteImport } from './routes/sos'
@@ -51,6 +53,11 @@ const HistoryRoute = HistoryRouteImport.update({
   path: '/history',
   getParentRoute: () => rootRouteImport,
 } as any)
+const JourneyRoute = JourneyRouteImport.update({
+  id: '/journey',
+  path: '/journey',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LumiRoute = LumiRouteImport.update({
   id: '/lumi',
   path: '/lumi',
@@ -64,6 +71,11 @@ const OnboardingRoute = OnboardingRouteImport.update({
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RemindersRoute = RemindersRouteImport.update({
+  id: '/reminders',
+  path: '/reminders',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SettingsRoute = SettingsRouteImport.update({
@@ -113,9 +125,11 @@ export interface FileRoutesByFullPath {
   '/coach': typeof CoachRoute
   '/crisis': typeof CrisisRoute
   '/history': typeof HistoryRoute
+  '/journey': typeof JourneyRoute
   '/lumi': typeof LumiRoute
   '/onboarding': typeof OnboardingRoute
   '/privacy': typeof PrivacyRoute
+  '/reminders': typeof RemindersRoute
   '/settings': typeof SettingsRoute
   '/signin': typeof SigninRoute
   '/sos': typeof SosRoute
@@ -131,9 +145,11 @@ export interface FileRoutesByTo {
   '/coach': typeof CoachRoute
   '/crisis': typeof CrisisRoute
   '/history': typeof HistoryRoute
+  '/journey': typeof JourneyRoute
   '/lumi': typeof LumiRoute
   '/onboarding': typeof OnboardingRoute
   '/privacy': typeof PrivacyRoute
+  '/reminders': typeof RemindersRoute
   '/settings': typeof SettingsRoute
   '/signin': typeof SigninRoute
   '/sos': typeof SosRoute
@@ -150,9 +166,11 @@ export interface FileRoutesById {
   '/coach': typeof CoachRoute
   '/crisis': typeof CrisisRoute
   '/history': typeof HistoryRoute
+  '/journey': typeof JourneyRoute
   '/lumi': typeof LumiRoute
   '/onboarding': typeof OnboardingRoute
   '/privacy': typeof PrivacyRoute
+  '/reminders': typeof RemindersRoute
   '/settings': typeof SettingsRoute
   '/signin': typeof SigninRoute
   '/sos': typeof SosRoute
@@ -170,9 +188,11 @@ export interface FileRouteTypes {
     | '/coach'
     | '/crisis'
     | '/history'
+    | '/journey'
     | '/lumi'
     | '/onboarding'
     | '/privacy'
+    | '/reminders'
     | '/settings'
     | '/signin'
     | '/sos'
@@ -188,9 +208,11 @@ export interface FileRouteTypes {
     | '/coach'
     | '/crisis'
     | '/history'
+    | '/journey'
     | '/lumi'
     | '/onboarding'
     | '/privacy'
+    | '/reminders'
     | '/settings'
     | '/signin'
     | '/sos'
@@ -206,9 +228,11 @@ export interface FileRouteTypes {
     | '/coach'
     | '/crisis'
     | '/history'
+    | '/journey'
     | '/lumi'
     | '/onboarding'
     | '/privacy'
+    | '/reminders'
     | '/settings'
     | '/signin'
     | '/sos'
@@ -225,9 +249,11 @@ export interface RootRouteChildren {
   CoachRoute: typeof CoachRoute
   CrisisRoute: typeof CrisisRoute
   HistoryRoute: typeof HistoryRoute
+  JourneyRoute: typeof JourneyRoute
   LumiRoute: typeof LumiRoute
   OnboardingRoute: typeof OnboardingRoute
   PrivacyRoute: typeof PrivacyRoute
+  RemindersRoute: typeof RemindersRoute
   SettingsRoute: typeof SettingsRoute
   SigninRoute: typeof SigninRoute
   SosRoute: typeof SosRoute
@@ -274,6 +300,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HistoryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/journey': {
+      id: '/journey'
+      path: '/journey'
+      fullPath: '/journey'
+      preLoaderRoute: typeof JourneyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lumi': {
       id: '/lumi'
       path: '/lumi'
@@ -293,6 +326,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reminders': {
+      id: '/reminders'
+      path: '/reminders'
+      fullPath: '/reminders'
+      preLoaderRoute: typeof RemindersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/settings': {
@@ -372,9 +412,11 @@ const rootRouteChildren: RootRouteChildren = {
   CoachRoute: CoachRoute,
   CrisisRoute: CrisisRoute,
   HistoryRoute: HistoryRoute,
+  JourneyRoute: JourneyRoute,
   LumiRoute: LumiRoute,
   OnboardingRoute: OnboardingRoute,
   PrivacyRoute: PrivacyRoute,
+  RemindersRoute: RemindersRoute,
   SettingsRoute: SettingsRoute,
   SigninRoute: SigninRoute,
   SosRoute: SosRoute,

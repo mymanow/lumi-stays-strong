@@ -8,7 +8,7 @@ import { FREE_COACH_MESSAGES_PER_DAY, PREMIUM_COACH_DAILY_CAP } from "@/config/a
 const Body = z.object({
   messages: z.array(z.object({ role: z.enum(["user", "assistant"]), content: z.string().min(1).max(4000) })).min(1).max(30),
   mode: z.enum(["urge", "relapse", "bad"]),
-  tone: z.enum(["gentle", "direct"]),
+  tone: z.enum(["gentle", "direct", "frank"]),
   lang: z.enum(["fr", "en"]),
 });
 
@@ -16,12 +16,19 @@ function json(status: number, body: unknown, extra: Record<string, string> = {})
   return new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json", ...extra } });
 }
 
+function toneInstruction(tone: string) {
+  if (tone === "frank") {
+    return "Tone: frank, no-BS tough love. Say things plainly. Name rationalizations for what they are (\"just checking on them\", \"I need closure\", \"one text won't hurt\") and point back to the user's own reasons. No sugarcoating, no cheerleading, no filler. Never humiliate or insult the user or the ex, never sarcasm at the user's expense, never shame. You are blunt because you are on their side. If the user seems in distress or in crisis, drop the bluntness and lead with care.";
+  }
+  return tone === "direct" ? "Tone: direct, clear and honest, still kind." : "Tone: gentle, soft and reassuring.";
+}
+
 function systemPrompt(ctx: { lang: string; mode: string; tone: string; reasons: string[]; motivation: string | null; situation: string | null; days: number; lastRelapse: string | null; crisis: boolean }) {
   const language = ctx.lang === "fr" ? "French" : "English";
   return [
     `You are Lumi, a small, warm blob-shaped companion in a no-contact breakup recovery app. Speak in first person as Lumi, in ${language}.`,
     `Be warm, short and practical: at most 120 words, a few short sentences, no lists unless helpful.`,
-    ctx.tone === "direct" ? "Tone: direct, clear and honest, still kind." : "Tone: gentle, soft and reassuring.",
+    toneInstruction(ctx.tone),
     "Never diagnose, never claim to be a therapist or provide therapy.",
     "NEVER suggest contacting the ex, never help write, edit or plan a message to the ex, and never promise or suggest getting the ex back, even if the user's motivation is to win them back.",
     "Encourage: slow breathing, delaying the urge (wait 20 minutes), rereading their own reasons, opening the SOS in the app, and reaching out to a trusted friend or family member. You accompany; you do not replace real people.",
@@ -83,7 +90,7 @@ export const Route = createFileRoute("/api/coach")({
           headers: { "Content-Type": "application/json", "Lovable-API-Key": apiKey, "X-Lovable-AIG-SDK": "fetch" },
           body: JSON.stringify({
             model: "openai/gpt-6-astra",
-            instructions: systemPrompt({ lang, mode, tone: profile?.coach_tone ?? tone, reasons: profile?.reasons ?? [], motivation: profile?.motivation ?? null, situation: profile?.situation_type ?? null, days, lastRelapse: lastRelapse?.occurred_at?.slice(0, 10) ?? null, crisis }),
+            instructions: systemPrompt({ lang, mode, tone: crisis ? "gentle" : (profile?.coach_tone ?? tone), reasons: profile?.reasons ?? [], motivation: profile?.motivation ?? null, situation: profile?.situation_type ?? null, days, lastRelapse: lastRelapse?.occurred_at?.slice(0, 10) ?? null, crisis }),
             input: messages.slice(-10).map((m) => ({ role: m.role, content: m.content })),
             stream: true,
             store: false,

@@ -258,7 +258,7 @@ function Onboarding() {
         </ul>
         <ReminderControl value={reminder} onChange={setReminder} />
       </>);
-      onNext = () => go(13, { reminder_enabled: false, reminder_time: reminder.time });
+      onNext = () => go(13, { reminder_enabled: reminder.enabled, reminder_time: reminder.time });
       break;
     case 13:
       body = (<>

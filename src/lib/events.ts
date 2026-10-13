@@ -1,6 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 
-type PendingEvent = { type: "resistance" | "relapse"; occurred_at: string; trigger?: string | null; previous_streak_seconds?: number | null };
+type PendingEvent = { type: "resistance" | "relapse"; occurred_at: string; trigger?: string | null; previous_streak_seconds?: number | null; note?: string | null };
 const KEY = "hold_pending_events";
 
 function readPending(): PendingEvent[] {

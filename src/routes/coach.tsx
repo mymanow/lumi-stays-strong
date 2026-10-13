@@ -42,7 +42,7 @@ function Coach() {
   const [crisis, setCrisis] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
-  const tone = (profile?.coach_tone ?? "gentle") as "gentle" | "direct";
+  const tone = (["gentle", "direct", "frank"].includes(profile?.coach_tone ?? "") ? profile!.coach_tone : "gentle") as "gentle" | "direct" | "frank";
   const days = profile?.last_contact_at ? Math.floor((Date.now() - new Date(profile.last_contact_at).getTime()) / 86400000) : 0;
 
   useEffect(() => {
@@ -100,7 +100,7 @@ function Coach() {
           <p className="text-sm text-muted-foreground">{premium ? t("coach.unlimited") : t("coach.remaining", { n: remaining ?? FREE_COACH_MESSAGES_PER_DAY })}</p>
         </div>
         <div role="radiogroup" aria-label={t("coach.tone")} className="glass inline-flex rounded-full p-1">
-          {(["gentle", "direct"] as const).map((k) => (
+          {(["gentle", "direct", "frank"] as const).map((k) => (
             <button key={k} type="button" role="radio" aria-checked={tone === k} onClick={() => updateProfile({ coach_tone: k })}
               className={`min-h-9 rounded-full px-4 text-sm ${tone === k ? "bg-white text-[#2e3865]" : "text-muted-foreground"}`}>{t(`coach.${k}`)}</button>
           ))}

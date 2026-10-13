@@ -12,6 +12,8 @@ import { useApp } from "@/lib/app-state";
 import { supabase } from "@/integrations/supabase/client";
 import { deleteMyAccount } from "@/lib/account.functions";
 import { clearVault } from "@/lib/vault";
+import { clearKeepsakes } from "@/lib/keepsakes";
+import { localDateString } from "@/lib/domain";
 import { MANAGE_SUBSCRIPTION_URL } from "@/config/app";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
@@ -29,7 +31,7 @@ export const Route = createFileRoute("/settings")({
   component: () => <AppShell><Settings /></AppShell>,
 });
 
-function Row({ to, label }: { to: "/lumi" | "/privacy" | "/terms" | "/crisis"; label: string }) {
+function Row({ to, label }: { to: "/lumi" | "/privacy" | "/terms" | "/crisis" | "/reminders" | "/journey"; label: string }) {
   return (
     <Link to={to} className="flex min-h-13 items-center justify-between border-b border-white/60 py-3 last:border-0">
       <span>{label}</span><ChevronIcon className="text-muted-foreground" />
@@ -42,11 +44,14 @@ function Settings() {
   const { profile, updateProfile, premium, isAnonymous } = useApp();
   const del = useServerFn(deleteMyAccount);
   const [confirm, setConfirm] = useState(false);
-  const [reminder, setReminder] = useState({ enabled: false, time: profile?.reminder_time?.slice(0, 5) ?? "21:30" });
+  const [reminder, setReminder] = useState({ enabled: !!profile?.reminder_enabled, time: profile?.reminder_time?.slice(0, 5) ?? "21:30" });
+  const [startDate, setStartDate] = useState(profile?.last_contact_at ? localDateString(new Date(profile.last_contact_at)) : localDateString());
+  const changeReminder = (v: { enabled: boolean; time: string }) => { setReminder(v); void updateProfile({ reminder_enabled: v.enabled, reminder_time: v.time }); };
 
   const doDelete = async () => {
     await del();
     await clearVault();
+    await clearKeepsakes();
     localStorage.removeItem("hold_reasons");
     await supabase.auth.signOut();
     window.location.href = "/";
@@ -59,7 +64,21 @@ function Settings() {
         <span className="font-medium">{t("settings.language")}</span>
         <LangSwitch onChange={(l) => updateProfile({ language: l })} />
       </Card>
-      <ReminderControl value={reminder} onChange={setReminder} />
+      <ReminderControl value={reminder} onChange={changeReminder} />
+      <Card className="py-1">
+        <Row to="/reminders" label={t("settings.reminders")} />
+        <Row to="/journey" label={t("journey.title")} />
+      </Card>
+      <Card>
+        <h2 className="mb-1 text-2xl">{t("settings.startDate")}</h2>
+        <p className="mb-3 text-sm text-muted-foreground">{t("settings.startDateSub")}</p>
+        <div className="flex gap-2">
+          <input type="date" value={startDate} max={localDateString()} onChange={(e) => setStartDate(e.target.value)} aria-label={t("settings.startDate")}
+            className="glass min-h-12 flex-1 rounded-full px-4 [color-scheme:light]" />
+          <button type="button" disabled={!startDate} onClick={() => updateProfile({ last_contact_at: new Date(`${startDate}T00:00:00`).toISOString() })}
+            className="min-h-12 rounded-full bg-primary px-5 font-semibold text-primary-foreground disabled:opacity-40">{t("settings.startDateSave")}</button>
+        </div>
+      </Card>
       <section><OwnReasons showList /></section>
       <Card>
         <h2 className="mb-1 text-2xl">{t("settings.saveAccount")}</h2>

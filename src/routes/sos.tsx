@@ -8,6 +8,7 @@ import { CloseIcon } from "@/components/hold/Icons";
 import { OwnReasons } from "@/components/hold/OwnReasons";
 import { sosReasons } from "@/lib/reasons";
 import { addVault } from "@/lib/vault";
+import { listFlags, pickRedFlags, type RedFlag } from "@/lib/keepsakes";
 import { logEvent } from "@/lib/events";
 
 export const Route = createFileRoute("/sos")({
@@ -33,6 +34,8 @@ function Sos() {
   const [step, setStep] = useState<"breathe" | "reasons" | "won">("breathe");
   const [elapsed, setElapsed] = useState(0);
   const [text, setText] = useState("");
+  const [flags, setFlags] = useState<RedFlag[]>([]);
+  useEffect(() => { listFlags().then((all) => setFlags(pickRedFlags(all, 3))).catch(() => {}); }, []);
   const reasons = sosReasons(profile?.reasons ?? [], profile?.motivation, profile?.situation_type, t);
 
   useEffect(() => {
@@ -77,6 +80,11 @@ function Sos() {
               </div>
             )}
             <OwnReasons />
+            <div className="glass rounded-[24px] p-4">
+              <h2 className="mb-2 text-lg font-semibold">{t("rem.sosTitle")}</h2>
+              {flags.length > 0 && <ul className="mb-3 flex list-disc flex-col gap-1.5 pl-5">{flags.map((f) => <li key={f.id} className="break-words">{f.text}</li>)}</ul>}
+              <Link to="/reminders" className="inline-flex min-h-11 items-center font-medium underline underline-offset-4">{t("rem.sosMore")}</Link>
+            </div>
             <div className="glass flex items-center gap-3 rounded-[24px] p-4">
               <Lumi size={44} stage={3} emotion="support" />
               <p>{t("sos.lumiLine")}</p>

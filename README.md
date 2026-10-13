@@ -39,6 +39,15 @@ Help a user keep no contact with an ex. The core moment is the urge to write to 
 - Where she appears: welcome screen (large), Home (small, with one short line like "Ce soir, je reste avec toi." chosen from a local list by time of day), SOS breathing (Lumi expands for 4s and shrinks for 6s to guide breathing), commitment screen, coach header (the coach speaks AS Lumi), and a /lumi page in Settings showing the 4 stages and the rule "Si tu craques, Lumi ne t'en veut pas. On repart ensemble."
 - Short phrases are fixed local text (no AI call).
 
+## Companion features (beyond the basics)
+- Mes rappels (/reminders): a red flags list (pin the important ones, shown first in SOS) and photos, voice notes (MediaRecorder) and videos. Stored ONLY in IndexedDB (src/lib/keepsakes.ts), 30 MB per file and 200 MB total; wiped on account deletion. Never uploaded, never sent to the coach.
+- Parcours (/journey) and the daily task on Home: six phases by days without contact (0-3, 4-14, 15-30, 31-60, 61-90, 91+), hedged general landmarks with no invented statistics; one tip per day, checkable (localStorage).
+- Progrès (History tab): current/best streak, attempts, past streaks chart, mood and urge lines (7/30/90 days, gaps stay empty), week-over-week comparison (a trend is only shown with 3+ check-ins in both weeks), most frequent triggers. Derived from existing checkins and contact_events.
+- Reset and reflect: the relapse dialog has an optional note saved in contact_events.note; history shows it. Settings can correct the last-contact date.
+- Coach tones: gentle, direct and frank ("Cash", blunt but never humiliating; drops to gentle if a crisis is detected).
+- Daily reminder: a notification while the app is open (no push server yet, so it cannot wake a closed app); the copy says so.
+- Migrations to run: 0004 (no_contact_rules) and 0005 (frank tone, contact_events.note).
+
 ## Onboarding (one question per screen, thin progress bar over 13 steps, Back button, answers saved as you go)
 0. Welcome: logo, language selector (FR/EN) top right, large Lumi, headline "Tiens bon quand l'envie d'écrire revient.", sub "Voici Lumi, elle veille avec toi. Un compteur, un SOS, un coach. Privé, sans compte obligatoire.", primary "Commencer", link "J'ai déjà un compte", small disclaimer "Pas un avis médical. En danger, appelle le 3114." (crisis number localized by language/region).
 1. Intro "Personnalisons ton parcours", then "Comment souhaite-tu qu'on t'appelles ?" (first name or nickname).

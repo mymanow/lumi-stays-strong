@@ -6,6 +6,7 @@ import { APP_NAME } from "@/config/app";
 import { CoachIcon, HistoryIcon, HomeIcon, SettingsIcon } from "./Icons";
 import { FullLoader } from "./Common";
 import { Lumi } from "./Lumi";
+import { msUntilNext, showNotification } from "@/lib/notify";
 
 const NAV = [
   { to: "/", key: "nav.home", Icon: HomeIcon },
@@ -18,6 +19,18 @@ const NAV = [
 export function AppShell({ children, wide = false }: { children: ReactNode; wide?: boolean }) {
   const { t } = useI18n();
   const { ready, profile } = useApp();
+  const reminderOn = !!profile?.reminder_enabled;
+  const reminderTime = profile?.reminder_time?.slice(0, 5) ?? "21:30";
+  // Daily reminder: fires while the app is open. No push server, so it can't wake a closed app.
+  useEffect(() => {
+    if (!reminderOn) return;
+    let timer: ReturnType<typeof setTimeout>;
+    const arm = () => {
+      timer = setTimeout(() => { void showNotification(t("plan.notifTitle"), t("plan.notifBody")); arm(); }, msUntilNext(reminderTime));
+    };
+    arm();
+    return () => clearTimeout(timer);
+  }, [reminderOn, reminderTime, t]);
   const navigate = useNavigate();
   useEffect(() => {
     if (ready && profile && !profile.onboarding_completed) navigate({ to: "/onboarding" });
