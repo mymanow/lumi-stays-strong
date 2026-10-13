@@ -120,7 +120,6 @@ export type Database = {
           motivation: string | null
           name: string | null
           no_contact_goal: string | null
-          no_contact_rules: string[]
           onboarding_completed: boolean
           onboarding_step: number
           reasons: string[]
@@ -153,7 +152,6 @@ export type Database = {
           motivation?: string | null
           name?: string | null
           no_contact_goal?: string | null
-          no_contact_rules?: string[]
           onboarding_completed?: boolean
           onboarding_step?: number
           reasons?: string[]
@@ -186,7 +184,6 @@ export type Database = {
           motivation?: string | null
           name?: string | null
           no_contact_goal?: string | null
-          no_contact_rules?: string[]
           onboarding_completed?: boolean
           onboarding_step?: number
           reasons?: string[]
