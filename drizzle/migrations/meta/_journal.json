@@ -29,6 +29,20 @@
       "when": 1791898440849,
       "tag": "0003_onboarding_v2_answers",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791903050550,
+      "tag": "0004_apply_no_contact_rules",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791903079605,
+      "tag": "0005_apply_frank_tone_and_relapse_note",
+      "breakpoints": true
     }
   ]
 }
