@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { commitmentPhraseKeys, crisisLineFor, detectCrisis, lumiStageForDays } from "@/lib/domain";
+import { CONTACT_RANGE_DAYS, commitmentPhraseKeys, crisisLineFor, detectCrisis, lumiStageForDays } from "@/lib/domain";
 
 describe("Lumi stages", () => {
   it("day 1 is a spark, 7 stronger, 30 lights up, 90 full", () => {
@@ -12,7 +12,7 @@ describe("Lumi stages", () => {
 
 describe("commitment phrases", () => {
   it("toxic + take_back_control", () => {
-    expect(commitmentPhraseKeys("take_back_control", "toxic")).toEqual(["commit.motivation.take_back_control", "commit.always", "commit.situation.toxic"]);
+    expect(commitmentPhraseKeys("perspective", "going_back")).toEqual(["commit.motivation.perspective", "commit.always", "commit.situation.going_back"]);
   });
   it("other situations use the default phrase", () => {
     expect(commitmentPhraseKeys("win_back", "breakup")[2]).toBe("commit.situation.default");
@@ -26,5 +26,13 @@ describe("crisis", () => {
   it("detects distress keywords", () => {
     expect(detectCrisis("j'ai envie d'en finir")).toBe(true);
     expect(detectCrisis("I want to text him")).toBe(false);
+  });
+});
+
+describe("last contact ranges", () => {
+  it("start from the lowest bound of each range and only increase", () => {
+    const days = Object.values(CONTACT_RANGE_DAYS);
+    expect(days[0]).toBe(0);
+    expect(days).toEqual([...days].sort((a, b) => a - b));
   });
 });

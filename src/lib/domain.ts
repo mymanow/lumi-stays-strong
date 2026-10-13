@@ -13,10 +13,23 @@ export function splitDuration(totalSeconds: number) {
   return { d: Math.floor(s / 86400), h: Math.floor((s % 86400) / 3600), m: Math.floor((s % 3600) / 60), s: s % 60 };
 }
 
+export const MOTIVATIONS = ["win_back", "reconcile", "perspective", "move_on", "unsure"] as const;
+export const SITUATIONS = ["breakup", "pulling_away", "going_back", "mixed_signals", "moved_on", "asked_space", "want_space"] as const;
+export const DEFAULT_REMINDER_TIME = "21:30";
+
+/** Days since the last contact at the lowest bound of each range, so the counter never overstates progress. */
+export const CONTACT_RANGE_DAYS = { today: 0, week: 1, month: 8, m1_3: 31, m3_6: 91, gt_6m: 181 } as const;
+export type ContactRange = keyof typeof CONTACT_RANGE_DAYS;
+
+export function motivationKey(motivation?: string | null) {
+  return (MOTIVATIONS as readonly string[]).includes(motivation ?? "") ? motivation! : "unsure";
+}
+export function situationKey(situation?: string | null) {
+  return situation === "going_back" || situation === "moved_on" ? situation : "default";
+}
+
 export function commitmentPhraseKeys(motivation?: string | null, situation?: string | null) {
-  const mot = ["take_back_control", "move_on", "win_back", "unsure"].includes(motivation ?? "") ? motivation! : "unsure";
-  const sit = situation === "toxic" || situation === "one_sided_love" ? situation : "default";
-  return [`commit.motivation.${mot}`, "commit.always", `commit.situation.${sit}`];
+  return [`commit.motivation.${motivationKey(motivation)}`, "commit.always", `commit.situation.${situationKey(situation)}`];
 }
 
 const CRISIS_PATTERNS = [

@@ -8,9 +8,7 @@ import { BackIcon } from "@/components/hold/Icons";
 import { HoldButton } from "@/components/hold/HoldButton";
 import { AccountLinker } from "@/components/hold/AccountLinker";
 import { APP_NAME } from "@/config/app";
-import { commitmentPhraseKeys } from "@/lib/domain";
-import { ScoreCalculation, ScoreProfile } from "@/components/hold/ScoreScreens";
-import { calculateScore, readScoreFactors, defaultReminderTime, levelForScore, type ScoreResult } from "@/lib/score";
+import { commitmentPhraseKeys, CONTACT_RANGE_DAYS, DEFAULT_REMINDER_TIME, MOTIVATIONS, SITUATIONS, type ContactRange } from "@/lib/domain";
 import { ReminderControl } from "@/components/hold/ReminderControl";
 
 export const Route = createFileRoute("/onboarding")({
@@ -28,20 +26,14 @@ export const Route = createFileRoute("/onboarding")({
 });
 
 const TOTAL = 12;
-const HARDSHIPS = ["text_urge", "rumination", "lost", "guilt", "pain", "overwhelmed"] as const;
-const TRIGGERS = ["evening", "social_media", "loneliness", "alcohol", "argument", "anniversary", "other"] as const;
-const DURATIONS = ["lt_6m", "6_12m", "1_3y", "gt_3y"] as const;
-const RECENCY = ["lt_week", "w1_4", "m1_3", "gt_3m"] as const;
-const SITUATIONS = ["infidelity_healing", "one_sided_love", "toxic", "blocked_ghosted", "divorce_long_term", "breakup", "situationship_ended", "mutual_breakup", "ex_moved_on", "first_love", "on_off", "long_relationship_ended"] as const;
-const MOTIVATIONS = ["take_back_control", "win_back", "move_on", "unsure"] as const;
-const SOCIALS = ["sometimes", "several_daily", "never"] as const;
-const EMOTIONS = ["calm", "disgust", "joy", "anger", "fear", "sadness"] as const;
+const LAST_CONTACT = ["today", "week", "month", "m1_3", "m3_6", "gt_6m"] as const;
+const AFTER = ["worse", "ignored", "nothing_changed", "saw_upsetting", "argued", "cold", "not_yet"] as const;
+const NOW = ["devastated", "angry", "hoping", "guilty", "confused", "lonely", "okay"] as const;
+const GOALS = ["d7", "d14", "d30", "d60", "d90", "d180", "open"] as const;
 const GENDERS = ["woman", "man", "undisclosed"] as const;
 
-function toLocalInput(d: Date) {
-  const p = (n: number) => String(n).padStart(2, "0");
-  return { date: `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`, time: `${p(d.getHours())}:${p(d.getMinutes())}` };
-}
+const only = <T extends string>(list: readonly T[], value?: string | null) => (list.some((v) => v === value) ? (value as string) : "");
+const onlyMany = <T extends string>(list: readonly T[], values?: string[] | null) => (values ?? []).filter((v) => list.some((x) => x === v));
 
 function Onboarding() {
   const { t, tl, lang } = useI18n();
@@ -49,55 +41,32 @@ function Onboarding() {
   const navigate = useNavigate();
   const crisis = useCrisisLine();
   const [step, setStep] = useState(0);
-  const [scoreScreen, setScoreScreen] = useState<"calculate" | "profile" | null>(null);
-  const [scoreResult, setScoreResult] = useState<ScoreResult | null>(null);
-  const [animateProfile, setAnimateProfile] = useState(false);
-  const [subStep, setSubStep] = useState(0); // within step 1: intro, name, hardship, contact date, triggers
-  const [hardest, setHardest] = useState<string[]>([]);
+  const [subStep, setSubStep] = useState(0); // within step 1: 0 intro, 1 name
   const [init, setInit] = useState(false);
   const [name, setName] = useState("");
-  const [contact, setContact] = useState(() => toLocalInput(new Date()));
-  const [triggers, setTriggers] = useState<string[]>([]);
-  type S = { duration: string; endedBy: string; endedChoice?: string | undefined; firstBreakup: string; situation: string; motivation: string; emotion: string; gender: string };
-  const [single, setSingle] = useState<S>({ duration: "", endedBy: "", firstBreakup: "", situation: "", motivation: "", emotion: "", gender: "" });
-  const [sub3, setSub3] = useState(0); // within step 3: 0 endedBy, 1 recency
-  const [recency, setRecency] = useState("");
-  const [sub6, setSub6] = useState(0); // within step 6: 0 motivation, 1 social media
-  const [socials, setSocials] = useState("");
+  const [situation, setSituation] = useState("");
+  const [lastContact, setLastContact] = useState("");
+  const [after, setAfter] = useState<string[]>([]);
+  const [now, setNow] = useState<string[]>([]);
+  const [hope, setHope] = useState("");
+  const [goal, setGoal] = useState("");
+  const [gender, setGender] = useState("");
   const [age, setAge] = useState(30);
-  const [reminder, setReminder] = useState({ enabled: false, time: "21:30" });
+  const [reminder, setReminder] = useState({ enabled: false, time: DEFAULT_REMINDER_TIME });
 
   useEffect(() => {
     if (!ready || !profile || init) return;
     if (profile.onboarding_completed) { navigate({ to: "/" }); return; }
     setStep(profile.onboarding_step ?? 0);
-    if (profile.last_contact_at) setContact(toLocalInput(new Date(profile.last_contact_at)));
-    setTriggers(profile.triggers ?? []);
-    const savedHardest = localStorage.getItem(`hold_onboarding_hardest_${profile.id}`);
-    const hasHardest = HARDSHIPS.some((value) => value === savedHardest);
-    if (hasHardest && savedHardest) setHardest([savedHardest]);
-    if (profile.name) { setName(profile.name); setSubStep(hasHardest ? 3 : 2); }
-    if (profile.last_contact_at) setSubStep(4);
-    const savedRecency = localStorage.getItem(`hold_onboarding_recency_${profile.id}`);
-    if (savedRecency && RECENCY.some((v) => v === savedRecency)) setRecency(savedRecency);
-    if ((profile.onboarding_step ?? 0) === 3 && profile.ended_by) setSub3(1);
-    const savedSocials = localStorage.getItem(`hold_onboarding_socials_${profile.id}`);
-    const hasSocials = !!savedSocials && SOCIALS.some((v) => v === savedSocials);
-    if (savedSocials && hasSocials) setSocials(savedSocials);
-    if ((profile.onboarding_step ?? 0) === 6 && profile.motivation && hasSocials) setSub6(1);
-    setSingle({
-      duration: profile.relationship_duration ?? "", endedBy: profile.ended_by ?? "",
-      firstBreakup: profile.first_breakup == null ? "" : profile.first_breakup ? "yes" : "no",
-      situation: profile.situation_type ?? "", motivation: profile.motivation ?? "",
-      emotion: profile.dominant_emotion ?? "", gender: profile.gender ?? "",
-    });
+    if (profile.name) { setName(profile.name); setSubStep(1); }
+    setSituation(only(SITUATIONS, profile.situation_type));
+    setLastContact(only(LAST_CONTACT, profile.last_contact_range));
+    setAfter(onlyMany(AFTER, profile.last_contact_feelings));
+    setNow(onlyMany(NOW, profile.current_feelings));
+    setHope(only(MOTIVATIONS, profile.motivation));
+    setGoal(only(GOALS, profile.no_contact_goal));
+    setGender(profile.gender ?? "");
     if (profile.age) setAge(profile.age);
-    setReminder({ enabled: false, time: defaultReminderTime(profile.triggers ?? []) });
-    const factors = readScoreFactors(profile.score_factors);
-    if (profile.difficulty_score != null && factors) {
-      setScoreResult({ score: profile.difficulty_score, level: levelForScore(profile.difficulty_score), factors, points: 0, computedAt: profile.score_computed_at ?? "" });
-      if (profile.onboarding_step === 10 && !profile.commitment_at) setScoreScreen("profile");
-    }
     setInit(true);
   }, [ready, profile, init, navigate]);
 
@@ -105,16 +74,6 @@ function Onboarding() {
     setStep(next);
     window.scrollTo(0, 0);
     await updateProfile({ ...patch, onboarding_step: next });
-  };
-
-  const prepareScore = (selectedAge: number, replay = true) => {
-    if (!profile) return;
-    const result = calculateScore(profile);
-    setScoreResult(result);
-    setScoreScreen(replay ? "calculate" : "profile");
-    setAnimateProfile(replay);
-    window.scrollTo(0, 0);
-    void updateProfile({ age: selectedAge, onboarding_step: 10, difficulty_score: result.score, difficulty_level: result.level, score_factors: result.factors, score_computed_at: result.computedAt });
   };
 
   const finish = async () => {
@@ -125,14 +84,10 @@ function Onboarding() {
   const opts = <T extends string>(group: string, values: readonly T[]) =>
     values.map((v) => ({ value: v, label: t(`options.${group}.${v}`) }));
 
-  const pick = (key: keyof S) => (v: string[]) => setSingle((s) => ({ ...s, [key]: v[0] ?? "" }));
 
-  const commitPhrases = useMemo(() => commitmentPhraseKeys(single.motivation, single.situation).map((k) => t(k)), [single, t]);
+  const commitPhrases = useMemo(() => commitmentPhraseKeys(hope, situation).map((k) => t(k)), [hope, situation, t]);
 
   if (!ready || !init) return <FullLoader />;
-
-  if (scoreScreen === "calculate") return <ScoreCalculation onComplete={() => { setStep(10); setScoreScreen("profile"); }} />;
-  if (scoreScreen === "profile" && scoreResult) return <ScoreProfile result={scoreResult} animate={animateProfile} onBack={() => { setAnimateProfile(false); setScoreScreen(null); go(9); }} onContinue={() => { setAnimateProfile(false); setScoreScreen(null); go(10); }} />;
 
   const Question = ({ id, title, sub }: { id: string; title: string; sub?: string }) => (
     <div className="mb-6">
@@ -183,129 +138,57 @@ function Onboarding() {
           </div></Stage>
         );
       }
-      if (subStep === 1) {
-        body = (<>
-          <Question id="q-name" title={t("onb.nameTitle")} />
-          <input value={name} maxLength={40} aria-label={t("onb.nameTitle")} placeholder={t("onb.namePh")}
-            onChange={(e) => setName(e.target.value)}
-            className="glass min-h-14 w-full rounded-[28px] px-5 text-base text-foreground placeholder:text-muted-foreground/70" />
-        </>);
-        canNext = name.trim().length > 0;
-        onNext = async () => {
-          await updateProfile({ name: name.trim() });
-          setSubStep(2);
-          window.scrollTo(0, 0);
-        };
-        break;
-      }
-      if (subStep === 2) {
-        body = (<>
-          <Question id="q-hardest" title={t("onb.hardestTitle")} sub={t("onb.hardestSub")} />
-          <ChoiceList labelledBy="q-hardest" options={opts("hardest", HARDSHIPS)} value={hardest} onChange={setHardest} />
-        </>);
-        canNext = hardest.length === 1;
-        onNext = () => {
-          const answer = hardest[0];
-          if (!profile || !answer) return;
-          localStorage.setItem(`hold_onboarding_hardest_${profile.id}`, answer);
-          setSubStep(3);
-          window.scrollTo(0, 0);
-        };
-        break;
-      }
-      if (subStep === 3) {
-        body = (<>
-          <Question id="q1" title={t("onb.lastContact")} />
-          <label className="flex flex-col gap-1 text-sm text-muted-foreground">{t("onb.date")}
-            <input type="date" value={contact.date} max={toLocalInput(new Date()).date} onChange={(e) => setContact({ ...contact, date: e.target.value })}
-              className="glass min-h-14 rounded-[28px] px-4 text-base text-foreground [color-scheme:light]" />
-          </label>
-        </>);
-        canNext = !!contact.date;
-        onNext = () => {
-          setSubStep(4);
-          window.scrollTo(0, 0);
-        };
-        break;
-      }
       body = (<>
-        <h2 id="q1b" className="mb-4 text-2xl">{t("onb.triggersTitle")}</h2>
-        <ChoiceList multi labelledBy="q1b" options={opts("triggers", TRIGGERS)} value={triggers} onChange={setTriggers} />
+        <Question id="q-name" title={t("onb.nameTitle")} />
+        <input value={name} maxLength={40} aria-label={t("onb.nameTitle")} placeholder={t("onb.namePh")}
+          onChange={(e) => setName(e.target.value)}
+          className="glass min-h-14 w-full rounded-[28px] px-5 text-base text-foreground placeholder:text-muted-foreground/70" />
       </>);
-      canNext = true;
-      onNext = () => {
-        let d = new Date(`${contact.date}T${contact.time}`);
-        if (isNaN(d.getTime()) || d > new Date()) d = new Date();
-        go(2, { last_contact_at: d.toISOString(), triggers });
-      };
+      canNext = name.trim().length > 0;
+      onNext = () => go(2, { name: name.trim() });
       break;
     case 2:
-      body = (<><Question id="q2" title={t("onb.duration")} /><ChoiceList labelledBy="q2" options={opts("duration", DURATIONS)} value={[single.duration]} onChange={pick("duration")} /></>);
-      canNext = !!single.duration; onNext = () => go(3, { relationship_duration: single.duration });
+      body = (<><Question id="q2" title={t("onb.situationTitle")} sub={t("onb.situationSub")} />
+        <ChoiceList labelledBy="q2" options={opts("situation", SITUATIONS)} value={situation ? [situation] : []} onChange={(v) => setSituation(v[0] ?? "")} /></>);
+      canNext = !!situation; onNext = () => go(3, { situation_type: situation });
       break;
-    case 3: {
-      if (sub3 === 1) {
-        body = (<><Question id="q3b" title={t("onb.recencyTitle")} sub={t("onb.recencySub")} />
-          <ChoiceList labelledBy="q3b" options={opts("recency", RECENCY)} value={recency ? [recency] : []}
-            onChange={(v) => setRecency(v[0] ?? "")} /></>);
-        canNext = !!recency;
-        onNext = () => {
-          if (profile && recency) localStorage.setItem(`hold_onboarding_recency_${profile.id}`, recency);
-          go(4);
-        };
-        break;
-      }
-      const sel = single.endedBy === "them" ? [single.endedChoice ?? "them_him"] : [single.endedChoice ?? single.endedBy];
-      body = (<><Question id="q3" title={t("onb.endedBy")} />
-        <ChoiceList labelledBy="q3" options={opts("endedBy", ["me", "them_him", "them_her", "mutual"] as const)} value={sel}
-          onChange={(v) => setSingle((s) => ({ ...s, endedChoice: v[0], endedBy: v[0]?.startsWith("them") ? "them" : v[0] ?? "" }))} /></>);
-      canNext = !!single.endedBy;
-      onNext = async () => {
-        await updateProfile({ ended_by: single.endedBy });
-        setSub3(1);
-        window.scrollTo(0, 0);
+    case 3:
+      body = (<><Question id="q3" title={t("onb.lastContactTitle")} />
+        <ChoiceList labelledBy="q3" options={opts("lastContact", LAST_CONTACT)} value={lastContact ? [lastContact] : []} onChange={(v) => setLastContact(v[0] ?? "")} /></>);
+      canNext = !!lastContact;
+      onNext = () => {
+        const days = CONTACT_RANGE_DAYS[lastContact as ContactRange] ?? 0;
+        go(4, { last_contact_range: lastContact, last_contact_at: new Date(Date.now() - days * 86400000).toISOString() });
       };
       break;
-    }
     case 4:
-      body = (<><Question id="q4" title={t("onb.firstBreakup")} /><ChoiceList labelledBy="q4" options={opts("firstBreakup", ["yes", "no"] as const)} value={[single.firstBreakup]} onChange={pick("firstBreakup")} /></>);
-      canNext = !!single.firstBreakup; onNext = () => go(5, { first_breakup: single.firstBreakup === "yes" });
+      body = (<><Question id="q4" title={t("onb.afterTitle")} sub={t("onb.multiSub")} />
+        <ChoiceList multi labelledBy="q4" options={opts("after", AFTER)} value={after}
+          onChange={(v) => setAfter(v.includes("not_yet") && !after.includes("not_yet") ? ["not_yet"] : v.filter((x) => x !== "not_yet" || v.length === 1))} /></>);
+      canNext = after.length > 0; onNext = () => go(5, { last_contact_feelings: after });
       break;
     case 5:
-      body = (<><Question id="q5" title={t("onb.situation")} /><ChoiceList labelledBy="q5" options={opts("situation", SITUATIONS)} value={[single.situation]} onChange={pick("situation")} /></>);
-      canNext = !!single.situation; onNext = () => go(6, { situation_type: single.situation });
+      body = (<><Question id="q5" title={t("onb.nowTitle")} sub={t("onb.multiSub")} />
+        <ChoiceList multi labelledBy="q5" options={opts("now", NOW)} value={now} onChange={setNow} /></>);
+      canNext = now.length > 0; onNext = () => go(6, { current_feelings: now });
       break;
-    case 6: {
-      if (sub6 === 1) {
-        body = (<><Question id="q6b" title={t("onb.socialsTitle")} />
-          <ChoiceList labelledBy="q6b" options={opts("socials", SOCIALS)} value={socials ? [socials] : []} onChange={(v) => setSocials(v[0] ?? "")} /></>);
-        canNext = !!socials;
-        onNext = () => {
-          if (profile && socials) localStorage.setItem(`hold_onboarding_socials_${profile.id}`, socials);
-          go(7);
-        };
-        break;
-      }
-      body = (<><Question id="q6" title={t("onb.motivation")} sub={t("onb.motivationSub")} /><ChoiceList labelledBy="q6" options={opts("motivation", MOTIVATIONS)} value={[single.motivation]} onChange={pick("motivation")} /></>);
-      canNext = !!single.motivation;
-      onNext = async () => {
-        await updateProfile({ motivation: single.motivation });
-        setSub6(1);
-        window.scrollTo(0, 0);
-      };
+    case 6:
+      body = (<><Question id="q6" title={t("onb.hopeTitle")} sub={t("onb.hopeSub")} />
+        <ChoiceList labelledBy="q6" options={opts("motivation", MOTIVATIONS)} value={hope ? [hope] : []} onChange={(v) => setHope(v[0] ?? "")} /></>);
+      canNext = !!hope; onNext = () => go(7, { motivation: hope });
       break;
-    }
     case 7:
-      body = (<><Question id="q7" title={t("onb.emotion")} /><ChoiceList labelledBy="q7" options={opts("emotion", EMOTIONS)} value={[single.emotion]} onChange={pick("emotion")} /></>);
-      canNext = !!single.emotion; onNext = () => go(8, { dominant_emotion: single.emotion });
+      body = (<><Question id="q7" title={t("onb.goalTitle")} sub={t("onb.goalSub")} />
+        <ChoiceList labelledBy="q7" options={opts("goal", GOALS)} value={goal ? [goal] : []} onChange={(v) => setGoal(v[0] ?? "")} /></>);
+      canNext = !!goal; onNext = () => go(8, { no_contact_goal: goal });
       break;
     case 8:
-      body = (<><Question id="q8" title={t("onb.gender")} sub={t("onb.genderSub")} /><ChoiceList labelledBy="q8" options={opts("gender", GENDERS)} value={[single.gender]} onChange={pick("gender")} /></>);
-      canNext = !!single.gender; onNext = () => go(9, { gender: single.gender });
+      body = (<><Question id="q8" title={t("onb.gender")} sub={t("onb.genderSub")} /><ChoiceList labelledBy="q8" options={opts("gender", GENDERS)} value={gender ? [gender] : []} onChange={(v) => setGender(v[0] ?? "")} /></>);
+      canNext = !!gender; onNext = () => go(9, { gender });
       break;
     case 9:
       body = (<><Question id="q9" title={t("onb.age")} sub={t("onb.ageSub")} /><AgeWheel value={age} onChange={setAge} unit={t("onb.ageUnit")} labelledBy="q9" /></>);
-      onNext = () => prepareScore(age, !scoreResult);
+      onNext = () => go(10, { age });
       break;
     case 10:
       body = (<>
@@ -350,10 +233,7 @@ function Onboarding() {
     <div className="mx-auto flex min-h-svh max-w-[480px] flex-col px-6 pb-8 pt-4">
       <div className="mb-6 flex items-center gap-3">
         <button type="button" onClick={() => {
-          if (step === 10 && scoreResult) { setScoreScreen("profile"); setAnimateProfile(false); }
-          else if (step === 6) { if (sub6 > 0) { setSub6(0); window.scrollTo(0, 0); } else go(5); }
-          else if (step === 3) { if (sub3 > 0) { setSub3(0); window.scrollTo(0, 0); } else go(2); }
-          else if (step === 1 && subStep > 0) setSubStep(subStep - 1);
+          if (step === 1 && subStep > 0) setSubStep(subStep - 1);
           else go(step - 1);
         }} aria-label={t("common.back")} className="glass flex h-11 w-11 items-center justify-center rounded-full text-foreground"><BackIcon /></button>
         <div className="h-2 flex-1 overflow-hidden rounded-full bg-white/50" role="progressbar" aria-valuemin={0} aria-valuemax={TOTAL} aria-valuenow={step} aria-label={t("onb.progress", { n: step, total: TOTAL })}>

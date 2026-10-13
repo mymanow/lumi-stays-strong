@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { AppShell } from "@/components/hold/AppShell";
@@ -38,7 +38,6 @@ function History() {
   return (
     <div>
       <PageTitle>{t("history.title")}</PageTitle>
-      <Link to="/profile" className="mb-5 inline-flex min-h-11 items-center font-semibold text-foreground underline underline-offset-4">{t("profileScore.link")}</Link>
       <Tabs defaultValue="checkins">
         <TabsList className="mb-6 flex h-auto w-full glass rounded-full p-1">
           <TabsTrigger value="checkins" className={tab}>{t("history.tabs.checkins")}</TabsTrigger>

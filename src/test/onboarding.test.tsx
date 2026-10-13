@@ -5,9 +5,8 @@ import { en } from "@/i18n/en";
 const { updateProfile, profile } = vi.hoisted(() => ({
   updateProfile: vi.fn().mockResolvedValue(undefined),
   profile: {
-    id: "test-profile", name: "Alex", onboarding_step: 1, onboarding_completed: false,
-    motivation: undefined as string | undefined,
-  },
+    id: "test-profile", name: "Alex", onboarding_step: 2, onboarding_completed: false,
+  } as Record<string, unknown>,
 }));
 
 vi.mock("@/lib/app-state", () => ({ useApp: () => ({ ready: true, profile, updateProfile }) }));
@@ -27,78 +26,108 @@ vi.mock("@/i18n", () => ({
 
 import { Route } from "@/routes/onboarding";
 
-afterEach(() => { cleanup(); localStorage.clear(); vi.clearAllMocks(); Object.assign(profile, { onboarding_step: 1, motivation: undefined }); });
+const Component = () => {
+  const C = Route.options.component as React.ComponentType;
+  return <C />;
+};
+const next = () => screen.getByRole("button", { name: "Continue" });
 
-describe("onboarding hardship question", () => {
-  it("requires one selection after the name and before the contact question", () => {
-    const Component = Route.options.component as React.ComponentType;
+beforeEach(() => {
+  // jsdom doesn't implement Element.scrollTo, which the age picker calls on mount.
+  Element.prototype.scrollTo = (() => {}) as typeof Element.prototype.scrollTo;
+  window.scrollTo = (() => {}) as typeof window.scrollTo;
+  window.matchMedia = vi.fn().mockReturnValue({ matches: false });
+});
+afterEach(() => { cleanup(); vi.clearAllMocks(); for (const k of Object.keys(profile)) delete profile[k]; Object.assign(profile, { id: "test-profile", name: "Alex", onboarding_step: 2, onboarding_completed: false }); });
+
+describe("onboarding questions", () => {
+  it("Q1 asks what brought the user here: 7 choices, one answer", () => {
     render(<Component />);
-    const next = screen.getByRole("button", { name: "Continue" });
-    expect(next).toBeDisabled();
+    expect(screen.getByRole("heading", { name: en.onb.situationTitle })).toBeInTheDocument();
+    expect(screen.getAllByRole("radio")).toHaveLength(7);
+    expect(next()).toBeDisabled();
+    fireEvent.click(screen.getByRole("radio", { name: en.options.situation.breakup }));
+    fireEvent.click(screen.getByRole("radio", { name: en.options.situation.going_back }));
+    expect(screen.getAllByRole("radio", { checked: true })).toHaveLength(1);
+    fireEvent.click(next());
+    expect(updateProfile).toHaveBeenCalledWith({ situation_type: "going_back", onboarding_step: 3 });
+  });
+
+  it("Q2 saves the range and starts the counter at its lowest bound", () => {
+    Object.assign(profile, { onboarding_step: 3 });
+    render(<Component />);
     expect(screen.getAllByRole("radio")).toHaveLength(6);
-    fireEvent.click(screen.getByRole("radio", { name: en.options.hardest.text_urge }));
-    fireEvent.click(screen.getByRole("radio", { name: en.options.hardest.rumination }));
-    expect(screen.getAllByRole("radio", { checked: true })).toHaveLength(1);
-    expect(next).toBeEnabled();
-    fireEvent.click(next);
-    expect(localStorage.getItem("hold_onboarding_hardest_test-profile")).toBe("rumination");
-    expect(screen.getByLabelText("Date")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("radio", { name: en.options.lastContact.m1_3 }));
+    fireEvent.click(next());
+    const patch = updateProfile.mock.calls[0]![0] as { last_contact_range: string; last_contact_at: string; onboarding_step: number };
+    expect(patch).toMatchObject({ last_contact_range: "m1_3", onboarding_step: 4 });
+    const days = (Date.now() - new Date(patch.last_contact_at).getTime()) / 86400000;
+    expect(days).toBeGreaterThan(30.9);
+    expect(days).toBeLessThan(31.1);
   });
 
-  it("resumes after a previously confirmed answer", () => {
-    localStorage.setItem("hold_onboarding_hardest_test-profile", "guilt");
-    const Component = Route.options.component as React.ComponentType;
+  it("Q3 is multi-select and 'I haven't reached out yet' is exclusive", () => {
+    Object.assign(profile, { onboarding_step: 4 });
     render(<Component />);
-    expect(screen.getByLabelText("Date")).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Back" }));
-    expect(screen.getAllByRole("radio", { checked: true })).toHaveLength(1);
-    expect(screen.getByRole("radio", { checked: true })).toHaveTextContent(en.options.hardest.guilt);
+    expect(screen.getByText(en.onb.multiSub)).toBeInTheDocument();
+    expect(screen.getAllByRole("checkbox")).toHaveLength(7);
+    expect(next()).toBeDisabled();
+    fireEvent.click(screen.getByRole("checkbox", { name: en.options.after.worse }));
+    fireEvent.click(screen.getByRole("checkbox", { name: en.options.after.argued }));
+    expect(screen.getAllByRole("checkbox", { checked: true })).toHaveLength(2);
+    fireEvent.click(screen.getByRole("checkbox", { name: en.options.after.not_yet }));
+    expect(screen.getAllByRole("checkbox", { checked: true })).toHaveLength(1);
+    fireEvent.click(screen.getByRole("checkbox", { name: en.options.after.worse }));
+    expect(screen.getAllByRole("checkbox", { checked: true })).toHaveLength(1);
+    expect(screen.getByRole("checkbox", { checked: true })).toHaveTextContent(en.options.after.worse);
+    fireEvent.click(next());
+    expect(updateProfile).toHaveBeenCalledWith({ last_contact_feelings: ["worse"], onboarding_step: 5 });
   });
-});
 
-describe("onboarding social media question", () => {
-  it("asks after the motivation and keeps the answer on this device", async () => {
-    Object.assign(profile, { onboarding_step: 6, motivation: "move_on" });
-    const Component = Route.options.component as React.ComponentType;
+  it("Q4 is multi-select with 7 choices", () => {
+    Object.assign(profile, { onboarding_step: 5 });
     render(<Component />);
-    expect(screen.getByRole("radio", { checked: true })).toHaveTextContent(en.options.motivation.move_on);
-    fireEvent.click(screen.getByRole("button", { name: "Continue" }));
-    expect(await screen.findByRole("heading", { name: en.onb.socialsTitle })).toBeInTheDocument();
-    const next = screen.getByRole("button", { name: "Continue" });
-    expect(next).toBeDisabled();
-    expect(screen.getAllByRole("radio")).toHaveLength(3);
-    fireEvent.click(screen.getByRole("radio", { name: en.options.socials.several_daily }));
-    expect(next).toBeEnabled();
-    fireEvent.click(next);
-    expect(localStorage.getItem("hold_onboarding_socials_test-profile")).toBe("several_daily");
-    expect(screen.getByRole("heading", { name: en.onb.emotion })).toBeInTheDocument();
+    expect(screen.getAllByRole("checkbox")).toHaveLength(7);
+    fireEvent.click(screen.getByRole("checkbox", { name: en.options.now.lonely }));
+    fireEvent.click(screen.getByRole("checkbox", { name: en.options.now.okay }));
+    fireEvent.click(next());
+    expect(updateProfile).toHaveBeenCalledWith({ current_feelings: ["lonely", "okay"], onboarding_step: 6 });
   });
 
-  it("resumes on the social media question with the saved answer", () => {
-    Object.assign(profile, { onboarding_step: 6, motivation: "move_on" });
-    localStorage.setItem("hold_onboarding_socials_test-profile", "never");
-    const Component = Route.options.component as React.ComponentType;
+  it("Q5 saves the hope as motivation", () => {
+    Object.assign(profile, { onboarding_step: 6 });
     render(<Component />);
-    expect(screen.getByRole("radio", { checked: true })).toHaveTextContent(en.options.socials.never);
-    fireEvent.click(screen.getByRole("button", { name: "Back" }));
-    expect(screen.getByRole("radio", { checked: true })).toHaveTextContent(en.options.motivation.move_on);
-  });
-});
-
-describe("onboarding reasons question removed", () => {
-  beforeEach(() => {
-    // jsdom doesn't implement Element.scrollTo, which the age picker calls on mount.
-    Element.prototype.scrollTo = (() => {}) as typeof Element.prototype.scrollTo;
+    expect(screen.getAllByRole("radio")).toHaveLength(5);
+    fireEvent.click(screen.getByRole("radio", { name: en.options.motivation.perspective }));
+    fireEvent.click(next());
+    expect(updateProfile).toHaveBeenCalledWith({ motivation: "perspective", onboarding_step: 7 });
   });
 
-  it("goes from age to local calculation before commitment", () => {
-    window.matchMedia = vi.fn().mockReturnValue({ matches: false });
+  it("Q6 offers 7 goals including no end date", () => {
+    Object.assign(profile, { onboarding_step: 7 });
+    render(<Component />);
+    expect(screen.getAllByRole("radio")).toHaveLength(7);
+    fireEvent.click(screen.getByRole("radio", { name: en.options.goal.open }));
+    fireEvent.click(next());
+    expect(updateProfile).toHaveBeenCalledWith({ no_contact_goal: "open", onboarding_step: 8 });
+  });
+
+  it("resumes with previously saved answers and ignores legacy values", () => {
+    Object.assign(profile, { onboarding_step: 2, situation_type: "toxic" });
+    render(<Component />);
+    expect(screen.queryByRole("radio", { checked: true })).not.toBeInTheDocument();
+    cleanup();
+    Object.assign(profile, { situation_type: "mixed_signals" });
+    render(<Component />);
+    expect(screen.getByRole("radio", { checked: true })).toHaveTextContent(en.options.situation.mixed_signals);
+  });
+
+  it("goes from age straight to commitment, with no score screen", () => {
     Object.assign(profile, { onboarding_step: 9 });
-    const Component = Route.options.component as React.ComponentType;
     render(<Component />);
     expect(screen.getByRole("heading", { name: en.onb.age })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Continue" }));
-    expect(screen.getByRole("heading", { name: en.profileScore.preparing })).toBeInTheDocument();
-    expect(screen.queryByText("Why are you doing this?")).not.toBeInTheDocument();
+    fireEvent.click(next());
+    expect(updateProfile).toHaveBeenCalledWith({ age: 30, onboarding_step: 10 });
+    expect(screen.getByRole("heading", { name: en.commit.title })).toBeInTheDocument();
   });
 });

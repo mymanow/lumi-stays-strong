@@ -14,8 +14,8 @@
 - Unsent "vault" messages are stored only in IndexedDB (src/lib/vault.ts) — they must never reach the server.
 - Coach AI runs in the /api/coach server route (bearer-verified, quota via ai_usage + subscriptions) — never call AI from the browser.
 - Whop: checkout config created in a server function; subscriptions written only by /api/public/whop-webhook with service role.
-- Onboarding presentation-only answers (hardship, time since breakup, social-media check) are kept locally under profile-scoped keys; they do not alter the server profile or coach context.
+- Onboarding has six breakup questions (situation, last contact range, feelings after, current feelings, hope, goal) saved to owner-only profile columns after each step (see supabase/migrations). Only motivation and situation type reach the coach context; feelings never do.
 
-- Indicative profile calculation stays in the pure browser-safe score module; persist only its result to owner-protected profiles and give the coach only the level, so raw scores never enter AI context.
-- Calculation and profile are transient onboarding views before commitment; the standalone profile route reuses the same presentation without animation, so existing step numbers and free access remain intact.
+- There is no score or difficulty profile: the indicative score was removed. Do not reintroduce a numeric score without a product decision.
+- Last contact is asked as a range; last_contact_at is set to the lowest bound of that range so the counter never overstates progress.
 - SOS derives localized reasons from optional own reasons and motivation/situation through a shared helper; own reason editing is shared with Settings to enforce one limit.

@@ -10,7 +10,6 @@ import { useApp } from "@/lib/app-state";
 import { supabase } from "@/integrations/supabase/client";
 import { localDateString, lumiStageForDays, splitDuration, timeOfDay } from "@/lib/domain";
 import { MILESTONE_DAYS } from "@/config/app";
-import { needsExtraSupport } from "@/lib/score";
 import { logEvent } from "@/lib/events";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
@@ -90,7 +89,7 @@ function Home() {
           </div>
           <p className="mt-4 text-sm text-muted-foreground">{t("home.best", { n: bestDays })}</p>
         </Card>
-        <SosButton className={needsExtraSupport(profile?.difficulty_level) ? "min-h-20 ring-2 ring-white ring-offset-4 ring-offset-transparent" : ""} />
+        <SosButton />
         <button type="button" onClick={() => setOpen(true)} className="min-h-11 self-center font-medium text-foreground underline underline-offset-4">{t("home.relapse")}</button>
       </div>
 
@@ -102,7 +101,6 @@ function Home() {
         <Card>
           <h2 className="text-2xl">{t("home.checkinTitle")}</h2>
           <p className="mt-1 text-sm text-muted-foreground">{checkin.data ? t("home.checkinDone") : "30 s"}</p>
-          {needsExtraSupport(profile?.difficulty_level) && !checkin.data && <p className="mt-2 text-sm text-muted-foreground">{t("profileScore.encourage")}</p>}
           <Link to="/checkin" className="mt-4 flex min-h-12 items-center justify-center rounded-full bg-white font-bold text-[#2e3865]">
             {checkin.data ? t("home.checkinEdit") : t("home.checkinCta")}
           </Link>
