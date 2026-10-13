@@ -16,10 +16,10 @@ vi.mock("@tanstack/react-router", async (importOriginal) => ({
   useHydrated: () => false,
 }));
 vi.mock("@/i18n", () => ({
-  useI18n: () => ({ lang: "en", setLang: vi.fn(), tl: () => [], t: (key: string) => {
+  useI18n: () => ({ lang: "en", setLang: vi.fn(), tl: (key: string) => (key === "info.bio.rows" ? en.info.bio.rows : key === "info.compare.rows" ? en.info.compare.rows : []), t: (key: string, vars?: Record<string, string>) => {
     let value: unknown = en;
     for (const part of key.split(".")) value = (value as Record<string, unknown>)[part];
-    return typeof value === "string" ? value : key;
+    return typeof value === "string" ? value.replace(/\{(\w+)\}/g, (_, k) => vars?.[k] ?? `{${k}}`) : key;
   } }),
   interpolate: (value: string) => value,
 }));
@@ -122,12 +122,43 @@ describe("onboarding questions", () => {
     expect(screen.getByRole("radio", { checked: true })).toHaveTextContent(en.options.situation.mixed_signals);
   });
 
-  it("goes from age straight to commitment, with no score screen", () => {
+  it("shows four information screens after the age, then the commitment", () => {
     Object.assign(profile, { onboarding_step: 9 });
     render(<Component />);
     expect(screen.getByRole("heading", { name: en.onb.age })).toBeInTheDocument();
     fireEvent.click(next());
-    expect(updateProfile).toHaveBeenCalledWith({ age: 30, onboarding_step: 10 });
+    // age is saved without leaving step 9, so a refresh resumes on the age question
+    expect(updateProfile).toHaveBeenCalledWith({ age: 30 });
+    expect(screen.getByRole("heading", { name: "Alex, many slips happen in a moment of weakness" })).toBeInTheDocument();
+    fireEvent.click(next());
+    expect(screen.getByRole("heading", { name: en.info.bio.title })).toBeInTheDocument();
+    fireEvent.click(next());
+    expect(screen.getByRole("heading", { name: en.info.compare.title })).toBeInTheDocument();
+    fireEvent.click(next());
+    expect(screen.getByRole("heading", { name: en.info.science.title })).toBeInTheDocument();
+    expect(updateProfile).toHaveBeenCalledTimes(1);
+    fireEvent.click(next());
+    expect(updateProfile).toHaveBeenLastCalledWith({ age: 30, onboarding_step: 10 });
     expect(screen.getByRole("heading", { name: en.commit.title })).toBeInTheDocument();
+  });
+
+  it("goes back through the information screens to the age", () => {
+    Object.assign(profile, { onboarding_step: 9 });
+    render(<Component />);
+    fireEvent.click(next());
+    fireEvent.click(next());
+    fireEvent.click(screen.getByRole("button", { name: "Back" }));
+    expect(screen.getByRole("heading", { name: "Alex, many slips happen in a moment of weakness" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Back" }));
+    expect(screen.getByRole("heading", { name: en.onb.age })).toBeInTheDocument();
+  });
+});
+
+describe("information screens honesty", () => {
+  it("carries the real citation and no unsourced statistic", () => {
+    const text = JSON.stringify(en.info);
+    expect(text).toContain("Clinical Psychological Science, 8(3), 450–463");
+    expect(text).not.toMatch(/\d+x/);
+    expect(en.info.science.caveat).toMatch(/not proof/);
   });
 });

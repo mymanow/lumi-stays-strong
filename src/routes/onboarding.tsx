@@ -5,6 +5,7 @@ import { useApp, type ProfilePatch } from "@/lib/app-state";
 import { Lumi } from "@/components/hold/Lumi";
 import { ChoiceList, FullLoader, LangSwitch, PrimaryButton, Stage, useCrisisLine } from "@/components/hold/Common";
 import { BackIcon } from "@/components/hold/Icons";
+import { InfoBody, INFO_KINDS, INFO_TONE } from "@/components/hold/OnboardingInfo";
 import { HoldButton } from "@/components/hold/HoldButton";
 import { AccountLinker } from "@/components/hold/AccountLinker";
 import { APP_NAME } from "@/config/app";
@@ -52,6 +53,7 @@ function Onboarding() {
   const [goal, setGoal] = useState("");
   const [gender, setGender] = useState("");
   const [age, setAge] = useState(30);
+  const [infoStep, setInfoStep] = useState(0); // within step 9: 0 = age, 1..4 = information screens
   const [reminder, setReminder] = useState({ enabled: false, time: DEFAULT_REMINDER_TIME });
 
   useEffect(() => {
@@ -98,6 +100,7 @@ function Onboarding() {
 
   let body: React.ReactNode = null;
   let canNext = true;
+  let tone: "light" | "dusk" | "night" = step === 10 ? "night" : "light";
   let onNext: () => void = () => go(step + 1);
 
   switch (step) {
@@ -187,8 +190,23 @@ function Onboarding() {
       canNext = !!gender; onNext = () => go(9, { gender });
       break;
     case 9:
+      if (infoStep > 0) {
+        const kind = INFO_KINDS[infoStep - 1]!;
+        body = <InfoBody kind={kind} name={name.trim()} />;
+        tone = INFO_TONE[kind];
+        onNext = () => {
+          window.scrollTo(0, 0);
+          if (infoStep < INFO_KINDS.length) setInfoStep(infoStep + 1);
+          else go(10, { age });
+        };
+        break;
+      }
       body = (<><Question id="q9" title={t("onb.age")} sub={t("onb.ageSub")} /><AgeWheel value={age} onChange={setAge} unit={t("onb.ageUnit")} labelledBy="q9" /></>);
-      onNext = () => go(10, { age });
+      onNext = async () => {
+        setInfoStep(1);
+        window.scrollTo(0, 0);
+        await updateProfile({ age });
+      };
       break;
     case 10:
       body = (<>
@@ -229,15 +247,16 @@ function Onboarding() {
   }
 
   return (
-    <Stage tone={step === 10 ? "night" : "light"}>
+    <Stage tone={tone}>
     <div className="mx-auto flex min-h-svh max-w-[480px] flex-col px-6 pb-8 pt-4">
       <div className="mb-6 flex items-center gap-3">
         <button type="button" onClick={() => {
-          if (step === 1 && subStep > 0) setSubStep(subStep - 1);
+          if (step === 9 && infoStep > 0) { setInfoStep(infoStep - 1); window.scrollTo(0, 0); }
+          else if (step === 1 && subStep > 0) setSubStep(subStep - 1);
           else go(step - 1);
         }} aria-label={t("common.back")} className="glass flex h-11 w-11 items-center justify-center rounded-full text-foreground"><BackIcon /></button>
         <div className="h-2 flex-1 overflow-hidden rounded-full bg-white/50" role="progressbar" aria-valuemin={0} aria-valuemax={TOTAL} aria-valuenow={step} aria-label={t("onb.progress", { n: step, total: TOTAL })}>
-          <div className="h-full rounded-full bg-[var(--progress)] transition-all" style={{ width: `${(step / TOTAL) * 100}%` }} />
+          <div className="h-full rounded-full bg-[var(--progress)] transition-all" style={{ width: `${((step + (step === 9 ? infoStep / (INFO_KINDS.length + 1) : 0)) / TOTAL) * 100}%` }} />
         </div>
       </div>
       <div className="flex-1">{body}</div>
