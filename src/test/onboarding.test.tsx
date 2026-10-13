@@ -139,6 +139,16 @@ describe("onboarding questions", () => {
     expect(updateProfile).toHaveBeenCalledTimes(1);
     fireEvent.click(next());
     expect(updateProfile).toHaveBeenLastCalledWith({ age: 30, onboarding_step: 10 });
+    expect(screen.getByRole("heading", { name: en.onb.rulesTitle })).toBeInTheDocument();
+  });
+
+  it("saves the selected no-contact rules, then shows the commitment", () => {
+    Object.assign(profile, { onboarding_step: 10, no_contact_rules: ["no_texting", "bogus"] });
+    render(<Component />);
+    expect(screen.getAllByRole("checkbox", { checked: true })).toHaveLength(1);
+    fireEvent.click(screen.getByRole("checkbox", { name: en.options.rules.no_meeting }));
+    fireEvent.click(next());
+    expect(updateProfile).toHaveBeenCalledWith({ no_contact_rules: ["no_texting", "no_meeting"], onboarding_step: 11 });
     expect(screen.getByRole("heading", { name: en.commit.title })).toBeInTheDocument();
   });
 
