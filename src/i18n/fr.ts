@@ -56,6 +56,8 @@ export const fr = {
         "Quelqu'un à qui parler quand tu en as besoin",
         "Calmer la panique en quelques minutes",
         "Repérer ce qui déclenche l'envie",
+        "Tes raisons et tes red flags à portée de main",
+        "Un parcours qui suit tes jours sans contact",
         "Tenir jour après jour, avec ton compteur",
         "Suivre ta progression dans le temps",
       ],

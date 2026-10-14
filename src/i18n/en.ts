@@ -58,6 +58,8 @@ export const en: typeof fr = {
         "Someone to talk to when you need it",
         "Calm panic in a few minutes",
         "Spot what triggers the urge",
+        "Your reasons and red flags, one tap away",
+        "A recovery journey that follows your days",
         "Stay strong day by day, with your counter",
         "Track your progress over time",
       ],
