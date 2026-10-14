@@ -62,6 +62,12 @@ export const fr = {
         "Suivre ta progression dans le temps",
       ],
     },
+    toolkit: {
+      title: "Ta boîte à outils pour les mauvais moments",
+      sub: "Des gestes prêts à l'emploi pour quand l'envie est plus forte que la volonté.",
+      samples: ["Il ne répondait jamais quand j'allais mal", "Il critiquait mes amis", "Je m'excusais pour tout"],
+      items: ["Compteur et série", "SOS avec respiration guidée", "Coach", "Check-in du jour", "Progrès", "Red flags et rappels", "Parcours", "Coffre de messages non envoyés"],
+    },
     science: {
       title: "Ce n'est pas de la magie",
       sub: "Des chercheurs ont observé un lien entre contact avec l'ex et détresse.",

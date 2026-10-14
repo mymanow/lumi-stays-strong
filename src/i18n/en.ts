@@ -64,6 +64,12 @@ export const en: typeof fr = {
         "Track your progress over time",
       ],
     },
+    toolkit: {
+      title: "Your toolkit for the hard moments",
+      sub: "Ready-to-use tools for when the urge is stronger than willpower.",
+      samples: ["They never answered when I was struggling", "They criticized my friends", "I apologized for everything"],
+      items: ["Counter and streak", "SOS with guided breathing", "Coach", "Daily check-in", "Progress", "Red flags and reminders", "Journey", "Vault for unsent messages"],
+    },
     science: {
       title: "It's not magic",
       sub: "Researchers have observed a link between contact with an ex and distress.",

@@ -122,7 +122,7 @@ describe("onboarding questions", () => {
     expect(screen.getByRole("radio", { checked: true })).toHaveTextContent(en.options.situation.mixed_signals);
   });
 
-  it("shows four information screens after the gender, then the rules", () => {
+  it("shows five information screens after the gender, then the rules", () => {
     Object.assign(profile, { onboarding_step: 9 });
     render(<Component />);
     expect(screen.getByRole("heading", { name: "Alex, many slips happen in a moment of weakness" })).toBeInTheDocument();
@@ -132,6 +132,8 @@ describe("onboarding questions", () => {
     expect(screen.getByRole("heading", { name: en.info.compare.title })).toBeInTheDocument();
     fireEvent.click(next());
     expect(screen.getByRole("heading", { name: en.info.science.title })).toBeInTheDocument();
+    fireEvent.click(next());
+    expect(screen.getByRole("heading", { name: en.info.toolkit.title })).toBeInTheDocument();
     expect(updateProfile).not.toHaveBeenCalled();
     fireEvent.click(next());
     expect(updateProfile).toHaveBeenLastCalledWith({ onboarding_step: 10 });

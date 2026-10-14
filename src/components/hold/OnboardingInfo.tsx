@@ -2,11 +2,12 @@ import { Check, Flame, HeartCrack, RefreshCw, TrendingUp, X, Zap, type LucideIco
 import { useI18n } from "@/i18n";
 import { APP_NAME } from "@/config/app";
 import { Lumi } from "./Lumi";
+import { ToolkitMarquee } from "./ToolkitMarquee";
 
-export type InfoKind = "slips" | "bio" | "compare" | "science";
-export const INFO_KINDS: readonly InfoKind[] = ["slips", "bio", "compare", "science"];
+export type InfoKind = "slips" | "bio" | "compare" | "science" | "toolkit";
+export const INFO_KINDS: readonly InfoKind[] = ["slips", "bio", "compare", "science", "toolkit"];
 /** Light scenes for the reassuring screens, deep scenes for the "why Hold" and "science" screens. */
-export const INFO_TONE: Record<InfoKind, "light" | "night"> = { slips: "light", bio: "light", compare: "night", science: "night" };
+export const INFO_TONE: Record<InfoKind, "light" | "night"> = { slips: "light", bio: "light", compare: "night", science: "night", toolkit: "light" };
 
 const BIO_ICONS: LucideIcon[] = [HeartCrack, Flame, Zap, RefreshCw, TrendingUp];
 
@@ -160,9 +161,20 @@ function Science() {
   );
 }
 
+function Toolkit() {
+  const { t } = useI18n();
+  return (
+    <>
+      <Title sub={t("info.toolkit.sub")}>{t("info.toolkit.title")}</Title>
+      <ToolkitMarquee />
+    </>
+  );
+}
+
 export function InfoBody({ kind, name }: { kind: InfoKind; name: string }) {
   if (kind === "slips") return <Slips name={name} />;
   if (kind === "bio") return <Bio />;
   if (kind === "compare") return <Compare />;
+  if (kind === "toolkit") return <Toolkit />;
   return <Science />;
 }

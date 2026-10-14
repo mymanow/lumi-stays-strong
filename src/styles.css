@@ -197,6 +197,13 @@ body::before, .stage-light::before, .stage-dusk::before, .stage-night::before {
   100% { opacity: 0; transform: translate(calc(var(--x, 10px) * -1), -170px); }
 }
 
+/* Toolkit marquee: tilted columns, the outer two drift up and the middle one drifts down, slowly. */
+.marquee-up, .marquee-down { will-change: transform; animation: marquee-up 48s linear infinite; }
+.marquee-down { animation-name: marquee-down; }
+@keyframes marquee-up { from { transform: translateY(0); } to { transform: translateY(-50%); } }
+@keyframes marquee-down { from { transform: translateY(-50%); } to { transform: translateY(0); } }
+.marquee-mask { -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 14%, #000 82%, transparent 100%); mask-image: linear-gradient(180deg, transparent 0%, #000 14%, #000 82%, transparent 100%); }
+
 /* Slow halo behind the counter: one breath every 10s (4s in, 6s out). */
 .halo { animation: halo-breathe 10s ease-in-out infinite; }
 @keyframes halo-breathe {
