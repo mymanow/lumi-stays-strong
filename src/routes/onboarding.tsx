@@ -66,10 +66,9 @@ function Onboarding() {
   const [goal, setGoal] = useState("");
   const [rules, setRules] = useState<string[]>([]);
   const [gender, setGender] = useState("");
-  const [age, setAge] = useState(30);
   const [leaving, setLeaving] = useState<"fwd" | "back" | null>(null);
   const [dir, setDir] = useState<"fwd" | "back">("fwd");
-  const [infoStep, setInfoStep] = useState(0); // within step 9: 0 = age, 1..4 = information screens
+  const [infoStep, setInfoStep] = useState(1); // within step 9: the four information screens (1..4)
   const [reminder, setReminder] = useState({ enabled: false, time: DEFAULT_REMINDER_TIME });
 
   useEffect(() => {
@@ -85,7 +84,6 @@ function Onboarding() {
     setGoal(only(GOALS, profile.no_contact_goal));
     setRules(onlyMany(RULES, profile.no_contact_rules));
     setGender(profile.gender ?? "");
-    if (profile.age) setAge(profile.age);
     setInit(true);
   }, [ready, profile, init, navigate]);
 
@@ -221,26 +219,19 @@ function Onboarding() {
       break;
     case 8:
       body = (<><Question id="q8" title={t("onb.gender")} sub={t("onb.genderSub")} /><ChoiceList labelledBy="q8" options={opts("gender", GENDERS)} value={gender ? [gender] : []} onChange={(v) => setGender(v[0] ?? "")} /></>);
-      canNext = !!gender; onNext = () => go(9, { gender });
+      canNext = !!gender; onNext = () => { setInfoStep(1); void go(9, { gender }); };
       break;
     case 9:
-      if (infoStep > 0) {
+      {
         const kind = INFO_KINDS[infoStep - 1]!;
         body = <InfoBody kind={kind} name={name.trim()} />;
         tone = INFO_TONE[kind];
         onNext = () => {
           window.scrollTo(0, 0);
           if (infoStep < INFO_KINDS.length) setInfoStep(infoStep + 1);
-          else go(10, { age });
+          else go(10);
         };
-        break;
       }
-      body = (<><Question id="q9" title={t("onb.age")} sub={t("onb.ageSub")} /><AgeWheel value={age} onChange={setAge} unit={t("onb.ageUnit")} labelledBy="q9" /></>);
-      onNext = async () => {
-        setInfoStep(1);
-        window.scrollTo(0, 0);
-        await updateProfile({ age });
-      };
       break;
     case 10:
       body = (<><Question id="q10" title={t("onb.rulesTitle")} sub={t("onb.rulesSub")} />
@@ -290,12 +281,12 @@ function Onboarding() {
     <div className="mx-auto flex min-h-svh max-w-[480px] flex-col px-6 pb-8 pt-4">
       <div className="mb-6 flex items-center gap-3">
         <button type="button" onClick={() => transition(() => {
-          if (step === 9 && infoStep > 0) { setInfoStep(infoStep - 1); window.scrollTo(0, 0); }
+          if (step === 9 && infoStep > 1) { setInfoStep(infoStep - 1); window.scrollTo(0, 0); }
           else if (step === 1 && subStep > 0) setSubStep(subStep - 1);
           else go(step - 1);
         }, "back")} aria-label={t("common.back")} className="glass flex h-11 w-11 items-center justify-center rounded-full text-foreground"><BackIcon /></button>
         <div className="h-2 flex-1 overflow-hidden rounded-full bg-white/50" role="progressbar" aria-valuemin={0} aria-valuemax={TOTAL} aria-valuenow={step} aria-label={t("onb.progress", { n: step, total: TOTAL })}>
-          <div className="h-full rounded-full bg-[var(--progress)] transition-all" style={{ width: `${((step + (step === 9 ? infoStep / (INFO_KINDS.length + 1) : 0)) / TOTAL) * 100}%` }} />
+          <div className="h-full rounded-full bg-[var(--progress)] transition-all" style={{ width: `${((step + (step === 9 ? (infoStep - 1) / INFO_KINDS.length : 0)) / TOTAL) * 100}%` }} />
         </div>
       </div>
       <div key={`${step}-${subStep}-${infoStep}`} className={`${outClass} flex flex-1 flex-col`}>
@@ -310,37 +301,3 @@ function Onboarding() {
     </Stage>
   );
 }
-
-function AgeWheel({ value, onChange, unit, labelledBy }: { value: number; onChange: (n: number) => void; unit: string; labelledBy: string }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const ITEM = 52;
-  const ages = useMemo(() => Array.from({ length: 83 }, (_, i) => 18 + i), []);
-  useEffect(() => { ref.current?.scrollTo({ top: (value - 18) * ITEM }); }, []); // eslint-disable-line react-hooks/exhaustive-deps
-  const timer = useRef<number | null>(null);
-  return (
-    <div className="relative mx-auto w-48">
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-1/2 h-[52px] -translate-y-1/2 rounded-[28px] border border-white bg-white/60" />
-      <div ref={ref} role="listbox" tabIndex={0} aria-labelledby={labelledBy} aria-activedescendant={`age-${value}`}
-        className="h-[260px] snap-y snap-mandatory overflow-y-auto py-[104px] focus-visible:outline-2 focus-visible:outline-foreground [scrollbar-width:none]"
-        onScroll={(e) => {
-          const el = e.currentTarget;
-          if (timer.current) clearTimeout(timer.current);
-          timer.current = window.setTimeout(() => onChange(Math.min(100, Math.max(18, 18 + Math.round(el.scrollTop / ITEM)))), 80);
-        }}
-        onKeyDown={(e) => {
-          if (e.key !== "ArrowUp" && e.key !== "ArrowDown") return;
-          e.preventDefault();
-          const n = Math.min(100, Math.max(18, value + (e.key === "ArrowDown" ? 1 : -1)));
-          onChange(n); ref.current?.scrollTo({ top: (n - 18) * ITEM, behavior: "smooth" });
-        }}>
-        {ages.map((a) => (
-          <div key={a} id={`age-${a}`} role="option" aria-selected={a === value} onClick={() => { onChange(a); ref.current?.scrollTo({ top: (a - 18) * ITEM, behavior: "smooth" }); }}
-            className={`flex h-[52px] snap-center items-center justify-center font-display text-2xl ${a === value ? "text-foreground" : "text-muted-foreground/60"}`}>
-            {a} {a === value && <span className="ml-2 font-sans text-sm text-muted-foreground">{unit}</span>}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-

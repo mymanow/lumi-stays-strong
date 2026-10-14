@@ -122,13 +122,9 @@ describe("onboarding questions", () => {
     expect(screen.getByRole("radio", { checked: true })).toHaveTextContent(en.options.situation.mixed_signals);
   });
 
-  it("shows four information screens after the age, then the commitment", () => {
+  it("shows four information screens after the gender, then the rules", () => {
     Object.assign(profile, { onboarding_step: 9 });
     render(<Component />);
-    expect(screen.getByRole("heading", { name: en.onb.age })).toBeInTheDocument();
-    fireEvent.click(next());
-    // age is saved without leaving step 9, so a refresh resumes on the age question
-    expect(updateProfile).toHaveBeenCalledWith({ age: 30 });
     expect(screen.getByRole("heading", { name: "Alex, many slips happen in a moment of weakness" })).toBeInTheDocument();
     fireEvent.click(next());
     expect(screen.getByRole("heading", { name: en.info.bio.title })).toBeInTheDocument();
@@ -136,9 +132,9 @@ describe("onboarding questions", () => {
     expect(screen.getByRole("heading", { name: en.info.compare.title })).toBeInTheDocument();
     fireEvent.click(next());
     expect(screen.getByRole("heading", { name: en.info.science.title })).toBeInTheDocument();
-    expect(updateProfile).toHaveBeenCalledTimes(1);
+    expect(updateProfile).not.toHaveBeenCalled();
     fireEvent.click(next());
-    expect(updateProfile).toHaveBeenLastCalledWith({ age: 30, onboarding_step: 10 });
+    expect(updateProfile).toHaveBeenLastCalledWith({ onboarding_step: 10 });
     expect(screen.getByRole("heading", { name: en.onb.rulesTitle })).toBeInTheDocument();
   });
 
@@ -164,15 +160,17 @@ describe("onboarding questions", () => {
     expect(screen.getByRole("heading", { name: en.commit.title })).toBeInTheDocument();
   });
 
-  it("goes back through the information screens to the age", () => {
+  it("goes back through the information screens to the gender question", () => {
     Object.assign(profile, { onboarding_step: 9 });
     render(<Component />);
     fireEvent.click(next());
     fireEvent.click(next());
     fireEvent.click(screen.getByRole("button", { name: "Back" }));
+    expect(screen.getByRole("heading", { name: en.info.bio.title })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Back" }));
     expect(screen.getByRole("heading", { name: "Alex, many slips happen in a moment of weakness" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Back" }));
-    expect(screen.getByRole("heading", { name: en.onb.age })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: en.onb.gender })).toBeInTheDocument();
   });
 });
 

@@ -96,7 +96,6 @@ export const fr = {
     rulesTitle: "Fixe tes règles de non-contact",
     rulesSub: "Pas d'inquiétude, tu pourras les modifier plus tard.",
     gender: "Tu es :", genderSub: "Pour adapter notre communication.",
-    age: "Quel âge as-tu ?", ageSub: "De 18 à 100 ans.", ageUnit: "ans",
   },
   options: {
     triggers: { evening: "Le soir", social_media: "Les réseaux", loneliness: "La solitude", alcohol: "L'alcool", argument: "Une dispute", anniversary: "Un anniversaire", other: "Autre" },

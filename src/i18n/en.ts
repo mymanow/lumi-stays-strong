@@ -98,7 +98,6 @@ export const en: typeof fr = {
     rulesTitle: "Set your no-contact rules",
     rulesSub: "Don't worry, you can update these later.",
     gender: "You are:", genderSub: "To adapt how we talk to you.",
-    age: "How old are you?", ageSub: "From 18 to 100.", ageUnit: "years",
   },
   options: {
     triggers: { evening: "Evenings", social_media: "Social media", loneliness: "Loneliness", alcohol: "Alcohol", argument: "An argument", anniversary: "An anniversary", other: "Other" },
