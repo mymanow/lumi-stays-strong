@@ -52,6 +52,7 @@ Help a user keep no contact with an ex. The core moment is the urge to write to 
 - Slow living background (two glows drifting over 70s, a few stars at night), a halo that breathes every 10s behind the counter, counter digits where only the seconds rise (minutes and hours fade).
 - SOS: the overlay fades in, a ring follows the breath (4s in, 6s out), and the daylight layer fades in slowly when the reasons appear. No vibration.
 - Milestones (1, 3, 7, 14, 30, 60, 90 days): one soft light and one warm line from Lumi, shown once per streak (src/lib/milestones.ts), never a modal. Past progress of a streak is recorded silently.
+- Greeting scene right after the name (onboarding step 1, third screen): Lumi rises out of a dawn glow with a soft squash, rings spread from her feet, fireflies drift up, then "Enchantée, {name} !" and one line of promise appear in sequence. The name is saved when leaving the name screen.
 - The commitment hold grows a warm light with the press; a saved check-in sends a small spark to Lumi.
 - Everything is transform/opacity only and disabled by prefers-reduced-motion (the check-in then goes straight home).
 

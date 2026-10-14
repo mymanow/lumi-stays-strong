@@ -76,6 +76,12 @@ export const fr = {
     introTitle: "Personnalisons ton parcours",
     introSub: "Quelques questions pour tout adapter à ta situation.",
     nameTitle: "Comment souhaite-tu qu'on t'appelle ?",
+    greet: {
+      hello: "Enchantée, {name} !",
+      me: "Moi, c'est {companion}.",
+      promise: "Je serai là chaque fois que l'envie d'écrire revient. Tu n'as pas à traverser ça seul·e.",
+      cta: "Commençons",
+    },
     namePh: "Ton prénom, ton pseudo, ton surnom…",
     situationTitle: "Qu'est-ce qui t'amène aujourd'hui ?",
     situationSub: "Choisis ce qui correspond le mieux à ta situation.",

@@ -78,6 +78,12 @@ export const en: typeof fr = {
     introTitle: "Let's personalize your journey",
     introSub: "A few questions to tailor everything to your situation.",
     nameTitle: "How would you like to be called?",
+    greet: {
+      hello: "Nice to meet you, {name}!",
+      me: "I'm {companion}.",
+      promise: "I'll be here every time the urge to text comes back. You don't have to go through this alone.",
+      cta: "Let's begin",
+    },
     namePh: "Your first name, username, nickname…",
     situationTitle: "What brought you here today?",
     situationSub: "Choose what feels most true to your situation.",

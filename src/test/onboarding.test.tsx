@@ -142,6 +142,18 @@ describe("onboarding questions", () => {
     expect(screen.getByRole("heading", { name: en.onb.rulesTitle })).toBeInTheDocument();
   });
 
+  it("greets the user by name after the name, before the first question", () => {
+    Object.assign(profile, { onboarding_step: 1 });
+    render(<Component />);
+    expect(screen.getByRole("heading", { name: en.onb.nameTitle })).toBeInTheDocument();
+    fireEvent.click(next());
+    expect(updateProfile).toHaveBeenCalledWith({ name: "Alex" });
+    expect(screen.getByRole("heading", { name: "Nice to meet you, Alex!" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: en.onb.greet.cta }));
+    expect(updateProfile).toHaveBeenLastCalledWith({ onboarding_step: 2 });
+    expect(screen.getByRole("heading", { name: en.onb.situationTitle })).toBeInTheDocument();
+  });
+
   it("saves the selected no-contact rules, then shows the commitment", () => {
     Object.assign(profile, { onboarding_step: 10, no_contact_rules: ["no_texting", "bogus"] });
     render(<Component />);

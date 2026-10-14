@@ -177,6 +177,26 @@ body::before, .stage-light::before, .stage-dusk::before, .stage-night::before {
 }
 @keyframes star-twinkle { from { opacity: 0.25; } to { opacity: 0.7; } }
 
+/* Greeting scene: Lumi rises out of a dawn glow, soft rings spread from her feet, fireflies drift up. */
+.greet-glow { background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, rgba(244, 185, 78, 0.22) 45%, transparent 72%); animation: greet-glow 1800ms ease-out 200ms both, halo-breathe 10s ease-in-out 2s infinite; }
+@keyframes greet-glow { from { opacity: 0; transform: scale(0.4); } to { opacity: 0.95; transform: scale(1); } }
+.greet-arrive { animation: greet-arrive 1500ms cubic-bezier(0.22, 1.2, 0.36, 1) 300ms both; }
+@keyframes greet-arrive {
+  0% { opacity: 0; transform: translateY(90px) scale(0.7, 0.8); }
+  55% { opacity: 1; transform: translateY(-14px) scale(0.96, 1.06); }
+  80% { transform: translateY(2px) scale(1.04, 0.96); }
+  100% { opacity: 1; transform: none; }
+}
+.greet-ring { opacity: 0; animation: greet-ring 5.2s ease-out infinite; }
+@keyframes greet-ring { 0% { opacity: 0.55; transform: scale(0.5); } 100% { opacity: 0; transform: scale(2.6); } }
+.firefly { opacity: 0; box-shadow: 0 0 10px 3px rgba(244, 185, 78, 0.55); animation: firefly 8s ease-in-out infinite; }
+@keyframes firefly {
+  0% { opacity: 0; transform: translate(0, 0); }
+  20% { opacity: 0.9; }
+  60% { opacity: 0.7; transform: translate(var(--x, 10px), -90px); }
+  100% { opacity: 0; transform: translate(calc(var(--x, 10px) * -1), -170px); }
+}
+
 /* Slow halo behind the counter: one breath every 10s (4s in, 6s out). */
 .halo { animation: halo-breathe 10s ease-in-out infinite; }
 @keyframes halo-breathe {

@@ -5,6 +5,7 @@ import { useApp, type ProfilePatch } from "@/lib/app-state";
 import { Lumi } from "@/components/hold/Lumi";
 import { ChoiceList, FullLoader, LangSwitch, PrimaryButton, Stage, useCrisisLine } from "@/components/hold/Common";
 import { BackIcon } from "@/components/hold/Icons";
+import { Greeting } from "@/components/hold/Greeting";
 import { InfoBody, INFO_KINDS, INFO_TONE } from "@/components/hold/OnboardingInfo";
 import { HoldButton } from "@/components/hold/HoldButton";
 import { AccountLinker } from "@/components/hold/AccountLinker";
@@ -54,7 +55,7 @@ function Onboarding() {
   const navigate = useNavigate();
   const crisis = useCrisisLine();
   const [step, setStep] = useState(0);
-  const [subStep, setSubStep] = useState(0); // within step 1: 0 intro, 1 name
+  const [subStep, setSubStep] = useState(0); // within step 1: 0 intro, 1 name, 2 greeting
   const [init, setInit] = useState(false);
   const [name, setName] = useState("");
   const [situation, setSituation] = useState("");
@@ -161,6 +162,19 @@ function Onboarding() {
           </div></Stage>
         );
       }
+      if (subStep === 2) {
+        return (
+          <Stage key="greeting" tone="dusk"><div className={`${outClass} mx-auto flex min-h-svh max-w-[480px] flex-col px-6 pb-6 pt-6`}>
+            <div>
+              <button type="button" onClick={() => transition(() => setSubStep(1), "back")} aria-label={t("common.back")} className="glass flex h-11 w-11 items-center justify-center rounded-full text-foreground"><BackIcon /></button>
+            </div>
+            <Greeting name={name.trim()} />
+            <div className="fade-up sticky bottom-0 pb-2 pt-3" style={{ "--d": "3300ms" } as React.CSSProperties}>
+              <PrimaryButton onClick={() => transition(() => go(2))}>{t("onb.greet.cta")}</PrimaryButton>
+            </div>
+          </div></Stage>
+        );
+      }
       body = (<>
         <Question id="q-name" title={t("onb.nameTitle")} />
         <input value={name} maxLength={40} aria-label={t("onb.nameTitle")} placeholder={t("onb.namePh")}
@@ -168,7 +182,7 @@ function Onboarding() {
           className="glass min-h-14 w-full rounded-[28px] px-5 text-base text-foreground placeholder:text-muted-foreground/70" />
       </>);
       canNext = name.trim().length > 0;
-      onNext = () => go(2, { name: name.trim() });
+      onNext = async () => { setSubStep(2); window.scrollTo(0, 0); await updateProfile({ name: name.trim() }); };
       break;
     case 2:
       body = (<><Question id="q2" title={t("onb.situationTitle")} sub={t("onb.situationSub")} />
