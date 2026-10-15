@@ -1,34 +1,25 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useI18n } from "@/i18n";
 import { PrimaryButton } from "./Common";
 
-const AUTO_MS = 3800;
-const reduced = () => typeof window !== "undefined" && !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-
-/** Full-screen white sentence that fades in on its own, then moves on (tap anywhere to continue sooner). */
+/** Full-screen white sentence that fades in, then a Continue button fades in below it (no automatic advance). */
 export function AloneScreen({ name, onDone }: { name: string; onDone: () => void }) {
   const { t } = useI18n();
-  const [still] = useState(reduced); // reduced motion: no timer, a visible button instead
   const [leaving, setLeaving] = useState(false);
 
   const finish = () => {
     if (leaving) return;
-    if (still) { onDone(); return; }
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) { onDone(); return; }
     setLeaving(true);
-    window.setTimeout(onDone, 500);
+    window.setTimeout(onDone, 400);
   };
 
-  useEffect(() => {
-    if (still) return;
-    const id = window.setTimeout(finish, AUTO_MS);
-    return () => window.clearTimeout(id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [still]);
-
   return (
-    <div className="mx-auto flex min-h-svh max-w-[480px] flex-col justify-center px-8" onClick={finish}>
-      <h1 className={`alone-fade text-center text-[30px] leading-snug text-white md:text-4xl ${leaving ? "alone-out" : ""}`}>{t("onb.aloneTitle", { name })}</h1>
-      {still && <div className="mt-10"><PrimaryButton onClick={finish}>{t("common.next")}</PrimaryButton></div>}
+    <div className={`mx-auto flex min-h-svh max-w-[480px] flex-col px-8 pb-8 ${leaving ? "alone-out" : ""}`}>
+      <div className="flex flex-1 items-center justify-center">
+        <h1 className="alone-fade text-center text-[30px] leading-snug text-white md:text-4xl">{t("onb.aloneTitle", { name })}</h1>
+      </div>
+      <div className="alone-fade-btn"><PrimaryButton onClick={finish}>{t("common.next")}</PrimaryButton></div>
     </div>
   );
 }
