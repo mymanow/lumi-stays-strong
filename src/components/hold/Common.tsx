@@ -77,21 +77,28 @@ export function SosButton({ className = "" }: { className?: string }) {
   );
 }
 
-export function ChoiceList<T extends string>({ options, value, onChange, multi = false, labelledBy }: {
+export function ChoiceList<T extends string>({ options, value, onChange, multi = false, labelledBy, grid = false }: {
   options: { value: T; label: string }[]; value: T[]; onChange: (v: T[]) => void; multi?: boolean; labelledBy?: string;
+  /** Tile layout: 3 columns of centered tiles, the last option spans the full width (e.g. durations). */
+  grid?: boolean;
 }) {
   return (
-    <div role={multi ? "group" : "radiogroup"} aria-labelledby={labelledBy} className="cascade flex flex-col gap-3">
-      {options.map((o) => {
+    <div role={multi ? "group" : "radiogroup"} aria-labelledby={labelledBy} className={`cascade ${grid ? "grid grid-cols-3 gap-3" : "flex flex-col gap-3"}`}>
+      {options.map((o, i) => {
         const selected = value.includes(o.value);
+        const last = i === options.length - 1;
         return (
           <button key={o.value} type="button" role={multi ? "checkbox" : "radio"} aria-checked={selected}
             onClick={() => onChange(multi ? (selected ? value.filter((v) => v !== o.value) : [...value, o.value]) : [o.value])}
-            className="choice flex min-h-14 items-center justify-between rounded-[28px] px-5 py-3 text-left text-base font-medium transition-colors">
+            className={grid
+              ? `choice flex items-center justify-center rounded-[24px] px-3 py-3 text-center text-base font-medium transition-colors ${last && options.length % 3 === 1 ? "col-span-3 min-h-14" : "min-h-24"}`
+              : "choice flex min-h-14 items-center justify-between rounded-[28px] px-5 py-3 text-left text-base font-medium transition-colors"}>
             <span>{o.label}</span>
-            <span aria-hidden className={`ml-3 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border ${selected ? "border-primary bg-primary text-primary-foreground" : "border-line"}`}>
-              {selected && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M5 12l5 5 9-10" /></svg>}
-            </span>
+            {!grid && (
+              <span aria-hidden className={`ml-3 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border ${selected ? "border-primary bg-primary text-primary-foreground" : "border-line"}`}>
+                {selected && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M5 12l5 5 9-10" /></svg>}
+              </span>
+            )}
           </button>
         );
       })}

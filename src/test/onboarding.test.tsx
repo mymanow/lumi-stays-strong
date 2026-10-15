@@ -124,6 +124,15 @@ describe("onboarding questions", () => {
     expect(updateProfile).toHaveBeenCalledWith({ no_contact_goal: "open", onboarding_step: 9 });
   });
 
+  it("lets the user skip the goal question without saving a goal", () => {
+    Object.assign(profile, { onboarding_step: 8 });
+    render(<Component />);
+    expect(next()).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: en.onb.skip }));
+    expect(updateProfile).toHaveBeenCalledWith({ no_contact_goal: null, onboarding_step: 9 });
+    expect(screen.getByRole("heading", { name: en.onb.gender })).toBeInTheDocument();
+  });
+
   it("resumes with previously saved answers and ignores legacy values", () => {
     Object.assign(profile, { onboarding_step: 2, situation_type: "toxic" });
     render(<Component />);

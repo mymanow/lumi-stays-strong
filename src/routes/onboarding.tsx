@@ -124,6 +124,7 @@ function Onboarding() {
   let canNext = true;
   let tone: "light" | "dusk" | "night" = step === 12 ? "night" : "light";
   let onNext: () => void = () => go(step + 1);
+  let onSkip: (() => void) | null = null; // optional questions: text link under the button
 
   switch (step) {
     case 0:
@@ -222,8 +223,9 @@ function Onboarding() {
       break;
     case 8:
       body = (<><Question id="q8" title={t("onb.goalTitle")} sub={t("onb.goalSub")} />
-        <ChoiceList labelledBy="q8" options={opts("goal", GOALS)} value={goal ? [goal] : []} onChange={(v) => setGoal(v[0] ?? "")} /></>);
+        <ChoiceList grid labelledBy="q8" options={opts("goal", GOALS)} value={goal ? [goal] : []} onChange={(v) => setGoal(v[0] ?? "")} /></>);
       canNext = !!goal; onNext = () => go(9, { no_contact_goal: goal });
+      onSkip = () => { setGoal(""); void go(9, { no_contact_goal: null }); };
       break;
     case 9:
       body = (<><Question id="q9" title={t("onb.gender")} sub={t("onb.genderSub")} /><ChoiceList labelledBy="q9" options={opts("gender", GENDERS)} value={gender ? [gender] : []} onChange={(v) => setGender(v[0] ?? "")} /></>);
@@ -302,6 +304,9 @@ function Onboarding() {
       {(canNext || ![12, 14].includes(step)) && (
         <div className="fade-up sticky bottom-0 mt-8 pb-2 pt-3" style={{ "--d": "450ms" } as React.CSSProperties}>
           <PrimaryButton disabled={!canNext} onClick={() => transition(onNext)}>{t("common.next")}</PrimaryButton>
+          {onSkip && (
+            <button type="button" onClick={() => transition(onSkip!)} className="mt-2 min-h-11 w-full text-sm text-muted-foreground underline-offset-4 hover:underline">{t("onb.skip")}</button>
+          )}
         </div>
       )}
       </div>

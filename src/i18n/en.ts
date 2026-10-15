@@ -104,6 +104,7 @@ export const en: typeof fr = {
     goalTitle: "How long do you want to stay No Contact?",
     sourceTitle: "How did you learn about {app}?",
     sourceSub: "Choose which platform you found us on.",
+    skip: "I'll do this later",
     goalSub: "Set a goal to commit to.",
     rulesTitle: "Set your no-contact rules",
     rulesSub: "Don't worry, you can update these later.",
