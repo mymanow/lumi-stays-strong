@@ -3,6 +3,7 @@ import { useI18n } from "@/i18n";
 import { APP_NAME } from "@/config/app";
 import { Lumi } from "./Lumi";
 import { ToolkitMarquee } from "./ToolkitMarquee";
+import { ScienceChart } from "./ScienceChart";
 
 export type InfoKind = "slips" | "bio" | "compare" | "science" | "toolkit";
 export const INFO_KINDS: readonly InfoKind[] = ["slips", "bio", "compare", "science", "toolkit"];
@@ -126,31 +127,12 @@ function Compare() {
   );
 }
 
-/** Conceptual sketch only: it carries no data and says so. */
-function Sketch() {
-  const { t } = useI18n();
-  return (
-    <figure className="fade-up mx-auto w-full max-w-[360px]" style={{ "--d": "150ms" } as React.CSSProperties}>
-      <svg viewBox="0 0 320 200" role="img" aria-label={t("info.science.sketchAlt")} className="w-full">
-        <line x1="40" y1="20" x2="40" y2="160" stroke="#fff" strokeOpacity=".7" strokeWidth="1.5" />
-        <line x1="40" y1="160" x2="300" y2="160" stroke="#fff" strokeOpacity=".7" strokeWidth="1.5" />
-        {[60, 100, 140].map((y) => <line key={y} x1="40" y1={y} x2="300" y2={y} stroke="#fff" strokeOpacity=".2" strokeDasharray="4 5" />)}
-        <path d="M 50 140 C 110 132 170 100 290 36" fill="none" stroke="#B4A6FA" strokeWidth="4" strokeLinecap="round" />
-        <circle cx="290" cy="36" r="9" fill="#fff" />
-        <text x="170" y="184" textAnchor="middle" fill="#fff" fontSize="13">{t("info.science.axisX")}</text>
-        <text x="14" y="90" textAnchor="middle" fill="#fff" fontSize="13" transform="rotate(-90 14 90)">{t("info.science.axisY")}</text>
-      </svg>
-      <figcaption className="mt-1 text-center text-xs text-muted-foreground">{t("info.science.sketch")}</figcaption>
-    </figure>
-  );
-}
-
 function Science() {
   const { t } = useI18n();
   return (
     <>
       <Title sub={t("info.science.sub")}>{t("info.science.title")}</Title>
-      <Sketch />
+      <ScienceChart />
       <p className="fade-up glass mt-6 rounded-[28px] p-5 text-base leading-snug" style={{ "--d": "400ms" } as React.CSSProperties}>{t("info.science.finding")}</p>
       <p className="fade-up mt-3 text-sm leading-snug text-muted-foreground" style={{ "--d": "600ms" } as React.CSSProperties}>{t("info.science.caveat")}</p>
       <p className="fade-up mt-6 text-xs leading-snug text-muted-foreground" style={{ "--d": "800ms" } as React.CSSProperties}>
