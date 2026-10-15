@@ -16,7 +16,7 @@ vi.mock("@tanstack/react-router", async (importOriginal) => ({
   useHydrated: () => false,
 }));
 vi.mock("@/i18n", () => ({
-  useI18n: () => ({ lang: "en", setLang: vi.fn(), tl: (key: string) => (key === "info.bio.rows" ? en.info.bio.rows : key === "info.compare.rows" ? en.info.compare.rows : []), t: (key: string, vars?: Record<string, string>) => {
+  useI18n: () => ({ lang: "en", setLang: vi.fn(), tl: (key: string) => (key === "info.bio.rows" ? en.info.bio.rows : key === "info.compare.rows" ? en.info.compare.rows : key === "reviews.examples" ? en.reviews.examples : []), t: (key: string, vars?: Record<string, string>) => {
     let value: unknown = en;
     for (const part of key.split(".")) value = (value as Record<string, unknown>)[part];
     return typeof value === "string" ? value.replace(/\{(\w+)\}/g, (_, k) => vars?.[k] ?? `{${k}}`) : key;
@@ -182,7 +182,11 @@ describe("onboarding questions", () => {
     expect(updateProfile).toHaveBeenCalledWith({ no_contact_rules: ["no_texting", "no_meeting"], onboarding_step: 12 });
     expect(screen.getByRole("heading", { name: /^You won't have to do it alone/ })).toBeInTheDocument();
     fireEvent.click(next());
-    expect(updateProfile).toHaveBeenLastCalledWith({ onboarding_step: 14 }); // no real reviews yet: the reviews screen is skipped
+    expect(updateProfile).toHaveBeenLastCalledWith({ onboarding_step: 13 });
+    expect(screen.getByRole("heading", { name: en.reviews.title })).toBeInTheDocument();
+    expect(screen.getAllByText(en.reviews.example)).toHaveLength(3);
+    fireEvent.click(next());
+    expect(updateProfile).toHaveBeenLastCalledWith({ onboarding_step: 14 });
     expect(screen.getByRole("heading", { name: en.commit.title })).toBeInTheDocument();
   });
 

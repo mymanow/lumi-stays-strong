@@ -86,7 +86,7 @@ export const en: typeof fr = {
     title: "Help others find us",
     sub: "A quick rating helps us reach more hearts that need healing.",
     average: "average rating", people: "people", verified: "Verified", example: "Example", stars: "5 out of 5 stars",
-    // Shown in development only, never in production: clearly labelled placeholders.
+    // Clearly labelled placeholders, shown while src/config/reviews.ts has no real reviews and SHOW_PLACEHOLDERS is on.
     examples: [
       { name: "Name A.", title: "Example review", body: "Placeholder text to check the layout. This is not a real review." },
       { name: "Name B.", title: "Example review", body: "Another placeholder, a bit longer, to see how the card handles two or three lines of text." },

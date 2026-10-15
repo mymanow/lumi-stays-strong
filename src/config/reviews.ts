@@ -2,18 +2,22 @@
  * Social proof for the onboarding "Help others find us" screen.
  *
  * Only add REAL reviews from real users who agreed to be quoted (and a RATING you can back up from the store).
- * While this list is empty the screen is skipped in production. In development it shows clearly labelled
- * examples (see i18n `reviews.examples`) so the design can be reviewed. Never invent reviews, names or figures.
+ * While REVIEWS is empty the screen shows three clearly labelled "Exemple" placeholder cards (see i18n
+ * `reviews.examples`) so the design is visible. Set SHOW_PLACEHOLDERS to false before launch to skip the screen until
+ * real reviews exist. Never invent reviews, names or figures.
  */
 export type Review = { name: string; title: string; body: string; verified?: boolean };
 
 export const REVIEWS: Review[] = [];
 
+/** Placeholder cards while there are no real reviews. Turn off before launch. */
+export const SHOW_PLACEHOLDERS = true;
+
 /** Fill in only with a real store rating, e.g. { value: "4.8", people: "1 200+" }. */
 export const RATING: { value: string; people: string } | null = null;
 
-/** "Real" reviews, or the labelled examples in development only; an empty list means the screen is skipped. */
+/** Real reviews, else the labelled placeholders while SHOW_PLACEHOLDERS is on; an empty list means the screen is skipped. */
 export function reviewsToShow<T extends { name: string; title: string; body: string }>(examples: T[]): { items: (Review | T)[]; example: boolean } {
   if (REVIEWS.length > 0) return { items: REVIEWS.slice(0, 3), example: false };
-  return import.meta.env.DEV ? { items: examples, example: true } : { items: [], example: false };
+  return SHOW_PLACEHOLDERS ? { items: examples, example: true } : { items: [], example: false };
 }

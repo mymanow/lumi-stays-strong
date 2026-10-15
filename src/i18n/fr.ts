@@ -84,7 +84,7 @@ export const fr = {
     title: "Aide d'autres personnes à nous trouver",
     sub: "Une courte note nous aide à toucher plus de cœurs qui ont besoin de guérir.",
     average: "note moyenne", people: "personnes", verified: "Vérifié", example: "Exemple", stars: "5 étoiles sur 5",
-    // Shown in development only, never in production: clearly labelled placeholders.
+    // Clearly labelled placeholders, shown while src/config/reviews.ts has no real reviews and SHOW_PLACEHOLDERS is on.
     examples: [
       { name: "Prénom A.", title: "Avis d'exemple", body: "Texte d'exemple pour valider la mise en page. Ce n'est pas un vrai avis." },
       { name: "Prénom B.", title: "Avis d'exemple", body: "Un autre texte d'exemple, un peu plus long, pour voir comment la carte gère deux ou trois lignes de texte." },
