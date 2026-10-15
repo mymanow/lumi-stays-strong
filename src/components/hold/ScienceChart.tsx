@@ -8,7 +8,7 @@ import { useI18n } from "@/i18n";
  */
 const GRAY = "M56 200 C 84 152 112 144 152 142 C 200 140 240 130 282 112";
 const BLUE = "M56 200 C 66 160 80 140 108 134 C 130 130 136 108 156 92 C 176 76 196 82 214 84 C 240 86 258 66 282 40";
-const START = 0.7, GRAY_S = 2.6, GAP_S = 0.8, BLUE_S = 3.0;
+const START = 0.4, GRAY_S = 1.4, GAP_S = 0.4, BLUE_S = 1.7;
 const clamp = (x: number) => Math.min(1, Math.max(0, x));
 const ease = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
 
