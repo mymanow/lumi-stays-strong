@@ -180,6 +180,9 @@ describe("onboarding questions", () => {
     fireEvent.click(screen.getByRole("checkbox", { name: en.options.rules.no_meeting }));
     fireEvent.click(next());
     expect(updateProfile).toHaveBeenCalledWith({ no_contact_rules: ["no_texting", "no_meeting"], onboarding_step: 12 });
+    expect(screen.getByRole("heading", { name: /^You won't have to do it alone/ })).toBeInTheDocument();
+    fireEvent.click(next());
+    expect(updateProfile).toHaveBeenLastCalledWith({ onboarding_step: 13 });
     expect(screen.getByRole("heading", { name: en.commit.title })).toBeInTheDocument();
   });
 

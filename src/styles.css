@@ -246,3 +246,9 @@ body::before, .stage-light::before, .stage-dusk::before, .stage-night::before {
 
 .no-select { user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; touch-action: none; }
 
+
+/* "You won't have to do it alone": slow fade-in, soft fade-out. */
+.alone-fade { animation: alone-in 1.6s ease-out 0.5s both; }
+.alone-out { animation: alone-out 0.5s ease-in both; }
+@keyframes alone-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes alone-out { from { opacity: 1; } to { opacity: 0; } }

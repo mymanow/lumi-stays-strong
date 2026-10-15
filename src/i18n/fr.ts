@@ -103,6 +103,7 @@ export const fr = {
     goalTitle: "Combien de temps veux-tu tenir sans contact ?",
     sourceTitle: "Comment as-tu connu {app} ?",
     sourceSub: "Choisis la plateforme où tu nous as trouvés.",
+    aloneTitle: "Tu n'auras pas à le faire seul·e, {name}",
     skip: "Je ferai ça plus tard",
     goalSub: "Fixe-toi un objectif auquel t'engager.",
     rulesTitle: "Fixe tes règles de non-contact",
