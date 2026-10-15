@@ -133,11 +133,10 @@ function Science() {
     <>
       <Title sub={t("info.science.sub")}>{t("info.science.title")}</Title>
       <ScienceChart />
-      <p className="fade-up glass mt-6 rounded-[28px] p-5 text-base leading-snug" style={{ "--d": "400ms" } as React.CSSProperties}>{t("info.science.finding")}</p>
       <p className="fade-up mt-3 text-sm leading-snug text-muted-foreground" style={{ "--d": "600ms" } as React.CSSProperties}>{t("info.science.caveat")}</p>
       <p className="fade-up mt-6 text-xs leading-snug text-muted-foreground" style={{ "--d": "800ms" } as React.CSSProperties}>
         {t("info.science.source")}{" "}
-        <a href="https://doi.org/10.1177/2167702620916454" target="_blank" rel="noreferrer" className="underline underline-offset-2">doi.org/10.1177/2167702620916454</a>
+        doi.org/10.1177/2167702620916454
       </p>
     </>
   );

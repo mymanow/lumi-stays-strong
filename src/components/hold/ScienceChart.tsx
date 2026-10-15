@@ -6,8 +6,8 @@ import { useI18n } from "@/i18n";
  * then a second dot draws a faster-rising curve ("no contact"). It carries no data and says so in its caption.
  * Driven by requestAnimationFrame so it can be skipped (final state) with prefers-reduced-motion.
  */
-const GRAY = "M56 200 C 84 152 112 144 152 142 C 200 140 240 130 282 112";
-const BLUE = "M56 200 C 66 160 80 140 108 134 C 130 130 136 108 156 92 C 176 76 196 82 214 84 C 240 86 258 66 282 40";
+const GRAY = "M56 200 C 90 192 120 170 156 158 C 196 146 236 140 282 118";
+const BLUE = "M56 200 C 62 176 74 150 96 126 C 118 102 140 96 176 84 C 214 72 250 52 282 34";
 const START = 0.4, GRAY_S = 1.4, GAP_S = 0.4, BLUE_S = 1.7;
 const clamp = (x: number) => Math.min(1, Math.max(0, x));
 const ease = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
@@ -85,13 +85,12 @@ export function ScienceChart() {
 
         <path ref={gray} d={GRAY} pathLength={1} fill="none" stroke="#fff" strokeOpacity=".42" strokeWidth="4" strokeLinecap="round" strokeDasharray="1" style={{ strokeDashoffset: 1 }} />
         <path ref={blue} d={BLUE} pathLength={1} fill="none" stroke="url(#sc-blue)" strokeWidth="4" strokeLinecap="round" strokeDasharray="1" style={{ strokeDashoffset: 1 }} />
-        <text ref={grayLabel} x="236" y="156" textAnchor="middle" fill="#fff" fillOpacity=".75" fontSize="13" style={{ opacity: 0 }}>{t("info.science.lineContact")}</text>
+        <text ref={grayLabel} x="236" y="168" textAnchor="middle" fill="#fff" fillOpacity=".75" fontSize="13" style={{ opacity: 0 }}>{t("info.science.lineContact")}</text>
         <text ref={blueLabel} x="226" y="30" textAnchor="middle" fill="#fff" fontSize="17" className="font-display" style={{ opacity: 0 }}>{t("info.science.lineNoContact")}</text>
 
         <g ref={grayDot} style={{ opacity: 0 }} transform="translate(56 200)"><Dot color="#C7D2FE" glow="#C7D2FE" /></g>
         <g ref={head} transform="translate(56 200)"><Dot color="#fff" glow="#A855F7" /></g>
       </svg>
-      <figcaption className="mt-1 text-center text-xs text-muted-foreground">{t("info.science.sketch")}</figcaption>
     </figure>
   );
 }
