@@ -80,6 +80,17 @@ export const fr = {
       source: "O'Hara, K. L., Grinberg, A. M., Tackman, A. M., Mehl, M. R., & Sbarra, D. A. (2020). Contact With an Ex-Partner Is Associated With Psychological Distress After Marital Separation. Clinical Psychological Science, 8(3), 450–463.",
     },
   },
+  reviews: {
+    title: "Aide d'autres personnes à nous trouver",
+    sub: "Une courte note nous aide à toucher plus de cœurs qui ont besoin de guérir.",
+    average: "note moyenne", people: "personnes", verified: "Vérifié", example: "Exemple", stars: "5 étoiles sur 5",
+    // Shown in development only, never in production: clearly labelled placeholders.
+    examples: [
+      { name: "Prénom A.", title: "Avis d'exemple", body: "Texte d'exemple pour valider la mise en page. Ce n'est pas un vrai avis." },
+      { name: "Prénom B.", title: "Avis d'exemple", body: "Un autre texte d'exemple, un peu plus long, pour voir comment la carte gère deux ou trois lignes de texte." },
+      { name: "Prénom C.", title: "Avis d'exemple", body: "Dernier texte d'exemple. Les vrais avis se renseignent dans src/config/reviews.ts." },
+    ],
+  },
   onb: {
     progress: "Étape {n} sur {total}",
     introTitle: "Personnalisons ton parcours",
