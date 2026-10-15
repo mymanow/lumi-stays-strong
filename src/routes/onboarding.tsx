@@ -27,12 +27,13 @@ export const Route = createFileRoute("/onboarding")({
   component: Onboarding,
 });
 
-const TOTAL = 13;
+const TOTAL = 14;
 const LAST_CONTACT = ["today", "week", "month", "m1_3", "m3_6", "gt_6m"] as const;
 const AFTER = ["worse", "ignored", "nothing_changed", "saw_upsetting", "argued", "cold", "not_yet"] as const;
 const NOW = ["devastated", "angry", "hoping", "guilty", "confused", "lonely", "okay"] as const;
 const GOALS = ["d7", "d14", "d30", "d60", "d90", "d180", "open"] as const;
 const RULES = ["no_texting", "no_stalking", "no_old_photos", "no_meeting", "no_reply_except", "no_asking_friends", "no_running_into"] as const;
+const SOURCES = ["tiktok", "google", "word_of_mouth", "quora", "app_store", "instagram_facebook", "reddit", "other"] as const;
 const GENDERS = ["woman", "man", "undisclosed"] as const;
 
 const only = <T extends string>(list: readonly T[], value?: string | null) => (list.some((v) => v === value) ? (value as string) : "");
@@ -63,12 +64,13 @@ function Onboarding() {
   const [after, setAfter] = useState<string[]>([]);
   const [now, setNow] = useState<string[]>([]);
   const [hope, setHope] = useState("");
+  const [source, setSource] = useState("");
   const [goal, setGoal] = useState("");
   const [rules, setRules] = useState<string[]>([]);
   const [gender, setGender] = useState("");
   const [leaving, setLeaving] = useState<"fwd" | "back" | null>(null);
   const [dir, setDir] = useState<"fwd" | "back">("fwd");
-  const [infoStep, setInfoStep] = useState(1); // within step 9: the four information screens (1..4)
+  const [infoStep, setInfoStep] = useState(1); // within step 10: the information screens (1..INFO_KINDS.length)
   const [reminder, setReminder] = useState({ enabled: false, time: DEFAULT_REMINDER_TIME });
 
   useEffect(() => {
@@ -81,6 +83,7 @@ function Onboarding() {
     setAfter(onlyMany(AFTER, profile.last_contact_feelings));
     setNow(onlyMany(NOW, profile.current_feelings));
     setHope(only(MOTIVATIONS, profile.motivation));
+    setSource(only(SOURCES, profile.acquisition_source));
     setGoal(only(GOALS, profile.no_contact_goal));
     setRules(onlyMany(RULES, profile.no_contact_rules));
     setGender(profile.gender ?? "");
@@ -119,7 +122,7 @@ function Onboarding() {
 
   let body: React.ReactNode = null;
   let canNext = true;
-  let tone: "light" | "dusk" | "night" = step === 11 ? "night" : "light";
+  let tone: "light" | "dusk" | "night" = step === 12 ? "night" : "light";
   let onNext: () => void = () => go(step + 1);
 
   switch (step) {
@@ -213,15 +216,20 @@ function Onboarding() {
       canNext = !!hope; onNext = () => go(7, { motivation: hope });
       break;
     case 7:
-      body = (<><Question id="q7" title={t("onb.goalTitle")} sub={t("onb.goalSub")} />
-        <ChoiceList labelledBy="q7" options={opts("goal", GOALS)} value={goal ? [goal] : []} onChange={(v) => setGoal(v[0] ?? "")} /></>);
-      canNext = !!goal; onNext = () => go(8, { no_contact_goal: goal });
+      body = (<><Question id="q7" title={t("onb.sourceTitle")} sub={t("onb.sourceSub")} />
+        <ChoiceList labelledBy="q7" options={opts("source", SOURCES)} value={source ? [source] : []} onChange={(v) => setSource(v[0] ?? "")} /></>);
+      canNext = !!source; onNext = () => go(8, { acquisition_source: source });
       break;
     case 8:
-      body = (<><Question id="q8" title={t("onb.gender")} sub={t("onb.genderSub")} /><ChoiceList labelledBy="q8" options={opts("gender", GENDERS)} value={gender ? [gender] : []} onChange={(v) => setGender(v[0] ?? "")} /></>);
-      canNext = !!gender; onNext = () => { setInfoStep(1); void go(9, { gender }); };
+      body = (<><Question id="q8" title={t("onb.goalTitle")} sub={t("onb.goalSub")} />
+        <ChoiceList labelledBy="q8" options={opts("goal", GOALS)} value={goal ? [goal] : []} onChange={(v) => setGoal(v[0] ?? "")} /></>);
+      canNext = !!goal; onNext = () => go(9, { no_contact_goal: goal });
       break;
     case 9:
+      body = (<><Question id="q9" title={t("onb.gender")} sub={t("onb.genderSub")} /><ChoiceList labelledBy="q9" options={opts("gender", GENDERS)} value={gender ? [gender] : []} onChange={(v) => setGender(v[0] ?? "")} /></>);
+      canNext = !!gender; onNext = () => { setInfoStep(1); void go(10, { gender }); };
+      break;
+    case 10:
       {
         const kind = INFO_KINDS[infoStep - 1]!;
         body = <InfoBody kind={kind} name={name.trim()} />;
@@ -229,28 +237,28 @@ function Onboarding() {
         onNext = () => {
           window.scrollTo(0, 0);
           if (infoStep < INFO_KINDS.length) setInfoStep(infoStep + 1);
-          else go(10);
+          else go(11);
         };
       }
       break;
-    case 10:
-      body = (<><Question id="q10" title={t("onb.rulesTitle")} sub={t("onb.rulesSub")} />
-        <ChoiceList multi labelledBy="q10" options={opts("rules", RULES)} value={rules} onChange={setRules} /></>);
-      onNext = () => go(11, { no_contact_rules: rules });
-      break;
     case 11:
-      body = (<>
-        <Question id="q11" title={t("commit.title")} />
-        <ul className="mb-10 flex flex-col gap-3">
-          {commitPhrases.map((p) => <li key={p} className="font-display text-xl leading-snug">{p}</li>)}
-        </ul>
-        <HoldButton onComplete={() => go(12, { commitment_at: new Date().toISOString() })} />
-      </>);
-      canNext = false;
+      body = (<><Question id="q11" title={t("onb.rulesTitle")} sub={t("onb.rulesSub")} />
+        <ChoiceList multi labelledBy="q11" options={opts("rules", RULES)} value={rules} onChange={setRules} /></>);
+      onNext = () => go(12, { no_contact_rules: rules });
       break;
     case 12:
       body = (<>
-        <Question id="q12" title={t("plan.title")} />
+        <Question id="q12" title={t("commit.title")} />
+        <ul className="mb-10 flex flex-col gap-3">
+          {commitPhrases.map((p) => <li key={p} className="font-display text-xl leading-snug">{p}</li>)}
+        </ul>
+        <HoldButton onComplete={() => go(13, { commitment_at: new Date().toISOString() })} />
+      </>);
+      canNext = false;
+      break;
+    case 13:
+      body = (<>
+        <Question id="q13" title={t("plan.title")} />
         <ul className="mb-8 flex flex-col gap-3">
           {tl<string[]>("plan.rows").map((r) => (
             <li key={r} className="flex items-center gap-3 glass rounded-[24px] p-4">
@@ -263,12 +271,12 @@ function Onboarding() {
         </ul>
         <ReminderControl value={reminder} onChange={setReminder} />
       </>);
-      onNext = () => go(13, { reminder_enabled: reminder.enabled, reminder_time: reminder.time });
+      onNext = () => go(14, { reminder_enabled: reminder.enabled, reminder_time: reminder.time });
       break;
-    case 13:
+    case 14:
       body = (<>
         <div className="mb-6 flex justify-center"><Lumi size={64} stage={2} emotion="happy" /></div>
-        <Question id="q13" title={t("account.title")} sub={t("account.sub")} />
+        <Question id="q14" title={t("account.title")} sub={t("account.sub")} />
         <AccountLinker />
         <button type="button" onClick={finish} className="mt-6 min-h-12 w-full text-foreground underline-offset-4 hover:underline">{t("account.skip")}</button>
       </>);
@@ -281,17 +289,17 @@ function Onboarding() {
     <div className="mx-auto flex min-h-svh max-w-[480px] flex-col px-6 pb-8 pt-4">
       <div className="mb-6 flex items-center gap-3">
         <button type="button" onClick={() => transition(() => {
-          if (step === 9 && infoStep > 1) { setInfoStep(infoStep - 1); window.scrollTo(0, 0); }
+          if (step === 10 && infoStep > 1) { setInfoStep(infoStep - 1); window.scrollTo(0, 0); }
           else if (step === 1 && subStep > 0) setSubStep(subStep - 1);
           else go(step - 1);
         }, "back")} aria-label={t("common.back")} className="glass flex h-11 w-11 items-center justify-center rounded-full text-foreground"><BackIcon /></button>
         <div className="h-2 flex-1 overflow-hidden rounded-full bg-white/50" role="progressbar" aria-valuemin={0} aria-valuemax={TOTAL} aria-valuenow={step} aria-label={t("onb.progress", { n: step, total: TOTAL })}>
-          <div className="h-full rounded-full bg-[var(--progress)] transition-all" style={{ width: `${((step + (step === 9 ? (infoStep - 1) / INFO_KINDS.length : 0)) / TOTAL) * 100}%` }} />
+          <div className="h-full rounded-full bg-[var(--progress)] transition-all" style={{ width: `${((step + (step === 10 ? (infoStep - 1) / INFO_KINDS.length : 0)) / TOTAL) * 100}%` }} />
         </div>
       </div>
       <div key={`${step}-${subStep}-${infoStep}`} className={`${outClass} flex flex-1 flex-col`}>
         <div className="flex-1">{body}</div>
-      {(canNext || ![11, 13].includes(step)) && (
+      {(canNext || ![12, 14].includes(step)) && (
         <div className="fade-up sticky bottom-0 mt-8 pb-2 pt-3" style={{ "--d": "450ms" } as React.CSSProperties}>
           <PrimaryButton disabled={!canNext} onClick={() => transition(onNext)}>{t("common.next")}</PrimaryButton>
         </div>

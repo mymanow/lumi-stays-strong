@@ -16,6 +16,7 @@
 - Coach AI runs in the /api/coach server route (bearer-verified, quota via ai_usage + subscriptions) — never call AI from the browser.
 - Whop: checkout config created in a server function; subscriptions written only by /api/public/whop-webhook with service role.
 - Onboarding has six breakup questions (situation, last contact range, feelings after, current feelings, hope, goal) saved to owner-only profile columns after each step (see drizzle/migrations/0003_onboarding_v2_answers.sql). Only motivation and situation type reach the coach context; feelings never do.
+- After the hope question, onboarding asks "How did you learn about {app}?" (8 options) saved to the owner-only `profiles.acquisition_source` column (drizzle/migrations/0006_acquisition_source.sql). It is for acquisition analytics only and never reaches the coach.
 
 - There is no score or difficulty profile: the indicative score was removed. Do not reintroduce a numeric score without a product decision.
 - Last contact is asked as a range; last_contact_at is set to the lowest bound of that range so the counter never overstates progress.

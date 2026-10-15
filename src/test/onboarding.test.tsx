@@ -103,13 +103,25 @@ describe("onboarding questions", () => {
     expect(updateProfile).toHaveBeenCalledWith({ motivation: "perspective", onboarding_step: 7 });
   });
 
-  it("Q6 offers 7 goals including no end date", () => {
+  it("asks how the user heard about the app, saves the answer, then the goal", () => {
     Object.assign(profile, { onboarding_step: 7 });
+    render(<Component />);
+    expect(screen.getByRole("heading", { name: /^How did you learn about/ })).toBeInTheDocument();
+    expect(screen.getAllByRole("radio")).toHaveLength(8);
+    expect(next()).toBeDisabled();
+    fireEvent.click(screen.getByRole("radio", { name: en.options.source.tiktok }));
+    fireEvent.click(next());
+    expect(updateProfile).toHaveBeenCalledWith({ acquisition_source: "tiktok", onboarding_step: 8 });
+    expect(screen.getByRole("heading", { name: en.onb.goalTitle })).toBeInTheDocument();
+  });
+
+  it("Q7 offers 7 goals including no end date", () => {
+    Object.assign(profile, { onboarding_step: 8 });
     render(<Component />);
     expect(screen.getAllByRole("radio")).toHaveLength(7);
     fireEvent.click(screen.getByRole("radio", { name: en.options.goal.open }));
     fireEvent.click(next());
-    expect(updateProfile).toHaveBeenCalledWith({ no_contact_goal: "open", onboarding_step: 8 });
+    expect(updateProfile).toHaveBeenCalledWith({ no_contact_goal: "open", onboarding_step: 9 });
   });
 
   it("resumes with previously saved answers and ignores legacy values", () => {
@@ -123,7 +135,7 @@ describe("onboarding questions", () => {
   });
 
   it("shows five information screens after the gender, then the rules", () => {
-    Object.assign(profile, { onboarding_step: 9 });
+    Object.assign(profile, { onboarding_step: 10 });
     render(<Component />);
     expect(screen.getByRole("heading", { name: "Alex, many slips happen in a moment of weakness" })).toBeInTheDocument();
     fireEvent.click(next());
@@ -136,7 +148,7 @@ describe("onboarding questions", () => {
     expect(screen.getByRole("heading", { name: en.info.toolkit.title })).toBeInTheDocument();
     expect(updateProfile).not.toHaveBeenCalled();
     fireEvent.click(next());
-    expect(updateProfile).toHaveBeenLastCalledWith({ onboarding_step: 10 });
+    expect(updateProfile).toHaveBeenLastCalledWith({ onboarding_step: 11 });
     expect(screen.getByRole("heading", { name: en.onb.rulesTitle })).toBeInTheDocument();
   });
 
@@ -153,17 +165,17 @@ describe("onboarding questions", () => {
   });
 
   it("saves the selected no-contact rules, then shows the commitment", () => {
-    Object.assign(profile, { onboarding_step: 10, no_contact_rules: ["no_texting", "bogus"] });
+    Object.assign(profile, { onboarding_step: 11, no_contact_rules: ["no_texting", "bogus"] });
     render(<Component />);
     expect(screen.getAllByRole("checkbox", { checked: true })).toHaveLength(1);
     fireEvent.click(screen.getByRole("checkbox", { name: en.options.rules.no_meeting }));
     fireEvent.click(next());
-    expect(updateProfile).toHaveBeenCalledWith({ no_contact_rules: ["no_texting", "no_meeting"], onboarding_step: 11 });
+    expect(updateProfile).toHaveBeenCalledWith({ no_contact_rules: ["no_texting", "no_meeting"], onboarding_step: 12 });
     expect(screen.getByRole("heading", { name: en.commit.title })).toBeInTheDocument();
   });
 
   it("goes back through the information screens to the gender question", () => {
-    Object.assign(profile, { onboarding_step: 9 });
+    Object.assign(profile, { onboarding_step: 10 });
     render(<Component />);
     fireEvent.click(next());
     fireEvent.click(next());
