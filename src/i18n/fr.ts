@@ -80,6 +80,13 @@ export const fr = {
       source: "O'Hara, K. L., Grinberg, A. M., Tackman, A. M., Mehl, M. R., & Sbarra, D. A. (2020). Contact With an Ex-Partner Is Associated With Psychological Distress After Marital Separation. Clinical Psychological Science, 8(3), 450–463.",
     },
   },
+  build: {
+    title: "Je prépare ton plan…",
+    sub: "Ça prend un instant.",
+    steps: ["Lecture de ta situation", "Réglage de ton objectif", "Préparation de tes outils SOS", "Planification de tes check-ins", "Lumi se prépare à te soutenir"],
+    quote: "Un jour à la fois. Tu n'as pas à tout porter d'un coup.",
+    ready: "Je suis prêt·e",
+  },
   reviews: {
     title: "Aide d'autres personnes à nous trouver",
     sub: "Une courte note nous aide à toucher plus de cœurs qui ont besoin de guérir.",

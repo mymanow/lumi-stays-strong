@@ -253,3 +253,8 @@ body::before, .stage-light::before, .stage-dusk::before, .stage-night::before {
 .alone-out { animation: alone-out 0.4s ease-in both; }
 @keyframes alone-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 @keyframes alone-out { from { opacity: 1; } to { opacity: 0; } }
+
+/* "Building your plan": bars fill left to right; the ready button fades in once they are full. */
+.plan-bar { transform-origin: left center; animation: plan-fill 3s cubic-bezier(.45, .05, .35, 1) 0.5s both; }
+@keyframes plan-fill { from { transform: scaleX(0.02); } to { transform: scaleX(1); } }
+.alone-fade-btn-now { animation: alone-in 0.9s ease-out both; }
