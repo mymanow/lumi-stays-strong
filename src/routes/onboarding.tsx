@@ -9,6 +9,7 @@ import { Greeting } from "@/components/hold/Greeting";
 import { InfoBody, INFO_KINDS, INFO_TONE } from "@/components/hold/OnboardingInfo";
 import { AloneScreen } from "@/components/hold/AloneScreen";
 import { ReviewsScreen, reviewsAvailable } from "@/components/hold/ReviewsScreen";
+import { PlanReady } from "@/components/hold/PlanReady";
 import { PlanBuilding } from "@/components/hold/PlanBuilding";
 import { HoldButton } from "@/components/hold/HoldButton";
 import { AccountLinker } from "@/components/hold/AccountLinker";
@@ -30,7 +31,7 @@ export const Route = createFileRoute("/onboarding")({
   component: Onboarding,
 });
 
-const TOTAL = 17;
+const TOTAL = 18;
 const LAST_CONTACT = ["today", "week", "month", "m1_3", "m3_6", "gt_6m"] as const;
 const AFTER = ["worse", "ignored", "nothing_changed", "saw_upsetting", "argued", "cold", "not_yet"] as const;
 const NOW = ["devastated", "angry", "hoping", "guilty", "confused", "lonely", "okay"] as const;
@@ -126,8 +127,9 @@ function Onboarding() {
 
   let body: React.ReactNode = null;
   let canNext = true;
-  let tone: "light" | "dusk" | "night" = step === 15 ? "night" : "light";
+  let tone: "light" | "dusk" | "night" = step === 16 ? "night" : "light";
   let onNext: () => void = () => go(step + 1);
+  let nextLabel = t("common.next");
   let onSkip: (() => void) | null = null; // optional questions: text link under the button
 
   switch (step) {
@@ -269,18 +271,23 @@ function Onboarding() {
         </Stage>
       );
     case 15:
-      body = (<>
-        <Question id="q15" title={t("commit.title")} />
-        <ul className="mb-10 flex flex-col gap-3">
-          {commitPhrases.map((p) => <li key={p} className="font-display text-xl leading-snug">{p}</li>)}
-        </ul>
-        <HoldButton onComplete={() => go(16, { commitment_at: new Date().toISOString() })} />
-      </>);
-      canNext = false;
+      body = <PlanReady name={name.trim()} goal={goal} />;
+      tone = "dusk";
+      nextLabel = t("ready.start");
       break;
     case 16:
       body = (<>
-        <Question id="q16" title={t("plan.title")} />
+        <Question id="q16" title={t("commit.title")} />
+        <ul className="mb-10 flex flex-col gap-3">
+          {commitPhrases.map((p) => <li key={p} className="font-display text-xl leading-snug">{p}</li>)}
+        </ul>
+        <HoldButton onComplete={() => go(17, { commitment_at: new Date().toISOString() })} />
+      </>);
+      canNext = false;
+      break;
+    case 17:
+      body = (<>
+        <Question id="q17" title={t("plan.title")} />
         <ul className="mb-8 flex flex-col gap-3">
           {tl<string[]>("plan.rows").map((r) => (
             <li key={r} className="flex items-center gap-3 glass rounded-[24px] p-4">
@@ -293,12 +300,12 @@ function Onboarding() {
         </ul>
         <ReminderControl value={reminder} onChange={setReminder} />
       </>);
-      onNext = () => go(17, { reminder_enabled: reminder.enabled, reminder_time: reminder.time });
+      onNext = () => go(18, { reminder_enabled: reminder.enabled, reminder_time: reminder.time });
       break;
-    case 17:
+    case 18:
       body = (<>
         <div className="mb-6 flex justify-center"><Lumi size={64} stage={2} emotion="happy" /></div>
-        <Question id="q17" title={t("account.title")} sub={t("account.sub")} />
+        <Question id="q18" title={t("account.title")} sub={t("account.sub")} />
         <AccountLinker />
         <button type="button" onClick={finish} className="mt-6 min-h-12 w-full text-foreground underline-offset-4 hover:underline">{t("account.skip")}</button>
       </>);
@@ -313,7 +320,7 @@ function Onboarding() {
         <button type="button" onClick={() => transition(() => {
           if (step === 10 && infoStep > 1) { setInfoStep(infoStep - 1); window.scrollTo(0, 0); }
           else if (step === 1 && subStep > 0) setSubStep(subStep - 1);
-          else if (step === 15) go(hasReviews ? 13 : 11); // skip the interstitials
+          else if (step === 15) go(hasReviews ? 13 : 11); // skip the loading scene
           else if (step === 14) go(hasReviews ? 13 : 11);
           else if (step === 13) go(11);
           else go(step - 1);
@@ -324,9 +331,9 @@ function Onboarding() {
       </div>
       <div key={`${step}-${subStep}-${infoStep}`} className={`${outClass} flex flex-1 flex-col`}>
         <div className="flex-1">{body}</div>
-      {(canNext || ![15, 17].includes(step)) && (
+      {(canNext || ![16, 18].includes(step)) && (
         <div className="fade-up sticky bottom-0 mt-8 pb-2 pt-3" style={{ "--d": "450ms" } as React.CSSProperties}>
-          <PrimaryButton disabled={!canNext} onClick={() => transition(onNext)}>{t("common.next")}</PrimaryButton>
+          <PrimaryButton disabled={!canNext} onClick={() => transition(onNext)}>{nextLabel}</PrimaryButton>
           {onSkip && (
             <button type="button" onClick={() => transition(onSkip!)} className="mt-2 min-h-11 w-full text-sm text-muted-foreground underline-offset-4 hover:underline">{t("onb.skip")}</button>
           )}

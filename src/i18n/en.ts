@@ -82,6 +82,17 @@ export const en: typeof fr = {
       source: "O'Hara, K. L., Grinberg, A. M., Tackman, A. M., Mehl, M. R., & Sbarra, D. A. (2020). Contact With an Ex-Partner Is Associated With Psychological Distress After Marital Separation. Clinical Psychological Science, 8(3), 450–463.",
     },
   },
+  ready: {
+    title: "Your personalized plan is ready, {name}!",
+    subDate: "We'll help you stick to no contact until:",
+    subOpen: "No end date: you move at your own pace, one day at a time.",
+    tagline: "Clarity starts with distance",
+    words: "Breathe. Hold. Move on.",
+    chips: ["Lumi coach", "Anti-temptation SOS", "Vault: write without sending", "Red flags to reread", "Day-by-day journey", "Progress tracking", "Daily reminder", "Milestones to celebrate"],
+    withTitle: "With {app}, you can:",
+    cards: ["Hold on when the urge to text comes back", "Breathe when the storm rises", "Give yourself space to move forward", "Write what you feel, without sending it", "See your progress day after day"],
+    start: "Start",
+  },
   build: {
     title: "Building your plan…",
     sub: "This only takes a moment.",

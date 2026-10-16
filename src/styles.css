@@ -258,3 +258,10 @@ body::before, .stage-light::before, .stage-dusk::before, .stage-night::before {
 .plan-bar { transform-origin: left center; animation: plan-fill 3s cubic-bezier(.45, .05, .35, 1) 0.5s both; }
 @keyframes plan-fill { from { transform: scaleX(0.02); } to { transform: scaleX(1); } }
 .alone-fade-btn-now { animation: alone-in 0.9s ease-out both; }
+
+/* Feature chips drifting sideways (rows go in opposite directions). */
+.chip-row-l, .chip-row-r { will-change: transform; animation: chip-l 46s linear infinite; }
+.chip-row-r { animation-name: chip-r; }
+@keyframes chip-l { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@keyframes chip-r { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+.marquee-x { -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%); mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%); }

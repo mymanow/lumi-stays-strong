@@ -19,6 +19,8 @@ export const DEFAULT_REMINDER_TIME = "21:30";
 
 /** Days since the last contact at the lowest bound of each range, so the counter never overstates progress. */
 export const CONTACT_RANGE_DAYS = { today: 0, week: 1, month: 8, m1_3: 31, m3_6: 91, gt_6m: 181 } as const;
+/** Days of the no-contact goals offered in onboarding ("open" has none). */
+export const GOAL_DAYS: Record<string, number | undefined> = { d7: 7, d14: 14, d30: 30, d60: 60, d90: 90, d180: 180 };
 export type ContactRange = keyof typeof CONTACT_RANGE_DAYS;
 
 export function motivationKey(motivation?: string | null) {

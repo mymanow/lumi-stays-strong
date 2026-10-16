@@ -16,7 +16,7 @@ vi.mock("@tanstack/react-router", async (importOriginal) => ({
   useHydrated: () => false,
 }));
 vi.mock("@/i18n", () => ({
-  useI18n: () => ({ lang: "en", setLang: vi.fn(), tl: (key: string) => (key === "info.bio.rows" ? en.info.bio.rows : key === "info.compare.rows" ? en.info.compare.rows : key === "reviews.examples" ? en.reviews.examples : key === "build.steps" ? en.build.steps : []), t: (key: string, vars?: Record<string, string>) => {
+  useI18n: () => ({ lang: "en", setLang: vi.fn(), tl: (key: string) => (key === "info.bio.rows" ? en.info.bio.rows : key === "info.compare.rows" ? en.info.compare.rows : key === "reviews.examples" ? en.reviews.examples : key === "build.steps" ? en.build.steps : key === "ready.chips" ? en.ready.chips : key === "ready.cards" ? en.ready.cards : []), t: (key: string, vars?: Record<string, string>) => {
     let value: unknown = en;
     for (const part of key.split(".")) value = (value as Record<string, unknown>)[part];
     return typeof value === "string" ? value.replace(/\{(\w+)\}/g, (_, k) => vars?.[k] ?? `{${k}}`) : key;
@@ -190,6 +190,9 @@ describe("onboarding questions", () => {
     expect(screen.getByRole("heading", { name: en.build.title })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: en.build.ready }));
     expect(updateProfile).toHaveBeenLastCalledWith({ onboarding_step: 15 });
+    expect(screen.getByRole("heading", { name: "Your personalized plan is ready, Alex!" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: en.ready.start }));
+    expect(updateProfile).toHaveBeenLastCalledWith({ onboarding_step: 16 });
     expect(screen.getByRole("heading", { name: en.commit.title })).toBeInTheDocument();
   });
 
