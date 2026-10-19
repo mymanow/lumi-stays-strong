@@ -303,3 +303,7 @@ body::before, .stage-light::before, .stage-dusk::before, .stage-night::before {
 @keyframes bell-ding { 0%, 55%, 100% { transform: rotate(0); } 8% { transform: rotate(14deg); } 16% { transform: rotate(-12deg); } 24% { transform: rotate(9deg); } 32% { transform: rotate(-6deg); } 40% { transform: rotate(3deg); } }
 .bell-arc { opacity: 0; animation: bell-arc 2.4s ease-out infinite; }
 @keyframes bell-arc { 0% { opacity: 0; } 8% { opacity: 1; } 45% { opacity: 0; } 100% { opacity: 0; } }
+
+/* Notification permission screen: our own dialog gently rises in. */
+.notify-dialog { animation: notify-in 0.6s cubic-bezier(0.2, 0.8, 0.3, 1) 0.2s both; }
+@keyframes notify-in { from { opacity: 0; transform: translateY(14px) scale(0.97); } to { opacity: 1; transform: none; } }

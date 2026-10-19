@@ -27,3 +27,17 @@ export async function showNotification(title: string, body: string) {
     else new Notification(title, { body, icon: "/icon.svg", tag: "hold-daily" });
   } catch { /* notifications are best effort */ }
 }
+
+export function isIOS(): boolean {
+  if (typeof navigator === "undefined") return false;
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.userAgent.includes("Macintosh") && navigator.maxTouchPoints > 1);
+}
+/** True when the app runs from the home screen (installed PWA) rather than in a browser tab. */
+export function isStandalone(): boolean {
+  if (typeof window === "undefined") return false;
+  return !!window.matchMedia?.("(display-mode: standalone)").matches || (navigator as Navigator & { standalone?: boolean }).standalone === true;
+}
+/** iPhone/iPad Safari only exposes notifications to installed web apps, so there the screen explains how to install. */
+export function notifyScreenApplicable(): boolean {
+  return notifySupport() !== "unsupported" || (isIOS() && !isStandalone());
+}

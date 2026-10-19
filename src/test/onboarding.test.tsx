@@ -215,7 +215,7 @@ describe("onboarding questions", () => {
     expect(updateProfile).toHaveBeenLastCalledWith({ onboarding_step: 17 });
     expect(screen.getByRole("heading", { name: /A gentle reminder every day to hold on/ })).toBeInTheDocument();
     fireEvent.click(next());
-    expect(updateProfile).toHaveBeenLastCalledWith({ onboarding_step: 18 });
+    expect(updateProfile).toHaveBeenLastCalledWith({ onboarding_step: 19 }); // jsdom has no Notification API: the permission screen is skipped
     expect(screen.getByRole("heading", { name: en.commit.title })).toBeInTheDocument();
   });
 

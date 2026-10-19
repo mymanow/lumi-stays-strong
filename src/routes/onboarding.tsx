@@ -11,6 +11,8 @@ import { AloneScreen } from "@/components/hold/AloneScreen";
 import { ReviewsScreen, reviewsAvailable } from "@/components/hold/ReviewsScreen";
 import { PlanReady } from "@/components/hold/PlanReady";
 import { CompanionShowcase } from "@/components/hold/CompanionShowcase";
+import { NotifyPermission } from "@/components/hold/NotifyPermission";
+import { notifyScreenApplicable } from "@/lib/notify";
 import { ReminderIntro } from "@/components/hold/ReminderIntro";
 import { PhoneShowcase } from "@/components/hold/PhoneShowcase";
 import { PlanBuilding } from "@/components/hold/PlanBuilding";
@@ -34,7 +36,7 @@ export const Route = createFileRoute("/onboarding")({
   component: Onboarding,
 });
 
-const TOTAL = 20;
+const TOTAL = 21;
 const LAST_CONTACT = ["today", "week", "month", "m1_3", "m3_6", "gt_6m"] as const;
 const AFTER = ["worse", "ignored", "nothing_changed", "saw_upsetting", "argued", "cold", "not_yet"] as const;
 const NOW = ["devastated", "angry", "hoping", "guilty", "confused", "lonely", "okay"] as const;
@@ -128,7 +130,7 @@ function Onboarding() {
 
   let body: React.ReactNode = null;
   let canNext = true;
-  let tone: "light" | "dusk" | "night" = step === 18 ? "night" : "light";
+  let tone: "light" | "dusk" | "night" = step === 19 ? "night" : "light";
   let onNext: () => void = () => go(step + 1);
   let nextLabel = t("common.next");
   let onSkip: (() => void) | null = null; // optional questions: text link under the button
@@ -282,18 +284,22 @@ function Onboarding() {
       break;
     case 17:
       body = <ReminderIntro />;
+      onNext = () => go(notifyScreenApplicable() ? 18 : 19); // no notification support and not an iPhone: skip the permission screen
       break;
     case 18:
+      body = <NotifyPermission onEnabled={() => setReminder((r) => ({ ...r, enabled: true }))} />;
+      break;
+    case 19:
       body = (<>
         <Question id="q15" title={t("commit.title")} />
         <ul className="mb-10 flex flex-col gap-3">
           {commitPhrases.map((p) => <li key={p} className="font-display text-xl leading-snug">{p}</li>)}
         </ul>
-        <HoldButton onComplete={() => go(19, { commitment_at: new Date().toISOString() })} />
+        <HoldButton onComplete={() => go(20, { commitment_at: new Date().toISOString() })} />
       </>);
       canNext = false;
       break;
-    case 19:
+    case 20:
       body = (<>
         <Question id="q16" title={t("plan.title")} />
         <ul className="mb-8 flex flex-col gap-3">
@@ -308,9 +314,9 @@ function Onboarding() {
         </ul>
         <ReminderControl value={reminder} onChange={setReminder} />
       </>);
-      onNext = () => go(20, { reminder_enabled: reminder.enabled, reminder_time: reminder.time });
+      onNext = () => go(21, { reminder_enabled: reminder.enabled, reminder_time: reminder.time });
       break;
-    case 20:
+    case 21:
       body = (<>
         <div className="mb-6 flex justify-center"><Lumi size={64} stage={2} emotion="happy" /></div>
         <Question id="q17" title={t("account.title")} sub={t("account.sub")} />
@@ -331,6 +337,7 @@ function Onboarding() {
           else if (step === 14) go(hasReviews ? 12 : 10); // skip the loading scene
           else if (step === 13) go(hasReviews ? 12 : 10);
           else if (step === 12) go(10);
+          else if (step === 19) go(notifyScreenApplicable() ? 18 : 17);
           else go(step - 1);
         }, "back")} aria-label={t("common.back")} className="glass flex h-11 w-11 items-center justify-center rounded-full text-foreground"><BackIcon /></button>
         <div className="h-2 flex-1 overflow-hidden rounded-full bg-white/50" role="progressbar" aria-valuemin={0} aria-valuemax={TOTAL} aria-valuenow={step} aria-label={t("onb.progress", { n: step, total: TOTAL })}>
@@ -339,7 +346,7 @@ function Onboarding() {
       </div>
       <div key={`${step}-${subStep}-${infoStep}`} className={`${outClass} flex flex-1 flex-col`}>
         <div className="flex-1">{body}</div>
-      {(canNext || ![18, 20].includes(step)) && (
+      {(canNext || ![19, 21].includes(step)) && (
         <div className="fade-up sticky bottom-0 mt-8 pb-2 pt-3" style={{ "--d": "450ms" } as React.CSSProperties}>
           <PrimaryButton disabled={!canNext} onClick={() => transition(onNext)}>{nextLabel}</PrimaryButton>
           {onSkip && (
