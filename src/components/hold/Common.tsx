@@ -97,7 +97,7 @@ export function ChoiceList<T extends string>({ options, value, onChange, multi =
               ? `choice flex items-center justify-center rounded-[24px] px-3 py-3 text-center text-base font-medium transition-colors ${last && options.length % 3 === 1 ? "col-span-3 min-h-14" : "min-h-24"} `
               : "choice flex min-h-14 w-full items-center justify-between rounded-[28px] px-5 py-3 text-left text-base font-medium transition-colors"}>
             <span>{o.label}</span>
-            {!grid && (
+            {!grid && !detail && (
               <span aria-hidden className={`ml-3 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border ${selected ? "border-primary bg-primary text-primary-foreground" : "border-line"}`}>
                 {selected && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M5 12l5 5 9-10" /></svg>}
               </span>
@@ -105,13 +105,14 @@ export function ChoiceList<T extends string>({ options, value, onChange, multi =
           </button>
         );
         if (!detail || grid) return <Fragment key={o.value}>{button}</Fragment>;
+        // One rounded card: the chosen answer on top, its explanation flush underneath on a darker tint.
         return (
-          <div key={o.value}>
-            {button}
+          <div key={o.value} className="overflow-hidden rounded-[28px]">
+            <div className={selected ? "[&>button]:rounded-b-none [&>button]:border-b-0" : ""}>{button}</div>
             <div id={`choice-detail-${o.value}`} aria-hidden={!selected} data-open={selected}
               className="grid transition-[grid-template-rows,opacity] duration-300 ease-out" style={{ gridTemplateRows: selected ? "1fr" : "0fr", opacity: selected ? 1 : 0 }}>
               <div className="overflow-hidden">
-                <p className="glass mt-2 rounded-[24px] px-5 py-4 text-[15px] leading-snug">{detail}</p>
+                <p className="px-5 py-5 text-[17px] leading-relaxed text-[#2e3865]" style={{ background: "rgba(124, 146, 235, 0.30)" }}>{detail}</p>
               </div>
             </div>
           </div>
