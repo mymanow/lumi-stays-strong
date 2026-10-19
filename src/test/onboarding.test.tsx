@@ -210,6 +210,9 @@ describe("onboarding questions", () => {
     expect(screen.getByRole("heading", { name: /Start your journey with support/ })).toBeInTheDocument();
     fireEvent.click(next());
     expect(updateProfile).toHaveBeenLastCalledWith({ onboarding_step: 16 });
+    expect(screen.getByRole("heading", { name: /You are not alone in this/ })).toBeInTheDocument();
+    fireEvent.click(next());
+    expect(updateProfile).toHaveBeenLastCalledWith({ onboarding_step: 17 });
     expect(screen.getByRole("heading", { name: en.commit.title })).toBeInTheDocument();
   });
 

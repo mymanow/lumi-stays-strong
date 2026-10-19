@@ -80,6 +80,9 @@ export const fr = {
       source: "O'Hara, K. L., Grinberg, A. M., Tackman, A. M., Mehl, M. R., & Sbarra, D. A. (2020). Contact With an Ex-Partner Is Associated With Psychological Distress After Marital Separation. Clinical Psychological Science, 8(3), 450–463.",
     },
   },
+  companion: {
+    title: "Tu n'es [pas seul·e] dans ça", tools: ["Compteur", "SOS", "Coffre", "Parcours"], dayTitle: "Ta journée avec {app}", whens: ["Matin", "En journée", "Soir"], whats: ["un check-in de 30 secondes", "le SOS quand l'envie arrive", "écris dans le coffre, sans envoyer"],
+  },
   showcase: {
     pill: "{app} Pro", title: "Commence ton [parcours] avec du [soutien]", alt: "Aperçu des écrans de l'app : compteur, règles, SOS et parcours",
     days: "jours sans contact", nextMilestone: "Prochain cap : 14 jours", rulesTitle: "Fixe tes règles de non-contact", rules: ["Ni message ni appel","Pas de stalking sur ses réseaux","Ne pas relire les anciens messages"],
