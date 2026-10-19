@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { Bell, Flag, Heart, Lock, Map as MapIcon, MessageCircle, PenLine, ShieldCheck, Sun, TrendingUp, Wind, Zap, type LucideIcon } from "lucide-react";
 import { useI18n } from "@/i18n";
 import { Lumi } from "./Lumi";
+import { Celebration } from "./Celebration";
 import { GOAL_DAYS } from "@/lib/domain";
 
 const CHIP_ICONS: LucideIcon[] = [MessageCircle, Zap, Lock, Flag, MapIcon, TrendingUp, Bell, Heart];
@@ -25,7 +26,7 @@ function ChipRow({ labels, icons, dir, seconds }: { labels: string[]; icons: Luc
 }
 
 /** "Your plan is ready": target date from the chosen goal, feature chips drifting sideways and a swipeable benefits carousel. */
-export function PlanReady({ name, goal }: { name: string; goal: string }) {
+export function PlanReady({ name, goal, celebrate = false, onCelebrated }: { name: string; goal: string; celebrate?: boolean; onCelebrated?: () => void }) {
   const { t, tl, lang } = useI18n();
   const chips = tl<string[]>("ready.chips");
   const cards = tl<string[]>("ready.cards");
@@ -42,13 +43,13 @@ export function PlanReady({ name, goal }: { name: string; goal: string }) {
   return (
     <>
       <div className="fade-up text-center">
-        <div className="mb-3 flex justify-center"><Lumi size={72} stage={2} emotion="happy" label="" /></div>
+        <div className="relative mb-3 flex justify-center">{celebrate && <Celebration onDone={onCelebrated} />}<div className={celebrate ? "ready-hop" : ""}><Lumi size={72} stage={2} emotion="happy" label="" /></div></div>
         <h1 className="text-[32px] leading-tight md:text-4xl">{t("ready.title", { name })}</h1>
         <p className="mx-auto mt-3 max-w-[330px] text-lg text-muted-foreground">{date ? t("ready.subDate") : t("ready.subOpen")}</p>
       </div>
       {date && (
         <div className="fade-up mt-5 flex justify-center" style={{ "--d": "200ms" } as React.CSSProperties}>
-          <div className="glass rounded-full border-2 px-8 py-3 text-xl font-semibold" style={{ borderColor: "rgba(214,204,255,.9)" }}>{date}</div>
+          <div className={`glass rounded-full border-2 px-8 py-3 text-xl font-semibold ${celebrate ? "date-shine" : ""}`} style={{ borderColor: "rgba(214,204,255,.9)" }}>{date}</div>
         </div>
       )}
       <div className="fade-up mt-8 text-center" style={{ "--d": "350ms" } as React.CSSProperties}>

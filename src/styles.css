@@ -265,3 +265,22 @@ body::before, .stage-light::before, .stage-dusk::before, .stage-night::before {
 @keyframes chip-l { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 @keyframes chip-r { from { transform: translateX(-50%); } to { transform: translateX(0); } }
 .marquee-x { -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%); mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%); }
+
+/* Calm celebration on "your plan is ready": rings + a gentle rain of small shapes, transform/opacity only. */
+.celebrate-ring { position: absolute; left: 50%; top: 50%; width: 120px; height: 120px; margin: -60px 0 0 -60px; border-radius: 9999px; border: 2px solid rgba(228, 220, 255, 0.7); opacity: 0; animation: celebrate-ring 2s ease-out both; }
+@keyframes celebrate-ring { 0% { opacity: 0.7; transform: scale(0.5); } 100% { opacity: 0; transform: scale(2.6); } }
+.celebrate-bit { position: absolute; left: 50%; top: 50%; opacity: 0; animation: celebrate-fall 3s cubic-bezier(0.25, 0.7, 0.35, 1) both; }
+.celebrate-dot { border-radius: 9999px; }
+.celebrate-petal { border-radius: 9999px 0 9999px 0; }
+.celebrate-star { background: currentColor; clip-path: polygon(50% 0%, 61% 38%, 100% 50%, 61% 62%, 50% 100%, 39% 62%, 0% 50%, 39% 38%); }
+@keyframes celebrate-fall {
+  0% { opacity: 0; transform: translate(0, 0) scale(0.4); }
+  12% { opacity: 1; }
+  38% { opacity: 1; transform: translate(calc(var(--dx) * 0.7), var(--up)) scale(1); }
+  100% { opacity: 0; transform: translate(var(--dx2), var(--down)) scale(0.8); }
+}
+.ready-hop { animation: ready-hop 0.9s cubic-bezier(0.3, 0.7, 0.4, 1) 0.35s both; }
+@keyframes ready-hop { 0% { transform: translateY(0) scale(1, 1); } 30% { transform: translateY(-14px) scale(0.96, 1.05); } 55% { transform: translateY(0) scale(1.05, 0.94); } 100% { transform: translateY(0) scale(1, 1); } }
+.date-shine { position: relative; overflow: hidden; }
+.date-shine::after { content: ""; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.55) 50%, transparent 70%); transform: translateX(-120%); animation: date-shine 1.1s ease-out 1.1s 1 both; }
+@keyframes date-shine { from { transform: translateX(-120%); } to { transform: translateX(120%); } }

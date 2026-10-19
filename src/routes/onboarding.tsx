@@ -70,6 +70,7 @@ function Onboarding() {
   const [source, setSource] = useState("");
   const [goal, setGoal] = useState("");
   const [rules, setRules] = useState<string[]>([]);
+  const [celebrate, setCelebrate] = useState(false); // play the plan-ready celebration once, only when arriving forward
   const [leaving, setLeaving] = useState<"fwd" | "back" | null>(null);
   const [dir, setDir] = useState<"fwd" | "back">("fwd");
   const [infoStep, setInfoStep] = useState(1); // within step 9: the information screens (1..INFO_KINDS.length)
@@ -260,11 +261,11 @@ function Onboarding() {
     case 13:
       return (
         <Stage key="flow" tone="light">
-          <PlanBuilding key="build" onDone={() => go(14)} />
+          <PlanBuilding key="build" onDone={() => { setCelebrate(true); void go(14); }} />
         </Stage>
       );
     case 14:
-      body = <PlanReady name={name.trim()} goal={goal} />;
+      body = <PlanReady name={name.trim()} goal={goal} celebrate={celebrate} onCelebrated={() => setCelebrate(false)} />;
       tone = "dusk";
       nextLabel = t("ready.start");
       break;
