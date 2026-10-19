@@ -99,6 +99,8 @@ describe("onboarding questions", () => {
     render(<Component />);
     expect(screen.getAllByRole("radio")).toHaveLength(5);
     fireEvent.click(screen.getByRole("radio", { name: en.options.motivation.perspective }));
+    expect(document.getElementById("choice-detail-perspective")).toHaveAttribute("aria-hidden", "false");
+    expect(document.getElementById("choice-detail-win_back")).toHaveAttribute("aria-hidden", "true");
     fireEvent.click(next());
     expect(updateProfile).toHaveBeenCalledWith({ motivation: "perspective", onboarding_step: 7 });
   });

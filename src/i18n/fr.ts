@@ -141,6 +141,13 @@ export const fr = {
   },
   options: {
     triggers: { evening: "Le soir", social_media: "Les réseaux", loneliness: "La solitude", alcohol: "L'alcool", argument: "Une dispute", anniversary: "Un anniversaire", other: "Autre" },
+    motivationInfo: {
+      win_back: "Après une perte, ton cerveau s'accroche naturellement, mais courir après l'autre le pousse à s'éloigner. Le no contact casse le cycle de la poursuite, t'aide à retrouver de la stabilité et laisse de l'espace, sans rien garantir sur son retour.",
+      reconcile: "Tu es ouvert·e à reconstruire sans répéter les schémas qui font mal. Prendre du recul laisse tes émotions se poser pour voir clairement si une réconciliation serait saine, et pas seulement familière.",
+      perspective: "Une rupture peut créer un « brouillard cognitif » qui brouille la pensée. Le no contact aide à le dissiper en réduisant les déclencheurs et en apaisant ton système nerveux, pour mieux y voir.",
+      move_on: "Le chagrin d'amour peut activer des circuits proches de ceux de l'addiction, avec envies et manque. Le no contact t'aide à faire une désintox émotionnelle, à calmer l'envie de reprendre contact et à reconstruire ta confiance.",
+      unsure: "Se sentir perdu·e est normal. Le stress peut brouiller le jugement et pousser à l'impulsivité. Le no contact agit comme une remise à zéro : moins de réactivité, plus de stabilité avant les grandes décisions.",
+    },
     situationInfo: {
       breakup: "Une rupture secoue tout ton système. Ton cerveau peut traverser quelque chose qui ressemble à un sevrage des « hormones de l'amour » comme la dopamine et l'ocytocine.",
       pulling_away: "Ils n'ont pas mis fin à votre histoire, mais quelque chose cloche. Le silence, la distance ou le changement d'énergie t'angoisse et te piège dans des spirales de « et si… ».",

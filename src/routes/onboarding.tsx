@@ -219,7 +219,7 @@ function Onboarding() {
       break;
     case 6:
       body = (<><Question id="q6" title={t("onb.hopeTitle")} sub={t("onb.hopeSub")} />
-        <ChoiceList labelledBy="q6" options={opts("motivation", MOTIVATIONS)} value={hope ? [hope] : []} onChange={(v) => setHope(v[0] ?? "")} /></>);
+        <ChoiceList labelledBy="q6" options={opts("motivation", MOTIVATIONS)} details={Object.fromEntries(MOTIVATIONS.map((v) => [v, t(`options.motivationInfo.${v}`)]))} value={hope ? [hope] : []} onChange={(v) => setHope(v[0] ?? "")} /></>);
       canNext = !!hope; onNext = () => go(7, { motivation: hope });
       break;
     case 7:

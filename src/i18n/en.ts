@@ -143,6 +143,13 @@ export const en: typeof fr = {
   },
   options: {
     triggers: { evening: "Evenings", social_media: "Social media", loneliness: "Loneliness", alcohol: "Alcohol", argument: "An argument", anniversary: "An anniversary", other: "Other" },
+    motivationInfo: {
+      win_back: "Your brain naturally clings after loss, but chasing pushes them away. No Contact breaks the pursuit cycle, helps you regain stability, and creates space, with no guarantee about whether they come back.",
+      reconcile: "You're open to rebuilding without repeating painful patterns. Stepping back lets emotions settle so you can see clearly if reconciliation would be healthy, not just familiar.",
+      perspective: "Breakups can create a \"cognitive fog\" that scrambles thinking. No Contact helps clear it by reducing triggers and calming your nervous system for clearer evaluation.",
+      move_on: "Heartbreak can activate pathways similar to addiction, causing cravings and withdrawal. No Contact helps you emotionally detox, ease reconnection urges, and rebuild confidence.",
+      unsure: "Feeling lost is normal. Stress can cloud judgment and fuel impulsivity. No Contact acts as a reset: lowering reactivity and creating stability before big decisions.",
+    },
     situationInfo: {
       breakup: "Breakups shock your whole system. Your brain can go through something like withdrawal from \"love chemicals\" such as dopamine and oxytocin.",
       pulling_away: "They haven't ended things, but something feels off. The silence, distance, or shift in energy is making you anxious and stuck in \"what if\" spirals.",
