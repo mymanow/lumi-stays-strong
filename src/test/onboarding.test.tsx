@@ -115,6 +115,18 @@ describe("onboarding questions", () => {
     expect(screen.getByRole("heading", { name: en.onb.goalTitle })).toBeInTheDocument();
   });
 
+  it("unfolds the explanation under the chosen situation and folds the previous one", () => {
+    Object.assign(profile, { onboarding_step: 2 });
+    render(<Component />);
+    const panel = (k: string) => document.getElementById(`choice-detail-${k}`)!;
+    fireEvent.click(screen.getByRole("radio", { name: en.options.situation.breakup }));
+    expect(panel("breakup")).toHaveAttribute("aria-hidden", "false");
+    expect(panel("breakup")).toHaveTextContent(/Breakups shock your whole system/);
+    fireEvent.click(screen.getByRole("radio", { name: en.options.situation.mixed_signals }));
+    expect(panel("breakup")).toHaveAttribute("aria-hidden", "true");
+    expect(panel("mixed_signals")).toHaveAttribute("aria-hidden", "false");
+  });
+
   it("Q7 offers 7 goals including no end date", () => {
     Object.assign(profile, { onboarding_step: 8 });
     render(<Component />);

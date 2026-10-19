@@ -59,7 +59,7 @@ Help a user keep no contact with an ex. The core moment is the urge to write to 
 ## Onboarding (one question per screen, thin progress bar over 18 steps, Back button, answers saved as you go)
 0. Welcome: logo, language selector (FR/EN) top right, large Lumi, headline "Tiens bon quand l'envie d'écrire revient.", sub "Voici Lumi, elle veille avec toi. Un compteur, un SOS, un coach. Privé, sans compte obligatoire.", primary "Commencer", link "J'ai déjà un compte", small disclaimer "Pas un avis médical. En danger, appelle le 3114." (crisis number localized by language/region).
 1. Intro "Personnalisons ton parcours", then "Comment souhaite-tu qu'on t'appelles ?" (first name or nickname).
-2. "Qu'est-ce qui t'amène aujourd'hui ?" single choice: rupture récente / j'ai l'impression que l'autre s'éloigne / je continue à revenir / signaux contradictoires / mon ex a tourné la page / on m'a demandé de l'espace / j'ai besoin d'espace pour prendre du recul.
+2. "Qu'est-ce qui t'amène aujourd'hui ?" (an explanation unfolds under the chosen answer and folds again when another one is picked; i18n options.situationInfo) single choice: rupture récente / j'ai l'impression que l'autre s'éloigne / je continue à revenir / signaux contradictoires / mon ex a tourné la page / on m'a demandé de l'espace / j'ai besoin d'espace pour prendre du recul.
 3. "Quand as-tu parlé à ton ex, écrit ou regardé ses réseaux pour la dernière fois ?" single choice: aujourd'hui / dernière semaine / dernier mois / 1 à 3 mois / 3 à 6 mois / plus de 6 mois. The counter starts at the lowest bound of the range.
 4. "Et comment tu t'es senti·e après ?" multi-select (7 choices; "Je n'ai pas encore repris contact" is exclusive).
 5. "Comment vas-tu en ce moment, vraiment ?" multi-select (7 choices).

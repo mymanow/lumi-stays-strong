@@ -143,6 +143,15 @@ export const en: typeof fr = {
   },
   options: {
     triggers: { evening: "Evenings", social_media: "Social media", loneliness: "Loneliness", alcohol: "Alcohol", argument: "An argument", anniversary: "An anniversary", other: "Other" },
+    situationInfo: {
+      breakup: "Breakups shock your whole system. Your brain can go through something like withdrawal from \"love chemicals\" such as dopamine and oxytocin.",
+      pulling_away: "They haven't ended things, but something feels off. The silence, distance, or shift in energy is making you anxious and stuck in \"what if\" spirals.",
+      going_back: "On-and-off cycles are powerful, partly because of what's often called trauma bonding: the push-pull can feel addictive. You know it's not good for you, but the urge to reconnect feels impossible to resist.",
+      mixed_signals: "One day they're warm, the next they're distant. This back-and-forth keeps you hooked and questioning what's real. Whether it's intentional or not, the confusion drains you.",
+      moved_on: "Seeing them with someone new feels like proof you didn't matter. Your brain interprets it as rejection, even though it says nothing about your worth.",
+      asked_space: "Being told to step back can feel like rejection or punishment. It leaves you powerless, stuck waiting, or tempted to break the rules.",
+      want_space: "Sometimes the only way to see clearly is to step back. No Contact gives your mind space to settle, helps you calm the emotional chaos, and lets you reflect on whether this relationship is truly right for you.",
+    },
     situation: {
       breakup: "I just went through a breakup",
       pulling_away: "I feel like they're pulling away",

@@ -194,7 +194,7 @@ function Onboarding() {
       break;
     case 2:
       body = (<><Question id="q2" title={t("onb.situationTitle")} sub={t("onb.situationSub")} />
-        <ChoiceList labelledBy="q2" options={opts("situation", SITUATIONS)} value={situation ? [situation] : []} onChange={(v) => setSituation(v[0] ?? "")} /></>);
+        <ChoiceList labelledBy="q2" options={opts("situation", SITUATIONS)} details={Object.fromEntries(SITUATIONS.map((v) => [v, t(`options.situationInfo.${v}`)]))} value={situation ? [situation] : []} onChange={(v) => setSituation(v[0] ?? "")} /></>);
       canNext = !!situation; onNext = () => go(3, { situation_type: situation });
       break;
     case 3:

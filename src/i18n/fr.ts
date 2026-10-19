@@ -141,6 +141,15 @@ export const fr = {
   },
   options: {
     triggers: { evening: "Le soir", social_media: "Les réseaux", loneliness: "La solitude", alcohol: "L'alcool", argument: "Une dispute", anniversary: "Un anniversaire", other: "Autre" },
+    situationInfo: {
+      breakup: "Une rupture secoue tout ton système. Ton cerveau peut traverser quelque chose qui ressemble à un sevrage des « hormones de l'amour » comme la dopamine et l'ocytocine.",
+      pulling_away: "Ils n'ont pas mis fin à votre histoire, mais quelque chose cloche. Le silence, la distance ou le changement d'énergie t'angoisse et te piège dans des spirales de « et si… ».",
+      going_back: "Les cycles « on se quitte, on se remet ensemble » sont puissants, en partie à cause de ce qu'on appelle souvent le lien traumatique : le chaud-froid peut devenir addictif. Tu sais que ce n'est pas bon pour toi, mais l'envie de reprendre contact semble impossible à tenir.",
+      mixed_signals: "Un jour ils sont chaleureux, le lendemain distants. Ce va-et-vient te garde accroché·e et te fait douter de ce qui est vrai. Que ce soit voulu ou non, la confusion t'épuise.",
+      moved_on: "Les voir avec quelqu'un de nouveau donne l'impression de la preuve que tu n'as pas compté. Ton cerveau l'interprète comme un rejet, alors que cela ne dit rien de ta valeur.",
+      asked_space: "Qu'on te demande de prendre du recul peut ressembler à un rejet ou à une punition. Tu te sens impuissant·e, à attendre, ou tenté·e d'enfreindre les règles.",
+      want_space: "Parfois, la seule façon d'y voir clair est de prendre du recul. Le no contact laisse ton esprit se poser, aide à calmer le chaos émotionnel et te permet de te demander si cette relation est vraiment faite pour toi.",
+    },
     situation: {
       breakup: "Je viens de vivre une rupture",
       pulling_away: "J'ai l'impression que l'autre s'éloigne",

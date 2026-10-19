@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import type { ReactNode } from "react";
+import { Fragment, type ReactNode } from "react";
 import { useI18n, type Lang } from "@/i18n";
 import { crisisLineFor } from "@/lib/domain";
 import { ArrowRight } from "lucide-react";
@@ -77,22 +77,25 @@ export function SosButton({ className = "" }: { className?: string }) {
   );
 }
 
-export function ChoiceList<T extends string>({ options, value, onChange, multi = false, labelledBy, grid = false }: {
+export function ChoiceList<T extends string>({ options, value, onChange, multi = false, labelledBy, grid = false, details }: {
   options: { value: T; label: string }[]; value: T[]; onChange: (v: T[]) => void; multi?: boolean; labelledBy?: string;
   /** Tile layout: 3 columns of centered tiles, the last option spans the full width (e.g. durations). */
   grid?: boolean;
+  /** Optional explanation per option, unfolded under the selected one (and folded again when another is picked). */
+  details?: Partial<Record<T, string>>;
 }) {
   return (
     <div role={multi ? "group" : "radiogroup"} aria-labelledby={labelledBy} className={`cascade ${grid ? "grid grid-cols-3 gap-3" : "flex flex-col gap-3"}`}>
       {options.map((o, i) => {
         const selected = value.includes(o.value);
         const last = i === options.length - 1;
-        return (
-          <button key={o.value} type="button" role={multi ? "checkbox" : "radio"} aria-checked={selected}
+        const detail = details?.[o.value];
+        const button = (
+          <button type="button" role={multi ? "checkbox" : "radio"} aria-checked={selected} aria-describedby={detail ? `choice-detail-${o.value}` : undefined}
             onClick={() => onChange(multi ? (selected ? value.filter((v) => v !== o.value) : [...value, o.value]) : [o.value])}
             className={grid
-              ? `choice flex items-center justify-center rounded-[24px] px-3 py-3 text-center text-base font-medium transition-colors ${last && options.length % 3 === 1 ? "col-span-3 min-h-14" : "min-h-24"}`
-              : "choice flex min-h-14 items-center justify-between rounded-[28px] px-5 py-3 text-left text-base font-medium transition-colors"}>
+              ? `choice flex items-center justify-center rounded-[24px] px-3 py-3 text-center text-base font-medium transition-colors ${last && options.length % 3 === 1 ? "col-span-3 min-h-14" : "min-h-24"} `
+              : "choice flex min-h-14 w-full items-center justify-between rounded-[28px] px-5 py-3 text-left text-base font-medium transition-colors"}>
             <span>{o.label}</span>
             {!grid && (
               <span aria-hidden className={`ml-3 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border ${selected ? "border-primary bg-primary text-primary-foreground" : "border-line"}`}>
@@ -100,6 +103,18 @@ export function ChoiceList<T extends string>({ options, value, onChange, multi =
               </span>
             )}
           </button>
+        );
+        if (!detail || grid) return <Fragment key={o.value}>{button}</Fragment>;
+        return (
+          <div key={o.value}>
+            {button}
+            <div id={`choice-detail-${o.value}`} aria-hidden={!selected} data-open={selected}
+              className="grid transition-[grid-template-rows,opacity] duration-300 ease-out" style={{ gridTemplateRows: selected ? "1fr" : "0fr", opacity: selected ? 1 : 0 }}>
+              <div className="overflow-hidden">
+                <p className="glass mt-2 rounded-[24px] px-5 py-4 text-[15px] leading-snug">{detail}</p>
+              </div>
+            </div>
+          </div>
         );
       })}
     </div>
