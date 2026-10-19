@@ -137,7 +137,6 @@ export const fr = {
     goalSub: "Fixe-toi un objectif auquel t'engager.",
     rulesTitle: "Fixe tes règles de non-contact",
     rulesSub: "Pas d'inquiétude, tu pourras les modifier plus tard.",
-    gender: "Tu es :", genderSub: "Pour adapter notre communication.",
   },
   options: {
     triggers: { evening: "Le soir", social_media: "Les réseaux", loneliness: "La solitude", alcohol: "L'alcool", argument: "Une dispute", anniversary: "Un anniversaire", other: "Autre" },
@@ -197,7 +196,6 @@ export const fr = {
     },
     source: { tiktok: "TikTok", google: "Recherche Google", word_of_mouth: "Bouche-à-oreille", quora: "Quora", app_store: "App Store", instagram_facebook: "Instagram / Facebook", reddit: "Reddit", other: "Autre" },
     goal: { d7: "7 jours", d14: "14 jours", d30: "30 jours", d60: "60 jours", d90: "90 jours", d180: "180 jours", open: "Sans date de fin" },
-    gender: { woman: "Une femme", man: "Un homme", undisclosed: "Je préfère ne pas dire" },
   },
   commit: {
     title: "Ton engagement.",

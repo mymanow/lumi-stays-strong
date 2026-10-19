@@ -139,7 +139,6 @@ export const en: typeof fr = {
     goalSub: "Set a goal to commit to.",
     rulesTitle: "Set your no-contact rules",
     rulesSub: "Don't worry, you can update these later.",
-    gender: "You are:", genderSub: "To adapt how we talk to you.",
   },
   options: {
     triggers: { evening: "Evenings", social_media: "Social media", loneliness: "Loneliness", alcohol: "Alcohol", argument: "An argument", anniversary: "An anniversary", other: "Other" },
@@ -199,7 +198,6 @@ export const en: typeof fr = {
     },
     source: { tiktok: "TikTok", google: "Google Search", word_of_mouth: "Word of mouth", quora: "Quora", app_store: "App Store", instagram_facebook: "Instagram / Facebook", reddit: "Reddit", other: "Other" },
     goal: { d7: "7 days", d14: "14 days", d30: "30 days", d60: "60 days", d90: "90 days", d180: "180 days", open: "No end date" },
-    gender: { woman: "A woman", man: "A man", undisclosed: "I'd rather not say" },
   },
   commit: {
     title: "Your commitment.",
