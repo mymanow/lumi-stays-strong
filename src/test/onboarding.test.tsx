@@ -207,6 +207,9 @@ describe("onboarding questions", () => {
     expect(screen.getByRole("heading", { name: "Your personalized plan is ready, Alex!" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: en.ready.start }));
     expect(updateProfile).toHaveBeenLastCalledWith({ onboarding_step: 15 });
+    expect(screen.getByRole("heading", { name: /Start your journey with support/ })).toBeInTheDocument();
+    fireEvent.click(next());
+    expect(updateProfile).toHaveBeenLastCalledWith({ onboarding_step: 16 });
     expect(screen.getByRole("heading", { name: en.commit.title })).toBeInTheDocument();
   });
 
