@@ -81,6 +81,7 @@ export const fr = {
     },
   },
   paywall: {
+    "skip": "Plus tard, continuer gratuitement",
     "loading": "Calcul de ton calendrier de détox émotionnelle…",
     "title": "Ton plan personnalisé est prêt !",
     "sub": "Nous t'aiderons à tenir ton Silence Radio pour une détox émotionnelle complète d'ici le :",
@@ -315,10 +316,9 @@ export const fr = {
     notifTitle: "{companion} pense à toi", notifBody: "Ta tâche du jour t'attend.",
   },
   account: {
-    title: "Garde ta progression en sécurité.",
     sub: "Ajoute ton e-mail pour retrouver ton compteur et tes raisons sur un autre appareil. Tes messages non envoyés restent sur cet appareil.",
     email: "Adresse e-mail", send: "Recevoir le lien", sent: "Lien envoyé. Ouvre l'e-mail pour confirmer.",
-    google: "Continuer avec Google", apple: "Continuer avec Apple", skip: "Plus tard, continuer sans compte",
+    google: "Continuer avec Google", apple: "Continuer avec Apple",
     linked: "Compte sauvegardé : {email}", invalid: "Adresse e-mail invalide.", error: "L'envoi a échoué. Réessaie dans un instant.",
   },
   signin: { title: "Content·e de te revoir.", sub: "Entre ton e-mail, on t'envoie un lien de connexion.", send: "Recevoir le lien", sent: "Lien envoyé. Ouvre-le sur cet appareil." },

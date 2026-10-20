@@ -20,7 +20,6 @@ import { notifyScreenApplicable } from "@/lib/notify";
 import { ReminderIntro } from "@/components/hold/ReminderIntro";
 import { PhoneShowcase } from "@/components/hold/PhoneShowcase";
 import { PlanBuilding } from "@/components/hold/PlanBuilding";
-import { AccountLinker } from "@/components/hold/AccountLinker";
 import { APP_NAME } from "@/config/app";
 import { CONTACT_RANGE_DAYS, DEFAULT_REMINDER_TIME, MOTIVATIONS, SITUATIONS, type ContactRange } from "@/lib/domain";
 
@@ -41,7 +40,7 @@ export const Route = createFileRoute("/onboarding")({
   component: Onboarding,
 });
 
-const TOTAL = 21;
+const TOTAL = 20;
 const LAST_CONTACT = ["today", "week", "month", "m1_3", "m3_6", "gt_6m"] as const;
 const AFTER = ["worse", "ignored", "nothing_changed", "saw_upsetting", "argued", "cold", "not_yet"] as const;
 const NOW = ["devastated", "angry", "hoping", "guilty", "confused", "lonely", "okay"] as const;
@@ -121,10 +120,9 @@ function Onboarding() {
     await updateProfile({ ...patch, onboarding_step: next });
   };
 
-  const finish = async () => {
-    await updateProfile({ onboarding_completed: true, onboarding_step: TOTAL });
-    navigate({ to: "/" });
-  };
+  // The paywall result is now the last screen: pressing any of its buttons completes the onboarding.
+  const complete = () => updateProfile({ onboarding_completed: true, onboarding_step: TOTAL });
+  const finish = async () => { await complete(); navigate({ to: "/" }); };
 
   const opts = <T extends string>(group: string, values: readonly T[]) =>
     values.map((v) => ({ value: v, label: t(`options.${group}.${v}`) }));
@@ -303,8 +301,9 @@ function Onboarding() {
         <Stage key="flow" tone="dusk">
           <div className={`${outClass} mx-auto flex min-h-svh max-w-[480px] flex-col px-6 pb-4 pt-3`}>
             <PaywallResult plan={plan} onPlan={setPlan} celebrate={celebrateResult} onCelebrated={() => setCelebrateResult(false)} onBack={() => transition(() => go(19), "back")}
-              onStart={() => setCheckoutOpen(true)}
-              onSimulate={() => { void updateProfile({ onboarding_step: 21 }); navigate({ to: "/subscribe/success", search: { simulate: "1" } }); }} />
+              onStart={() => { void complete(); setCheckoutOpen(true); }}
+              onSkip={() => void finish()}
+              onSimulate={() => { void complete(); navigate({ to: "/subscribe/success", search: { simulate: "1" } }); }} />
           </div>
           {checkoutOpen && <Suspense fallback={null}><CheckoutSheet open={checkoutOpen} onOpenChange={setCheckoutOpen} plan={plan} /></Suspense>}
         </Stage>
@@ -316,17 +315,8 @@ function Onboarding() {
       if (SIMULATE_PAYMENT) {
         // Preview only: jump to the post-payment screen without paying or creating any subscription.
         skipLabel = t("pitch.simulate");
-        onSkip = () => { void updateProfile({ onboarding_step: 20 }); navigate({ to: "/subscribe/success", search: { simulate: "1" } }); };
+        onSkip = () => { void complete(); navigate({ to: "/subscribe/success", search: { simulate: "1" } }); };
       }
-      break;
-    case 21:
-      body = (<>
-        <div className="mb-6 flex justify-center"><Lumi size={64} stage={2} emotion="happy" /></div>
-        <Question id="q17" title={t("account.title")} sub={t("account.sub")} />
-        <AccountLinker />
-        <button type="button" onClick={finish} className="mt-6 min-h-12 w-full text-foreground underline-offset-4 hover:underline">{t("account.skip")}</button>
-      </>);
-      canNext = false;
       break;
   }
 

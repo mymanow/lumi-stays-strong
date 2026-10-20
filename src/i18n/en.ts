@@ -83,6 +83,7 @@ export const en: typeof fr = {
     },
   },
   paywall: {
+    "skip": "Maybe later, continue for free",
     "loading": "Calculating your emotional detox calendar…",
     "title": "Your personalized plan is ready!",
     "sub": "We'll help you keep your Radio Silence for a full emotional detox by:",
@@ -317,10 +318,9 @@ export const en: typeof fr = {
     notifTitle: "{companion} is thinking of you", notifBody: "Your task for today is waiting.",
   },
   account: {
-    title: "Keep your progress safe.",
     sub: "Add your email to find your counter and reasons on another device. Your unsent messages stay on this device.",
     email: "Email address", send: "Get the link", sent: "Link sent. Open the email to confirm.",
-    google: "Continue with Google", apple: "Continue with Apple", skip: "Later, continue without an account",
+    google: "Continue with Google", apple: "Continue with Apple",
     linked: "Account saved: {email}", invalid: "Invalid email address.", error: "Sending failed. Try again in a moment.",
   },
   signin: { title: "Welcome back.", sub: "Enter your email and we'll send you a sign-in link.", send: "Get the link", sent: "Link sent. Open it on this device." },

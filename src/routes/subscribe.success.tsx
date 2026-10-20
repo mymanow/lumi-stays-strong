@@ -59,7 +59,7 @@ function Success() {
           <p className={`mt-3 text-lg ${active ? "fade-up" : ""}`} style={{ "--d": "1000ms" } as React.CSSProperties} aria-live="polite">{active ? t("subscribe.successBody") : state === "late" ? t("subscribe.successLate") : ""}</p>
         </div>
         {state !== "pending" && (
-          <Link to={simulated ? "/onboarding" : "/coach"} className="fade-up flex min-h-[68px] w-full items-center justify-center rounded-[26px] bg-white text-lg font-bold text-[#2e3865]" style={{ "--d": active ? "1400ms" : "0ms" } as React.CSSProperties}>{t("subscribe.toCoach")}</Link>
+          <Link to="/coach" className="fade-up flex min-h-[68px] w-full items-center justify-center rounded-[26px] bg-white text-lg font-bold text-[#2e3865]" style={{ "--d": active ? "1400ms" : "0ms" } as React.CSSProperties}>{t("subscribe.toCoach")}</Link>
         )}
       </div>
     </Stage>

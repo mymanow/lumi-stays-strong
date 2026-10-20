@@ -24,7 +24,7 @@ export function targetDate(lang: string, now = new Date()) {
  * dynamic target date (today + 90 days), reassurance (slogan, feature chips, stars only with a real rating) and the
  * two plans. The CTA goes to the checkout of the selected plan.
  */
-export function PaywallResult({ plan, onPlan, onStart, onSimulate, onBack, celebrate = false, onCelebrated }: { plan: PlanKey; onPlan: (p: PlanKey) => void; onStart: () => void; onSimulate: () => void; onBack: () => void; celebrate?: boolean; onCelebrated?: (() => void) | undefined }) {
+export function PaywallResult({ plan, onPlan, onStart, onSimulate, onSkip, onBack, celebrate = false, onCelebrated }: { plan: PlanKey; onPlan: (p: PlanKey) => void; onStart: () => void; onSimulate: () => void; onSkip: () => void; onBack: () => void; celebrate?: boolean; onCelebrated?: (() => void) | undefined }) {
   const { t, tl, lang } = useI18n();
   const [loaded, setLoaded] = useState(() => reduced());
   const [more, setMore] = useState(false); // the weekly plan stays hidden until "show more plans"
@@ -109,6 +109,7 @@ export function PaywallResult({ plan, onPlan, onStart, onSimulate, onBack, celeb
 
       <div className="fade-up sticky bottom-0 mt-4 pb-1 pt-2" style={{ "--d": "480ms" } as React.CSSProperties}>
         <PrimaryButton onClick={onStart}>{t("paywall.cta")}</PrimaryButton>
+        <button type="button" onClick={onSkip} className="mt-1 min-h-10 w-full text-sm text-white/85 underline-offset-4 hover:underline">{t("paywall.skip")}</button>
         {SIMULATE_PAYMENT && <button type="button" onClick={onSimulate} className="mt-1 min-h-10 w-full text-sm text-white/70 underline-offset-4 hover:underline">{t("pitch.simulate")}</button>}
       </div>
     </div>

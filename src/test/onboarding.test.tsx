@@ -276,6 +276,18 @@ describe("paywall result screen", () => {
     expect((await screen.findByTestId("checkout")).getAttribute("data-plan")).toBe("quarterly");
   });
 
+  it("is the last screen: skipping completes the onboarding and goes home, opening the checkout completes it too", async () => {
+    Object.assign(profile, { onboarding_step: 20 });
+    render(<Component />);
+    fireEvent.click(screen.getByRole("button", { name: en.paywall.skip }));
+    await Promise.resolve();
+    expect(updateProfile).toHaveBeenCalledWith({ onboarding_completed: true, onboarding_step: 20 });
+    expect(navigateMock).toHaveBeenCalledWith({ to: "/" });
+    updateProfile.mockClear();
+    fireEvent.click(screen.getByRole("button", { name: en.paywall.cta }));
+    expect(updateProfile).toHaveBeenCalledWith({ onboarding_completed: true, onboarding_step: 20 });
+  });
+
   it("shows no star rating while there is no real rating", () => {
     Object.assign(profile, { onboarding_step: 20 });
     render(<Component />);
@@ -288,7 +300,7 @@ describe("payment simulation (test only)", () => {
     Object.assign(profile, { onboarding_step: 19 });
     render(<Component />);
     fireEvent.click(screen.getByRole("button", { name: en.pitch.simulate }));
-    expect(updateProfile).toHaveBeenCalledWith({ onboarding_step: 20 });
+    expect(updateProfile).toHaveBeenCalledWith({ onboarding_completed: true, onboarding_step: 20 });
     expect(navigateMock).toHaveBeenCalledWith({ to: "/subscribe/success", search: { simulate: "1" } });
     expect(updateProfile.mock.calls.some(([p]) => JSON.stringify(p).includes("subscri"))).toBe(false);
   });
