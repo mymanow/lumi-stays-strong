@@ -166,9 +166,9 @@ export const fr = {
     average: "note moyenne", people: "personnes", verified: "Vérifié", example: "Exemple", stars: "5 étoiles sur 5",
     // Clearly labelled placeholders, shown while src/config/reviews.ts has no real reviews and SHOW_PLACEHOLDERS is on.
     examples: [
-      { name: "Prénom A.", title: "Avis d'exemple", body: "Texte d'exemple pour valider la mise en page. Ce n'est pas un vrai avis." },
-      { name: "Prénom B.", title: "Avis d'exemple", body: "Un autre texte d'exemple, un peu plus long, pour voir comment la carte gère deux ou trois lignes de texte." },
-      { name: "Prénom C.", title: "Avis d'exemple", body: "Dernier texte d'exemple. Les vrais avis se renseignent dans src/config/reviews.ts." },
+      { name: "Emma R.", title: "« Je pense enfin à moi »", body: "Avant, je consultais les réseaux sociaux de mon ex tous les jours. Maintenant, après 30 jours sans contact, je commence à me retrouver. Je n’aurais jamais pensé pouvoir en arriver là." },
+      { name: "Sophie M.", title: "« Cette appli m’a empêchée de lui écrire »", body: "Chaque fois que j’avais envie de reprendre contact, j’ouvrais cette application à la place. Les rappels quotidiens m’ont aidée à tenir bon, même dans les moments les plus difficiles. Je fais enfin passer ma tranquillité d’esprit en premier." },
+      { name: "Lucas D.", title: "« Je ne ressens plus le besoin de vérifier »", body: "Pendant des mois, je consultais le compte Instagram de mon ex, en espérant trouver un signe que je lui manquais. Cette application m’a aidé à rompre cette habitude et à me recentrer sur ma propre vie. Un jour après l’autre." },
     ],
   },
   onb: {

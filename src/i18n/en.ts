@@ -168,9 +168,9 @@ export const en: typeof fr = {
     average: "average rating", people: "people", verified: "Verified", example: "Example", stars: "5 out of 5 stars",
     // Clearly labelled placeholders, shown while src/config/reviews.ts has no real reviews and SHOW_PLACEHOLDERS is on.
     examples: [
-      { name: "Name A.", title: "Example review", body: "Placeholder text to check the layout. This is not a real review." },
-      { name: "Name B.", title: "Example review", body: "Another placeholder, a bit longer, to see how the card handles two or three lines of text." },
-      { name: "Name C.", title: "Example review", body: "Last placeholder. Real reviews go in src/config/reviews.ts." },
+      { name: "Emma R.", title: "“I’m finally choosing myself”", body: "I used to check my ex’s social media every single day. Now, after 30 days of No Contact, I’m starting to feel like myself again. I never thought I could get here." },
+      { name: "Sophie M.", title: "“It stopped me from texting him”", body: "Every time I wanted to reach out, I opened this app instead. The daily reminders helped me stay strong, even on the hardest days. I’m finally putting my peace first." },
+      { name: "Lucas D.", title: "“I don’t feel the need to check anymore”", body: "I spent months looking at my ex’s Instagram, hoping to find a sign that they missed me. This app helped me break that habit and focus on my own life. One day at a time." },
     ],
   },
   onb: {

@@ -39,7 +39,7 @@ export function ReviewsScreen() {
                 {[0, 1, 2, 3, 4].map((i) => <Star key={i} size={16} fill="currentColor" strokeWidth={0} />)}
               </div>
             </div>
-            <p className="mt-3 text-base font-semibold">“{r.title}”</p>
+            <p className="mt-3 text-base font-semibold">{r.title}</p>
             <p className="mt-1 text-base leading-snug">{r.body}</p>
           </li>
         ))}

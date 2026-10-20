@@ -3,7 +3,7 @@
  *
  * Only add REAL reviews from real users who agreed to be quoted (and a RATING you can back up from the store).
  * While REVIEWS is empty the screen shows three clearly labelled "Exemple" placeholder cards (see i18n
- * `reviews.examples`) so the design is visible. Set SHOW_PLACEHOLDERS to false before launch to skip the screen until
+ * `reviews.examples`: the three texts supplied by the owner, Emma R. / Sophie M. / Lucas D., FR + EN) so the design is visible. Set SHOW_PLACEHOLDERS to false before launch to skip the screen until
  * real reviews exist. Never invent reviews, names or figures.
  */
 export type Review = { name: string; title: string; body: string; verified?: boolean };
