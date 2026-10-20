@@ -247,10 +247,15 @@ describe("paywall result screen", () => {
     expect(screen.getByText(en.paywall.quarterly.billed)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: en.paywall.cta }));
     expect(navigateMock).toHaveBeenLastCalledWith({ to: "/subscribe", search: { from: "onboarding", plan: "quarterly" } });
+    expect(screen.queryByRole("radio", { name: /Weekly/ })).toBeNull(); // hidden until "Show more plans"
+    fireEvent.click(screen.getByRole("button", { name: /Show more plans/ }));
     fireEvent.click(screen.getByRole("radio", { name: /Weekly/ }));
     expect(screen.getByRole("radio", { name: /Weekly/ })).toBeChecked();
     fireEvent.click(screen.getByRole("button", { name: en.paywall.cta }));
     expect(navigateMock).toHaveBeenLastCalledWith({ to: "/subscribe", search: { from: "onboarding", plan: "weekly" } });
+    fireEvent.click(screen.getByRole("button", { name: /Hide/ })); // hiding falls back to the visible plan
+    fireEvent.click(screen.getByRole("button", { name: en.paywall.cta }));
+    expect(navigateMock).toHaveBeenLastCalledWith({ to: "/subscribe", search: { from: "onboarding", plan: "quarterly" } });
   });
 
   it("shows no star rating while there is no real rating", () => {

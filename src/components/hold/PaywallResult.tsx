@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Heart, Lock, MessageCircle, PenLine, Star, Zap } from "lucide-react";
+import { ChevronDown, Heart, Lock, MessageCircle, PenLine, Star, Zap } from "lucide-react";
 import { useI18n } from "@/i18n";
 import { Lumi } from "./Lumi";
 import { PrimaryButton } from "./Common";
@@ -31,6 +31,7 @@ export function targetDate(lang: string, now = new Date()) {
 export function PaywallResult({ plan, onPlan, onStart, onSimulate, onBack }: { plan: PlanKey; onPlan: (p: PlanKey) => void; onStart: () => void; onSimulate: () => void; onBack: () => void }) {
   const { t, tl, lang } = useI18n();
   const [loaded, setLoaded] = useState(() => reduced());
+  const [more, setMore] = useState(false); // the weekly plan stays hidden until "show more plans"
   useEffect(() => {
     if (loaded) return;
     const id = window.setTimeout(() => setLoaded(true), LOADING_MS);
@@ -48,6 +49,7 @@ export function PaywallResult({ plan, onPlan, onStart, onSimulate, onBack }: { p
   }
 
   const chips = tl<string[]>("paywall.chips");
+  const toggleMore = () => { if (more && plan === "weekly") onPlan("quarterly"); setMore((m) => !m); }; // never leave a hidden plan selected
   const card = (k: PlanKey) => {
     const on = plan === k;
     return (
@@ -95,10 +97,18 @@ export function PaywallResult({ plan, onPlan, onStart, onSimulate, onBack }: { p
         </ul>
       </div>
 
-      <div className="fade-up mt-5 flex flex-col gap-3.5 pt-3" role="radiogroup" aria-label={t("paywall.plans")} style={{ "--d": "400ms" } as React.CSSProperties}>
+      <div className="fade-up mt-5 pt-3" role="radiogroup" aria-label={t("paywall.plans")} style={{ "--d": "400ms" } as React.CSSProperties}>
         {card("quarterly")}
-        {card("weekly")}
+        <div className="grid transition-[grid-template-rows] duration-500 ease-out" style={{ gridTemplateRows: more ? "1fr" : "0fr" }} aria-hidden={!more} inert={!more}>
+          <div className="overflow-hidden">
+            <div className={`pt-3.5 transition-[transform,opacity] duration-500 ease-out ${more ? "translate-y-0 opacity-100" : "-translate-y-4 opacity-0"}`}>{card("weekly")}</div>
+          </div>
+        </div>
       </div>
+      <button type="button" onClick={toggleMore} aria-expanded={more} className="mx-auto mt-2 flex min-h-10 items-center gap-1.5 text-[15px]">
+        {t(more ? "pitch.hide" : "pitch.more")}
+        <ChevronDown size={16} aria-hidden className={`transition-transform duration-300 ${more ? "rotate-180" : ""}`} />
+      </button>
 
       <div className="fade-up sticky bottom-0 mt-4 pb-1 pt-2" style={{ "--d": "480ms" } as React.CSSProperties}>
         <PrimaryButton onClick={onStart}>{t("paywall.cta")}</PrimaryButton>
