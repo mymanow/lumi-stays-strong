@@ -11,6 +11,7 @@ import { AloneScreen } from "@/components/hold/AloneScreen";
 import { ReviewsScreen, reviewsAvailable } from "@/components/hold/ReviewsScreen";
 import { PlanReady } from "@/components/hold/PlanReady";
 import { CompanionShowcase } from "@/components/hold/CompanionShowcase";
+import { SIMULATE_PAYMENT } from "@/config/app";
 import { PlanPitch } from "@/components/hold/PlanPitch";
 import type { PlanKey } from "@/config/whop";
 import { NotifyPermission } from "@/components/hold/NotifyPermission";
@@ -134,6 +135,7 @@ function Onboarding() {
   let onNext: () => void = () => go(step + 1);
   let nextLabel = t("common.next");
   let onSkip: (() => void) | null = null; // optional questions: text link under the button
+  let skipLabel = t("onb.skip");
 
   switch (step) {
     case 0:
@@ -293,6 +295,11 @@ function Onboarding() {
     case 19:
       body = <PlanPitch value={plan} onChange={setPlan} />;
       tone = "dusk";
+      if (SIMULATE_PAYMENT) {
+        // Preview only: jump to the post-payment screen without paying or creating any subscription.
+        skipLabel = t("pitch.simulate");
+        onSkip = () => { void updateProfile({ onboarding_step: 20 }); navigate({ to: "/subscribe/success", search: { simulate: "1" } }); };
+      }
       break;
     case 20:
       body = (<>
@@ -328,7 +335,7 @@ function Onboarding() {
         <div className="fade-up sticky bottom-0 mt-8 pb-2 pt-3" style={{ "--d": "450ms" } as React.CSSProperties}>
           <PrimaryButton disabled={!canNext} onClick={() => transition(onNext)}>{nextLabel}</PrimaryButton>
           {onSkip && (
-            <button type="button" onClick={() => transition(onSkip!)} className="mt-2 min-h-11 w-full text-sm text-muted-foreground underline-offset-4 hover:underline">{t("onb.skip")}</button>
+            <button type="button" onClick={() => transition(onSkip!)} className="mt-2 min-h-11 w-full text-sm text-muted-foreground underline-offset-4 hover:underline">{skipLabel}</button>
           )}
         </div>
       )}

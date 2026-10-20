@@ -2,7 +2,8 @@ import { fireEvent, render, screen, cleanup } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { en } from "@/i18n/en";
 
-const { updateProfile, profile } = vi.hoisted(() => ({
+const { updateProfile, profile, navigateMock } = vi.hoisted(() => ({
+  navigateMock: vi.fn(),
   updateProfile: vi.fn().mockResolvedValue(undefined),
   profile: {
     id: "test-profile", name: "Alex", onboarding_step: 2, onboarding_completed: false,
@@ -12,7 +13,7 @@ const { updateProfile, profile } = vi.hoisted(() => ({
 vi.mock("@/lib/app-state", () => ({ useApp: () => ({ ready: true, profile, updateProfile }) }));
 vi.mock("@tanstack/react-router", async (importOriginal) => ({
   ...await importOriginal<typeof import("@tanstack/react-router")>(),
-  useNavigate: () => vi.fn(),
+  useNavigate: () => navigateMock,
   useHydrated: () => false,
 }));
 vi.mock("@/i18n", () => ({
@@ -233,6 +234,17 @@ describe("onboarding questions", () => {
     expect(screen.getByRole("heading", { name: "Alex, many slips happen in a moment of weakness" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Back" }));
     expect(screen.getByRole("heading", { name: en.onb.goalTitle })).toBeInTheDocument();
+  });
+});
+
+describe("payment simulation (test only)", () => {
+  it("jumps from the plan pitch to the post-payment screen without writing any subscription", () => {
+    Object.assign(profile, { onboarding_step: 19 });
+    render(<Component />);
+    fireEvent.click(screen.getByRole("button", { name: en.pitch.simulate }));
+    expect(updateProfile).toHaveBeenCalledWith({ onboarding_step: 20 });
+    expect(navigateMock).toHaveBeenCalledWith({ to: "/subscribe/success", search: { simulate: "1" } });
+    expect(updateProfile.mock.calls.some(([p]) => JSON.stringify(p).includes("subscri"))).toBe(false);
   });
 });
 
