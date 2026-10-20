@@ -103,6 +103,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          acquisition_source: string | null
           age: number | null
           best_streak_seconds: number
           coach_tone: string
@@ -117,7 +118,6 @@ export type Database = {
           gender: string | null
           id: string
           language: string
-          acquisition_source: string | null
           last_contact_at: string | null
           last_contact_feelings: string[]
           last_contact_range: string | null
@@ -137,6 +137,7 @@ export type Database = {
           triggers: string[]
         }
         Insert: {
+          acquisition_source?: string | null
           age?: number | null
           best_streak_seconds?: number
           coach_tone?: string
@@ -151,7 +152,6 @@ export type Database = {
           gender?: string | null
           id: string
           language?: string
-          acquisition_source?: string | null
           last_contact_at?: string | null
           last_contact_feelings?: string[]
           last_contact_range?: string | null
@@ -171,6 +171,7 @@ export type Database = {
           triggers?: string[]
         }
         Update: {
+          acquisition_source?: string | null
           age?: number | null
           best_streak_seconds?: number
           coach_tone?: string
@@ -185,7 +186,6 @@ export type Database = {
           gender?: string | null
           id?: string
           language?: string
-          acquisition_source?: string | null
           last_contact_at?: string | null
           last_contact_feelings?: string[]
           last_contact_range?: string | null
