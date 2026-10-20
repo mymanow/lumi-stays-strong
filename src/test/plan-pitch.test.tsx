@@ -15,17 +15,17 @@ import { PlanPitch } from "@/components/hold/PlanPitch";
 afterEach(cleanup);
 
 describe("plan pitch", () => {
-  it("shows the yearly plan first and reveals the monthly one on demand", () => {
+  it("shows the quarterly plan first and reveals the weekly one on demand", () => {
     const onChange = vi.fn();
-    render(<PlanPitch value="yearly" onChange={onChange} />);
+    render(<PlanPitch value="quarterly" onChange={onChange} />);
     const more = screen.getByRole("button", { name: /Show more plans/ });
     expect(more).toHaveAttribute("aria-expanded", "false");
-    expect(screen.getByRole("radio", { name: /Yearly/ })).toBeChecked();
-    expect(screen.queryByRole("radio", { name: /Monthly/ })).toBeNull(); // collapsed part is hidden from assistive tech
+    expect(screen.getByRole("radio", { name: /Quarterly/ })).toBeChecked();
+    expect(screen.queryByRole("radio", { name: /Weekly/ })).toBeNull(); // collapsed part is hidden from assistive tech
     fireEvent.click(more);
     expect(screen.getByRole("button", { name: /Hide/ })).toHaveAttribute("aria-expanded", "true");
-    fireEvent.click(screen.getByRole("radio", { name: /Monthly/ }));
-    expect(onChange).toHaveBeenCalledWith("monthly");
+    fireEvent.click(screen.getByRole("radio", { name: /Weekly/ }));
+    expect(onChange).toHaveBeenCalledWith("weekly");
   });
 
   it("makes no trial or free-billing promise", () => {

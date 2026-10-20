@@ -46,7 +46,7 @@ export const Route = createFileRoute("/api/public/whop-webhook")({
         if (!ACTIVATE.has(type) && !DEACTIVATE.has(type)) return new Response("ignored", { status: 200 });
 
         const planId: string | undefined = d.plan?.id ?? d.plan_id ?? membership.plan?.id;
-        const plan = planId && planId === (process.env["WHOP_PLAN_YEARLY"] ?? "plan_67890") ? "yearly" : "monthly";
+        const plan = planId && planId === (process.env["WHOP_PLAN_WEEKLY"] ?? "plan_67890") ? "weekly" : "quarterly";
         const periodEnd = membership.renewal_period_end ?? membership.expires_at ?? null;
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");

@@ -81,7 +81,7 @@ function Onboarding() {
   const [leaving, setLeaving] = useState<"fwd" | "back" | null>(null);
   const [dir, setDir] = useState<"fwd" | "back">("fwd");
   const [infoStep, setInfoStep] = useState(1); // within step 9: the information screens (1..INFO_KINDS.length)
-  const [plan, setPlan] = useState<PlanKey>("yearly"); // plan highlighted on the pitch page, carried to /subscribe
+  const [plan, setPlan] = useState<PlanKey>("quarterly"); // plan highlighted on the pitch page, carried to /subscribe
   const [reminder, setReminder] = useState({ enabled: false, time: DEFAULT_REMINDER_TIME });
 
   useEffect(() => {

@@ -16,7 +16,7 @@ import { createWhopCheckout } from "@/lib/account.functions";
 const WhopEmbed = lazy(() => import("@/components/hold/WhopEmbed"));
 
 export const Route = createFileRoute("/subscribe")({
-  validateSearch: z.object({ from: z.string().optional(), plan: z.enum(["monthly", "yearly"]).optional() }),
+  validateSearch: z.object({ from: z.string().optional(), plan: z.enum(["quarterly", "weekly"]).optional() }),
   head: () => ({
     meta: [
       { property: "og:type", content: "website" },
@@ -46,7 +46,7 @@ function Subscribe() {
   const navigate = useNavigate();
   const create = useServerFn(createWhopCheckout);
   const search = Route.useSearch();
-  const [plan, setPlan] = useState<PlanKey>(search.plan ?? "yearly");
+  const [plan, setPlan] = useState<PlanKey>(search.plan ?? "quarterly");
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -84,11 +84,11 @@ function Subscribe() {
       <p className="glass mt-6 rounded-[24px] p-4 text-sm text-muted-foreground">{t("subscribe.free")}</p>
 
       <div role="radiogroup" aria-label="Plan" className="mt-6 grid grid-cols-2 gap-3">
-        {(["monthly", "yearly"] as const).map((k) => (
+        {(["quarterly", "weekly"] as const).map((k) => (
           <button key={k} type="button" role="radio" aria-checked={plan === k} onClick={() => setPlan(k)}
             className={`flex min-h-20 flex-col items-start justify-center rounded-[24px] px-4 text-left ${plan === k ? "border border-primary bg-white text-[#2e3865]" : "glass"}`}>
             <span className="font-medium">{t(`subscribe.${k}`)}</span>
-            <span className="font-display text-lg">{t(k === "monthly" ? "subscribe.priceMonthly" : "subscribe.priceYearly")}</span>
+            <span className="font-display text-lg">{t(k === "quarterly" ? "subscribe.priceQuarterly" : "subscribe.priceWeekly")}</span>
           </button>
         ))}
       </div>

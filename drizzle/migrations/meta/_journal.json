@@ -50,6 +50,13 @@
       "when": 1791990000000,
       "tag": "0006_acquisition_source",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1792076400000,
+      "tag": "0007_quarterly_weekly_plans",
+      "breakpoints": true
     }
   ]
 }

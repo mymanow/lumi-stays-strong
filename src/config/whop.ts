@@ -1,8 +1,8 @@
-export type PlanKey = "monthly" | "yearly";
+export type PlanKey = "quarterly" | "weekly";
 
 export const WHOP_PLANS: Record<PlanKey, string> = {
-  monthly: (import.meta.env["VITE_WHOP_PLAN_MONTHLY"] as string | undefined) || "plan_12345",
-  yearly: (import.meta.env["VITE_WHOP_PLAN_YEARLY"] as string | undefined) || "plan_67890",
+  quarterly: (import.meta.env["VITE_WHOP_PLAN_QUARTERLY"] as string | undefined) || "plan_12345",
+  weekly: (import.meta.env["VITE_WHOP_PLAN_WEEKLY"] as string | undefined) || "plan_67890",
 };
 
 export const WHOP_ACCENT = "#F4B94E";

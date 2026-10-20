@@ -101,18 +101,18 @@ export const en: typeof fr = {
     ],
     "best": "Best price",
     "plans": "Choose a plan",
-    "perMonth": "per month",
+    "perWeek": "per week",
     "more": "Show more plans",
     "hide": "Hide",
-    "yearly": {
-      "name": "Yearly",
-      "billed": "€59.99 billed yearly",
-      "price": "€5.00"
+    "quarterly": {
+      "name": "Quarterly",
+      "billed": "€24.99 billed every 3 months",
+      "price": "€1.92"
     },
-    "monthly": {
-      "name": "Monthly",
-      "billed": "Billed every month",
-      "price": "€9.99"
+    "weekly": {
+      "name": "Weekly",
+      "billed": "Billed every week",
+      "price": "€3.99"
     }
   },
   notify: {
@@ -379,7 +379,7 @@ export const en: typeof fr = {
     title: "A coach when the urge is too strong.",
     benefits: ["Unlimited messages with the coach", "Gentle or direct tone", "Knows your reasons and your progress"],
     free: "Always free: counter, SOS, journal, history and 3 coach messages a day.",
-    monthly: "Monthly", yearly: "Yearly", priceMonthly: "€9.99 / month", priceYearly: "€59.99 / year",
+    quarterly: "Quarterly", weekly: "Weekly", priceQuarterly: "€24.99 / 3 months", priceWeekly: "€3.99 / week",
     needEmail: "Add your email first: your subscription will follow you on all your devices.",
     error: "Checkout can't load right now.",
     successTitle: "Thank you.", successBody: "Your unlimited coach is ready.", successPending: "Confirming your payment…",

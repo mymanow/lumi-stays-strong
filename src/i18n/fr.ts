@@ -99,18 +99,18 @@ export const fr = {
     ],
     "best": "Meilleur prix",
     "plans": "Choisir une offre",
-    "perMonth": "par mois",
+    "perWeek": "par semaine",
     "more": "Afficher plus d'offres",
     "hide": "Masquer",
-    "yearly": {
-      "name": "Annuel",
-      "billed": "Facturé 59,99 € par an",
-      "price": "5,00 €"
+    "quarterly": {
+      "name": "Trimestriel",
+      "billed": "Facturé 24,99 € tous les 3 mois",
+      "price": "1,92 €"
     },
-    "monthly": {
-      "name": "Mensuel",
-      "billed": "Facturé chaque mois",
-      "price": "9,99 €"
+    "weekly": {
+      "name": "Hebdomadaire",
+      "billed": "Facturé chaque semaine",
+      "price": "3,99 €"
     }
   },
   notify: {
@@ -377,7 +377,7 @@ export const fr = {
     title: "Un coach quand l'envie est trop forte.",
     benefits: ["Messages illimités avec le coach", "Ton doux ou direct", "Il connaît tes raisons et ton avancée"],
     free: "Reste gratuit : compteur, SOS, journal, historique et 3 messages de coach par jour.",
-    monthly: "Mensuel", yearly: "Annuel", priceMonthly: "9,99 € / mois", priceYearly: "59,99 € / an",
+    quarterly: "Trimestriel", weekly: "Hebdomadaire", priceQuarterly: "24,99 € / 3 mois", priceWeekly: "3,99 € / semaine",
     needEmail: "Ajoute d'abord ton e-mail : ton abonnement te suivra sur tous tes appareils.",
     error: "Le paiement ne peut pas se charger pour le moment.",
     successTitle: "Merci.", successBody: "Ton coach illimité est prêt.", successPending: "On confirme ton paiement…",
