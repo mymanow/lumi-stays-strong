@@ -103,6 +103,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          acquisition_source: string | null
           age: number | null
           best_streak_seconds: number
           coach_tone: string
@@ -136,6 +137,7 @@ export type Database = {
           triggers: string[]
         }
         Insert: {
+          acquisition_source?: string | null
           age?: number | null
           best_streak_seconds?: number
           coach_tone?: string
@@ -169,6 +171,7 @@ export type Database = {
           triggers?: string[]
         }
         Update: {
+          acquisition_source?: string | null
           age?: number | null
           best_streak_seconds?: number
           coach_tone?: string
