@@ -82,6 +82,33 @@ export const en: typeof fr = {
       source: "O'Hara, K. L., Grinberg, A. M., Tackman, A. M., Mehl, M. R., & Sbarra, D. A. (2020). Contact With an Ex-Partner Is Associated With Psychological Distress After Marital Separation. Clinical Psychological Science, 8(3), 450–463.",
     },
   },
+  paywall: {
+    "loading": "Calculating your emotional detox calendar…",
+    "title": "Your personalized plan is ready!",
+    "sub": "We'll help you keep your Radio Silence for a full emotional detox by:",
+    "slogan": "Clarity starts with Radio Silence.",
+    "words": "Reset. Reflect. Refocus.",
+    "chips": [
+      "Advice & tracking",
+      "Instant anti-temptation help",
+      "Reminders to yourself",
+      "Emotional release journal"
+    ],
+    "best": "Best price",
+    "plans": "Choose a plan",
+    "perWeek": "/ week",
+    "cta": "Start Radio Silence",
+    "quarterly": {
+      "name": "Quarterly (90 days)",
+      "billed": "€39.00 billed every 3 months.",
+      "price": "€2.99"
+    },
+    "weekly": {
+      "name": "Weekly",
+      "billed": "€6.99 billed weekly. No commitment.",
+      "price": "€6.99"
+    }
+  },
   pitch: {
     "title": "Your recovery starts [now].",
     "sub": "Have everything you need the next time the urge to write comes back.",
@@ -107,13 +134,13 @@ export const en: typeof fr = {
     "simulate": "Simulate payment (test)",
     "quarterly": {
       "name": "Quarterly",
-      "billed": "€24.99 billed every 3 months",
-      "price": "€1.92"
+      "billed": "€39.00 billed every 3 months",
+      "price": "€2.99"
     },
     "weekly": {
       "name": "Weekly",
       "billed": "Billed every week",
-      "price": "€3.99"
+      "price": "€6.99"
     }
   },
   notify: {
@@ -380,7 +407,7 @@ export const en: typeof fr = {
     title: "A coach when the urge is too strong.",
     benefits: ["Unlimited messages with the coach", "Gentle or direct tone", "Knows your reasons and your progress"],
     free: "Always free: counter, SOS, journal, history and 3 coach messages a day.",
-    quarterly: "Quarterly", weekly: "Weekly", priceQuarterly: "€24.99 / 3 months", priceWeekly: "€3.99 / week",
+    quarterly: "Quarterly", weekly: "Weekly", priceQuarterly: "€39.00 / 3 months", priceWeekly: "€6.99 / week",
     needEmail: "Add your email first: your subscription will follow you on all your devices.",
     error: "Checkout can't load right now.",
     successTitle: "Congratulations!", successBody: "Your unlimited coach is ready. Your support system is in place: we'll help you stay strong.", successPending: "Confirming your payment…",

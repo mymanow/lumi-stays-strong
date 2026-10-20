@@ -17,7 +17,7 @@ vi.mock("@tanstack/react-router", async (importOriginal) => ({
   useHydrated: () => false,
 }));
 vi.mock("@/i18n", () => ({
-  useI18n: () => ({ lang: "en", setLang: vi.fn(), tl: (key: string) => (key === "info.bio.rows" ? en.info.bio.rows : key === "info.compare.rows" ? en.info.compare.rows : key === "reviews.examples" ? en.reviews.examples : key === "build.steps" ? en.build.steps : key === "ready.chips" ? en.ready.chips : key === "ready.cards" ? en.ready.cards : key === "pitch.steps" ? en.pitch.steps : []), t: (key: string, vars?: Record<string, string>) => {
+  useI18n: () => ({ lang: "en", setLang: vi.fn(), tl: (key: string) => (key === "info.bio.rows" ? en.info.bio.rows : key === "info.compare.rows" ? en.info.compare.rows : key === "reviews.examples" ? en.reviews.examples : key === "build.steps" ? en.build.steps : key === "ready.chips" ? en.ready.chips : key === "ready.cards" ? en.ready.cards : key === "pitch.steps" ? en.pitch.steps : key === "paywall.chips" ? en.paywall.chips : []), t: (key: string, vars?: Record<string, string>) => {
     let value: unknown = en;
     for (const part of key.split(".")) value = (value as Record<string, unknown>)[part];
     return typeof value === "string" ? value.replace(/\{(\w+)\}/g, (_, k) => vars?.[k] ?? `{${k}}`) : key;
@@ -220,7 +220,7 @@ describe("onboarding questions", () => {
     expect(screen.getByRole("heading", { name: /Your recovery starts now/ })).toBeInTheDocument();
     fireEvent.click(next());
     expect(updateProfile).toHaveBeenLastCalledWith({ onboarding_step: 20 });
-    expect(screen.getByRole("heading", { name: en.account.title })).toBeInTheDocument(); // commitment and "plan ready" screens were removed
+    expect(screen.getByRole("heading", { name: en.paywall.title })).toBeInTheDocument(); // commitment and "plan ready" screens were removed
   });
 
   it("goes back through the information screens to the goal question", () => {
@@ -234,6 +234,29 @@ describe("onboarding questions", () => {
     expect(screen.getByRole("heading", { name: "Alex, many slips happen in a moment of weakness" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Back" }));
     expect(screen.getByRole("heading", { name: en.onb.goalTitle })).toBeInTheDocument();
+  });
+});
+
+describe("paywall result screen", () => {
+  it("shows today + 90 days, both plans, and sends the selected plan to the checkout", () => {
+    Object.assign(profile, { onboarding_step: 20 });
+    render(<Component />);
+    const expected = new Intl.DateTimeFormat("en-US", { dateStyle: "long" }).format(new Date(Date.now() + 90 * 86400000));
+    expect(screen.getByTestId("target-date")).toHaveTextContent(expected);
+    expect(screen.getByRole("radio", { name: /Quarterly/ })).toBeChecked();
+    expect(screen.getByText(en.paywall.quarterly.billed)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: en.paywall.cta }));
+    expect(navigateMock).toHaveBeenLastCalledWith({ to: "/subscribe", search: { from: "onboarding", plan: "quarterly" } });
+    fireEvent.click(screen.getByRole("radio", { name: /Weekly/ }));
+    expect(screen.getByRole("radio", { name: /Weekly/ })).toBeChecked();
+    fireEvent.click(screen.getByRole("button", { name: en.paywall.cta }));
+    expect(navigateMock).toHaveBeenLastCalledWith({ to: "/subscribe", search: { from: "onboarding", plan: "weekly" } });
+  });
+
+  it("shows no star rating while there is no real rating", () => {
+    Object.assign(profile, { onboarding_step: 20 });
+    render(<Component />);
+    expect(screen.queryByLabelText(/\/ 5$/)).toBeNull();
   });
 });
 

@@ -319,3 +319,9 @@ body::before, .stage-light::before, .stage-dusk::before, .stage-night::before {
 @keyframes success-star { from { opacity: 0; transform: rotate(var(--a)) translateY(-60px) scale(0.3); } to { opacity: 1; transform: rotate(var(--a)) translateY(-118px) scale(1); } }
 .success-float { animation: success-float 4s ease-in-out 1.2s infinite; }
 @keyframes success-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+/* Paywall result: Lumi "computes" the calendar while three dots pulse. */
+.paywall-calc { animation: paywall-calc 1.6s ease-in-out infinite; }
+@keyframes paywall-calc { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-8px) scale(1.04); } }
+.paywall-dot { animation: paywall-dot 1s ease-in-out infinite; opacity: 0.3; }
+@keyframes paywall-dot { 0%, 100% { opacity: 0.3; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.15); } }

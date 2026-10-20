@@ -80,6 +80,33 @@ export const fr = {
       source: "O'Hara, K. L., Grinberg, A. M., Tackman, A. M., Mehl, M. R., & Sbarra, D. A. (2020). Contact With an Ex-Partner Is Associated With Psychological Distress After Marital Separation. Clinical Psychological Science, 8(3), 450–463.",
     },
   },
+  paywall: {
+    "loading": "Calcul de ton calendrier de détox émotionnelle…",
+    "title": "Ton plan personnalisé est prêt !",
+    "sub": "Nous t'aiderons à tenir ton Silence Radio pour une détox émotionnelle complète d'ici le :",
+    "slogan": "La clarté commence avec le Silence Radio.",
+    "words": "Reset. Reflect. Refocus.",
+    "chips": [
+      "Conseils & suivi",
+      "Aide anti-tentation immédiate",
+      "Rappels à soi‑même",
+      "Journal de décharge émotionnelle"
+    ],
+    "best": "Meilleur prix",
+    "plans": "Choisir une offre",
+    "perWeek": "/ semaine",
+    "cta": "Démarrer le Silence Radio",
+    "quarterly": {
+      "name": "Trimestriel (90 jours)",
+      "billed": "Facturé 39,00 € tous les 3 mois.",
+      "price": "2,99 €"
+    },
+    "weekly": {
+      "name": "Hebdomadaire",
+      "billed": "Facturé 6,99 € par semaine. Sans engagement.",
+      "price": "6,99 €"
+    }
+  },
   pitch: {
     "title": "Ton rétablissement commence [maintenant].",
     "sub": "Aie tout ce qu'il te faut pour la prochaine fois que l'envie d'écrire revient.",
@@ -105,13 +132,13 @@ export const fr = {
     "simulate": "Simuler le paiement (test)",
     "quarterly": {
       "name": "Trimestriel",
-      "billed": "Facturé 24,99 € tous les 3 mois",
-      "price": "1,92 €"
+      "billed": "Facturé 39,00 € tous les 3 mois",
+      "price": "2,99 €"
     },
     "weekly": {
       "name": "Hebdomadaire",
       "billed": "Facturé chaque semaine",
-      "price": "3,99 €"
+      "price": "6,99 €"
     }
   },
   notify: {
@@ -378,7 +405,7 @@ export const fr = {
     title: "Un coach quand l'envie est trop forte.",
     benefits: ["Messages illimités avec le coach", "Ton doux ou direct", "Il connaît tes raisons et ton avancée"],
     free: "Reste gratuit : compteur, SOS, journal, historique et 3 messages de coach par jour.",
-    quarterly: "Trimestriel", weekly: "Hebdomadaire", priceQuarterly: "24,99 € / 3 mois", priceWeekly: "3,99 € / semaine",
+    quarterly: "Trimestriel", weekly: "Hebdomadaire", priceQuarterly: "39,00 € / 3 mois", priceWeekly: "6,99 € / semaine",
     needEmail: "Ajoute d'abord ton e-mail : ton abonnement te suivra sur tous tes appareils.",
     error: "Le paiement ne peut pas se charger pour le moment.",
     successTitle: "Félicitations !", successBody: "Ton coach illimité est prêt. Ton système de soutien est en place : on t'aide à tenir bon.", successPending: "On confirme ton paiement…",

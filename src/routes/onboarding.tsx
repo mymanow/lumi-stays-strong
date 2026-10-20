@@ -12,6 +12,7 @@ import { ReviewsScreen, reviewsAvailable } from "@/components/hold/ReviewsScreen
 import { PlanReady } from "@/components/hold/PlanReady";
 import { CompanionShowcase } from "@/components/hold/CompanionShowcase";
 import { SIMULATE_PAYMENT } from "@/config/app";
+import { PaywallResult, checkoutSearch } from "@/components/hold/PaywallResult";
 import { PlanPitch } from "@/components/hold/PlanPitch";
 import type { PlanKey } from "@/config/whop";
 import { NotifyPermission } from "@/components/hold/NotifyPermission";
@@ -37,7 +38,7 @@ export const Route = createFileRoute("/onboarding")({
   component: Onboarding,
 });
 
-const TOTAL = 20;
+const TOTAL = 21;
 const LAST_CONTACT = ["today", "week", "month", "m1_3", "m3_6", "gt_6m"] as const;
 const AFTER = ["worse", "ignored", "nothing_changed", "saw_upsetting", "argued", "cold", "not_yet"] as const;
 const NOW = ["devastated", "angry", "hoping", "guilty", "confused", "lonely", "okay"] as const;
@@ -80,7 +81,7 @@ function Onboarding() {
   const [leaving, setLeaving] = useState<"fwd" | "back" | null>(null);
   const [dir, setDir] = useState<"fwd" | "back">("fwd");
   const [infoStep, setInfoStep] = useState(1); // within step 9: the information screens (1..INFO_KINDS.length)
-  const [plan, setPlan] = useState<PlanKey>("quarterly"); // plan highlighted on the pitch page (not carried further: payment is no longer part of onboarding)
+  const [plan, setPlan] = useState<PlanKey>("quarterly"); // plan highlighted on the pitch page (the pitch page itself has no payment button; the paywall result screen after it does)
   const [reminder, setReminder] = useState({ enabled: false, time: DEFAULT_REMINDER_TIME });
 
   useEffect(() => {
@@ -292,6 +293,16 @@ function Onboarding() {
       body = <NotifyPermission onEnabled={() => setReminder((r) => ({ ...r, enabled: true }))} />;
       onNext = () => go(19, { reminder_enabled: reminder.enabled, reminder_time: reminder.time }); // the plan/reminder screen is gone: save the choice here
       break;
+    case 20:
+      return (
+        <Stage key="flow" tone="dusk">
+          <div className={`${outClass} mx-auto flex min-h-svh max-w-[480px] flex-col px-6 pb-4 pt-3`}>
+            <PaywallResult plan={plan} onPlan={setPlan} onBack={() => transition(() => go(19), "back")}
+              onStart={() => { void updateProfile({ onboarding_step: 21 }); navigate({ to: "/subscribe", search: checkoutSearch(plan) }); }}
+              onSimulate={() => { void updateProfile({ onboarding_step: 21 }); navigate({ to: "/subscribe/success", search: { simulate: "1" } }); }} />
+          </div>
+        </Stage>
+      );
     case 19:
       body = <PlanPitch value={plan} onChange={setPlan} />;
       tone = "dusk";
@@ -301,7 +312,7 @@ function Onboarding() {
         onSkip = () => { void updateProfile({ onboarding_step: 20 }); navigate({ to: "/subscribe/success", search: { simulate: "1" } }); };
       }
       break;
-    case 20:
+    case 21:
       body = (<>
         <div className="mb-6 flex justify-center"><Lumi size={64} stage={2} emotion="happy" /></div>
         <Question id="q17" title={t("account.title")} sub={t("account.sub")} />
@@ -331,7 +342,7 @@ function Onboarding() {
       </div>
       <div key={`${step}-${subStep}-${infoStep}`} className={`${outClass} flex flex-1 flex-col`}>
         <div className="flex-1">{body}</div>
-      {(canNext || step !== 20) && (
+      {(canNext || step !== 21) && (
         <div className="fade-up sticky bottom-0 mt-8 pb-2 pt-3" style={{ "--d": "450ms" } as React.CSSProperties}>
           <PrimaryButton disabled={!canNext} onClick={() => transition(onNext)}>{nextLabel}</PrimaryButton>
           {onSkip && (
