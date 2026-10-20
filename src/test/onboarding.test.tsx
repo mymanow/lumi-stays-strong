@@ -187,7 +187,7 @@ describe("onboarding questions", () => {
     expect(screen.getByRole("heading", { name: en.onb.situationTitle })).toBeInTheDocument();
   });
 
-  it("saves the selected no-contact rules, then shows the commitment", () => {
+  it("saves the selected no-contact rules, then continues", () => {
     Object.assign(profile, { onboarding_step: 10, no_contact_rules: ["no_texting", "bogus"] });
     render(<Component />);
     expect(screen.getAllByRole("checkbox", { checked: true })).toHaveLength(1);
@@ -219,7 +219,7 @@ describe("onboarding questions", () => {
     expect(screen.getByRole("heading", { name: /Your recovery starts now/ })).toBeInTheDocument();
     fireEvent.click(next());
     expect(updateProfile).toHaveBeenLastCalledWith({ onboarding_step: 20 });
-    expect(screen.getByRole("heading", { name: en.commit.title })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: en.account.title })).toBeInTheDocument(); // commitment and "plan ready" screens were removed
   });
 
   it("goes back through the information screens to the goal question", () => {
