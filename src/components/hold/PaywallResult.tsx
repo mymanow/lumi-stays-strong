@@ -14,11 +14,6 @@ const CHIP_ICONS = [MessageCircle, Zap, Heart, PenLine];
 const LOADING_MS = 2600;
 const reduced = () => typeof window !== "undefined" && !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
-/** Where the CTA sends the person: our /subscribe page, which embeds the Whop checkout of the selected plan. */
-export function checkoutSearch(plan: PlanKey) {
-  return { from: "onboarding", plan } as const;
-}
-
 /** Today + 90 days, as a readable date in the app language. */
 export function targetDate(lang: string, now = new Date()) {
   return new Intl.DateTimeFormat(lang === "fr" ? "fr-FR" : "en-US", { dateStyle: "long" }).format(new Date(now.getTime() + TARGET_DAYS * 86400000));

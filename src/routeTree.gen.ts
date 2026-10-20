@@ -22,7 +22,6 @@ import { Route as RemindersRouteImport } from './routes/reminders'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SigninRouteImport } from './routes/signin'
 import { Route as SosRouteImport } from './routes/sos'
-import { Route as SubscribeRouteImport } from './routes/subscribe'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as ApiCoachRouteImport } from './routes/api/coach'
 import { Route as SubscribeSuccessRouteImport } from './routes/subscribe.success'
@@ -93,11 +92,6 @@ const SosRoute = SosRouteImport.update({
   path: '/sos',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SubscribeRoute = SubscribeRouteImport.update({
-  id: '/subscribe',
-  path: '/subscribe',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
@@ -109,9 +103,9 @@ const ApiCoachRoute = ApiCoachRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const SubscribeSuccessRoute = SubscribeSuccessRouteImport.update({
-  id: '/success',
-  path: '/success',
-  getParentRoute: () => SubscribeRoute,
+  id: '/subscribe/success',
+  path: '/subscribe/success',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicWhopWebhookRoute = ApiPublicWhopWebhookRouteImport.update({
   id: '/api/public/whop-webhook',
@@ -133,7 +127,6 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/signin': typeof SigninRoute
   '/sos': typeof SosRoute
-  '/subscribe': typeof SubscribeRouteWithChildren
   '/terms': typeof TermsRoute
   '/api/coach': typeof ApiCoachRoute
   '/subscribe/success': typeof SubscribeSuccessRoute
@@ -153,7 +146,6 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/signin': typeof SigninRoute
   '/sos': typeof SosRoute
-  '/subscribe': typeof SubscribeRouteWithChildren
   '/terms': typeof TermsRoute
   '/api/coach': typeof ApiCoachRoute
   '/subscribe/success': typeof SubscribeSuccessRoute
@@ -174,7 +166,6 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/signin': typeof SigninRoute
   '/sos': typeof SosRoute
-  '/subscribe': typeof SubscribeRouteWithChildren
   '/terms': typeof TermsRoute
   '/api/coach': typeof ApiCoachRoute
   '/subscribe/success': typeof SubscribeSuccessRoute
@@ -196,7 +187,6 @@ export interface FileRouteTypes {
     | '/settings'
     | '/signin'
     | '/sos'
-    | '/subscribe'
     | '/terms'
     | '/api/coach'
     | '/subscribe/success'
@@ -216,7 +206,6 @@ export interface FileRouteTypes {
     | '/settings'
     | '/signin'
     | '/sos'
-    | '/subscribe'
     | '/terms'
     | '/api/coach'
     | '/subscribe/success'
@@ -236,7 +225,6 @@ export interface FileRouteTypes {
     | '/settings'
     | '/signin'
     | '/sos'
-    | '/subscribe'
     | '/terms'
     | '/api/coach'
     | '/subscribe/success'
@@ -257,9 +245,9 @@ export interface RootRouteChildren {
   SettingsRoute: typeof SettingsRoute
   SigninRoute: typeof SigninRoute
   SosRoute: typeof SosRoute
-  SubscribeRoute: typeof SubscribeRouteWithChildren
   TermsRoute: typeof TermsRoute
   ApiCoachRoute: typeof ApiCoachRoute
+  SubscribeSuccessRoute: typeof SubscribeSuccessRoute
   ApiPublicWhopWebhookRoute: typeof ApiPublicWhopWebhookRoute
 }
 
@@ -356,13 +344,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SosRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/subscribe': {
-      id: '/subscribe'
-      path: '/subscribe'
-      fullPath: '/subscribe'
-      preLoaderRoute: typeof SubscribeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/terms': {
       id: '/terms'
       path: '/terms'
@@ -379,10 +360,10 @@ declare module '@tanstack/react-router' {
     }
     '/subscribe/success': {
       id: '/subscribe/success'
-      path: '/success'
+      path: '/subscribe/success'
       fullPath: '/subscribe/success'
       preLoaderRoute: typeof SubscribeSuccessRouteImport
-      parentRoute: typeof SubscribeRoute
+      parentRoute: typeof rootRouteImport
     }
     '/api/public/whop-webhook': {
       id: '/api/public/whop-webhook'
@@ -393,18 +374,6 @@ declare module '@tanstack/react-router' {
     }
   }
 }
-
-interface SubscribeRouteChildren {
-  SubscribeSuccessRoute: typeof SubscribeSuccessRoute
-}
-
-const SubscribeRouteChildren: SubscribeRouteChildren = {
-  SubscribeSuccessRoute: SubscribeSuccessRoute,
-}
-
-const SubscribeRouteWithChildren = SubscribeRoute._addFileChildren(
-  SubscribeRouteChildren,
-)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -420,9 +389,9 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsRoute: SettingsRoute,
   SigninRoute: SigninRoute,
   SosRoute: SosRoute,
-  SubscribeRoute: SubscribeRouteWithChildren,
   TermsRoute: TermsRoute,
   ApiCoachRoute: ApiCoachRoute,
+  SubscribeSuccessRoute: SubscribeSuccessRoute,
   ApiPublicWhopWebhookRoute: ApiPublicWhopWebhookRoute,
 }
 export const routeTree = rootRouteImport

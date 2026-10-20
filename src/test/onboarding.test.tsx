@@ -25,6 +25,11 @@ vi.mock("@/i18n", () => ({
   interpolate: (value: string) => value,
 }));
 
+// The real sheet needs Supabase and Whop; here we only check that it opens for the right plan.
+vi.mock("@/components/hold/CheckoutSheet", () => ({
+  CheckoutSheet: ({ open, plan }: { open: boolean; plan: string }) => (open ? <div role="dialog" data-testid="checkout" data-plan={plan} /> : null),
+}));
+
 import { Route } from "@/routes/onboarding";
 
 const Component = () => {
@@ -238,24 +243,37 @@ describe("onboarding questions", () => {
 });
 
 describe("paywall result screen", () => {
-  it("shows today + 90 days, both plans, and sends the selected plan to the checkout", () => {
+  it("shows today + 90 days, the quarterly plan first, and opens the checkout for the selected plan", async () => {
     Object.assign(profile, { onboarding_step: 20 });
     render(<Component />);
     const expected = new Intl.DateTimeFormat("en-US", { dateStyle: "long" }).format(new Date(Date.now() + 90 * 86400000));
     expect(screen.getByTestId("target-date")).toHaveTextContent(expected);
     expect(screen.getByRole("radio", { name: /Quarterly/ })).toBeChecked();
     expect(screen.getByText(en.paywall.quarterly.billed)).toBeInTheDocument();
+    expect(screen.queryByTestId("checkout")).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: en.paywall.cta }));
-    expect(navigateMock).toHaveBeenLastCalledWith({ to: "/subscribe", search: { from: "onboarding", plan: "quarterly" } });
-    expect(screen.queryByRole("radio", { name: /Weekly/ })).toBeNull(); // hidden until "Show more plans"
+    expect(await screen.findByTestId("checkout")).toHaveAttribute("data-plan", "quarterly");
+    expect(navigateMock).not.toHaveBeenCalled(); // no separate paywall page any more
+  });
+
+  it("keeps the weekly plan hidden until 'Show more plans' and sends it to the checkout once chosen", async () => {
+    Object.assign(profile, { onboarding_step: 20 });
+    render(<Component />);
+    expect(screen.queryByRole("radio", { name: /Weekly/ })).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: /Show more plans/ }));
     fireEvent.click(screen.getByRole("radio", { name: /Weekly/ }));
-    expect(screen.getByRole("radio", { name: /Weekly/ })).toBeChecked();
     fireEvent.click(screen.getByRole("button", { name: en.paywall.cta }));
-    expect(navigateMock).toHaveBeenLastCalledWith({ to: "/subscribe", search: { from: "onboarding", plan: "weekly" } });
-    fireEvent.click(screen.getByRole("button", { name: /Hide/ })); // hiding falls back to the visible plan
+    expect((await screen.findByTestId("checkout")).getAttribute("data-plan")).toBe("weekly");
+  });
+
+  it("hiding the weekly plan falls back to the visible one", async () => {
+    Object.assign(profile, { onboarding_step: 20 });
+    render(<Component />);
+    fireEvent.click(screen.getByRole("button", { name: /Show more plans/ }));
+    fireEvent.click(screen.getByRole("radio", { name: /Weekly/ }));
+    fireEvent.click(screen.getByRole("button", { name: /Hide/ }));
     fireEvent.click(screen.getByRole("button", { name: en.paywall.cta }));
-    expect(navigateMock).toHaveBeenLastCalledWith({ to: "/subscribe", search: { from: "onboarding", plan: "quarterly" } });
+    expect((await screen.findByTestId("checkout")).getAttribute("data-plan")).toBe("quarterly");
   });
 
   it("shows no star rating while there is no real rating", () => {

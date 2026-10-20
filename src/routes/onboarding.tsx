@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { useI18n } from "@/i18n";
 import { useApp, type ProfilePatch } from "@/lib/app-state";
 import { Lumi } from "@/components/hold/Lumi";
@@ -12,7 +12,7 @@ import { ReviewsScreen, reviewsAvailable } from "@/components/hold/ReviewsScreen
 import { PlanReady } from "@/components/hold/PlanReady";
 import { CompanionShowcase } from "@/components/hold/CompanionShowcase";
 import { SIMULATE_PAYMENT } from "@/config/app";
-import { PaywallResult, checkoutSearch } from "@/components/hold/PaywallResult";
+import { PaywallResult } from "@/components/hold/PaywallResult";
 import { PlanPitch } from "@/components/hold/PlanPitch";
 import type { PlanKey } from "@/config/whop";
 import { NotifyPermission } from "@/components/hold/NotifyPermission";
@@ -23,6 +23,9 @@ import { PlanBuilding } from "@/components/hold/PlanBuilding";
 import { AccountLinker } from "@/components/hold/AccountLinker";
 import { APP_NAME } from "@/config/app";
 import { CONTACT_RANGE_DAYS, DEFAULT_REMINDER_TIME, MOTIVATIONS, SITUATIONS, type ContactRange } from "@/lib/domain";
+
+// Loaded only when the checkout button is pressed (keeps the payment code out of the onboarding bundle).
+const CheckoutSheet = lazy(() => import("@/components/hold/CheckoutSheet").then((m) => ({ default: m.CheckoutSheet })));
 
 export const Route = createFileRoute("/onboarding")({
   head: () => ({
@@ -77,6 +80,7 @@ function Onboarding() {
   const [source, setSource] = useState("");
   const [goal, setGoal] = useState("");
   const [rules, setRules] = useState<string[]>([]);
+  const [checkoutOpen, setCheckoutOpen] = useState(false); // Whop checkout sheet opened by the paywall result button
   const [celebrateResult, setCelebrateResult] = useState(false); // confetti on the paywall result, only when arriving forward from the pitch
   const [celebrate, setCelebrate] = useState(false); // play the plan-ready celebration once, only when arriving forward
   const [leaving, setLeaving] = useState<"fwd" | "back" | null>(null);
@@ -299,9 +303,10 @@ function Onboarding() {
         <Stage key="flow" tone="dusk">
           <div className={`${outClass} mx-auto flex min-h-svh max-w-[480px] flex-col px-6 pb-4 pt-3`}>
             <PaywallResult plan={plan} onPlan={setPlan} celebrate={celebrateResult} onCelebrated={() => setCelebrateResult(false)} onBack={() => transition(() => go(19), "back")}
-              onStart={() => { void updateProfile({ onboarding_step: 21 }); navigate({ to: "/subscribe", search: checkoutSearch(plan) }); }}
+              onStart={() => setCheckoutOpen(true)}
               onSimulate={() => { void updateProfile({ onboarding_step: 21 }); navigate({ to: "/subscribe/success", search: { simulate: "1" } }); }} />
           </div>
+          {checkoutOpen && <Suspense fallback={null}><CheckoutSheet open={checkoutOpen} onOpenChange={setCheckoutOpen} plan={plan} /></Suspense>}
         </Stage>
       );
     case 19:

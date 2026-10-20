@@ -402,10 +402,6 @@ export const fr = {
     rule: "Si tu craques, {companion} ne t'en veut pas. On repart ensemble.",
   },
   subscribe: {
-    title: "Un coach quand l'envie est trop forte.",
-    benefits: ["Messages illimités avec le coach", "Ton doux ou direct", "Il connaît tes raisons et ton avancée"],
-    free: "Reste gratuit : compteur, SOS, journal, historique et 3 messages de coach par jour.",
-    quarterly: "Trimestriel", weekly: "Hebdomadaire", priceQuarterly: "39,00 € / 3 mois", priceWeekly: "6,99 € / semaine",
     needEmail: "Ajoute d'abord ton e-mail : ton abonnement te suivra sur tous tes appareils.",
     error: "Le paiement ne peut pas se charger pour le moment.",
     successTitle: "Félicitations !", successBody: "Ton coach illimité est prêt. Ton système de soutien est en place : on t'aide à tenir bon.", successPending: "On confirme ton paiement…",

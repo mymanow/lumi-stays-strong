@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { AppShell } from "@/components/hold/AppShell";
 import { Card, LangSwitch, PageTitle } from "@/components/hold/Common";
@@ -16,6 +16,10 @@ import { clearKeepsakes } from "@/lib/keepsakes";
 import { localDateString } from "@/lib/domain";
 import { MANAGE_SUBSCRIPTION_URL } from "@/config/app";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import type { PlanKey } from "@/config/whop";
+
+// Loaded only when "subscribe" is pressed.
+const CheckoutSheet = lazy(() => import("@/components/hold/CheckoutSheet").then((m) => ({ default: m.CheckoutSheet })));
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
@@ -40,6 +44,8 @@ function Row({ to, label }: { to: "/lumi" | "/privacy" | "/terms" | "/crisis" | 
 }
 
 function Settings() {
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [checkoutPlan, setCheckoutPlan] = useState<PlanKey>("quarterly");
   const { t } = useI18n();
   const { profile, updateProfile, premium, isAnonymous } = useApp();
   const del = useServerFn(deleteMyAccount);
@@ -91,7 +97,7 @@ function Settings() {
         {premium ? (
           <a href={MANAGE_SUBSCRIPTION_URL} target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center rounded-full border border-white/80 px-4">{t("settings.manage")}</a>
         ) : (
-          <Link to="/subscribe" className="inline-flex min-h-11 items-center rounded-full bg-primary px-4 font-semibold text-primary-foreground">{t("settings.subscribe")}</Link>
+          <button type="button" onClick={() => setCheckoutOpen(true)} className="inline-flex min-h-11 items-center rounded-full bg-primary px-4 font-semibold text-primary-foreground">{t("settings.subscribe")}</button>
         )}
       </Card>
       <Card className="py-1">
@@ -118,6 +124,7 @@ function Settings() {
         </AlertDialogContent>
       </AlertDialog>
       {profile && null}
+      {checkoutOpen && <Suspense fallback={null}><CheckoutSheet open={checkoutOpen} onOpenChange={setCheckoutOpen} plan={checkoutPlan} onPlan={setCheckoutPlan} /></Suspense>}
     </div>
   );
 }

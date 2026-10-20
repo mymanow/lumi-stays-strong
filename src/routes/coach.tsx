@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { AppShell } from "@/components/hold/AppShell";
 import { Lumi } from "@/components/hold/Lumi";
@@ -9,6 +9,10 @@ import { useApp } from "@/lib/app-state";
 import { supabase } from "@/integrations/supabase/client";
 import { detectCrisis, lumiStageForDays } from "@/lib/domain";
 import { FREE_COACH_MESSAGES_PER_DAY } from "@/config/app";
+import type { PlanKey } from "@/config/whop";
+
+// Loaded only when "subscribe" is pressed.
+const CheckoutSheet = lazy(() => import("@/components/hold/CheckoutSheet").then((m) => ({ default: m.CheckoutSheet })));
 
 const search = z.object({ mode: z.enum(["urge", "relapse", "bad"]).optional() });
 
@@ -31,6 +35,8 @@ type Msg = { role: "user" | "assistant"; content: string };
 type Mode = "urge" | "relapse" | "bad";
 
 function Coach() {
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [checkoutPlan, setCheckoutPlan] = useState<PlanKey>("quarterly");
   const { t, lang } = useI18n();
   const { profile, premium, updateProfile, session } = useApp();
   const initial = Route.useSearch().mode;
@@ -137,7 +143,7 @@ function Coach() {
             <p>{t("coach.limit")}</p>
             <div className="mt-3 flex flex-wrap gap-3">
               <Link to="/sos" className="inline-flex min-h-11 items-center rounded-full border border-white/80 px-4">SOS</Link>
-              <Link to="/subscribe" className="inline-flex min-h-11 items-center rounded-full bg-primary px-4 font-semibold text-primary-foreground">{t("coach.upgrade")}</Link>
+              <button type="button" onClick={() => setCheckoutOpen(true)} className="inline-flex min-h-11 items-center rounded-full bg-primary px-4 font-semibold text-primary-foreground">{t("coach.upgrade")}</button>
             </div>
           </div>
         )}
@@ -155,6 +161,7 @@ function Coach() {
         </div>
         <p className="mt-1 text-center text-xs text-muted-foreground">{t("coach.privacy")}</p>
       </form>
+      {checkoutOpen && <Suspense fallback={null}><CheckoutSheet open={checkoutOpen} onOpenChange={setCheckoutOpen} plan={checkoutPlan} onPlan={setCheckoutPlan} /></Suspense>}
     </div>
   );
 }

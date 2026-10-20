@@ -404,10 +404,6 @@ export const en: typeof fr = {
     rule: "If you slip, {companion} never holds it against you. We start again together.",
   },
   subscribe: {
-    title: "A coach when the urge is too strong.",
-    benefits: ["Unlimited messages with the coach", "Gentle or direct tone", "Knows your reasons and your progress"],
-    free: "Always free: counter, SOS, journal, history and 3 coach messages a day.",
-    quarterly: "Quarterly", weekly: "Weekly", priceQuarterly: "€39.00 / 3 months", priceWeekly: "€6.99 / week",
     needEmail: "Add your email first: your subscription will follow you on all your devices.",
     error: "Checkout can't load right now.",
     successTitle: "Congratulations!", successBody: "Your unlimited coach is ready. Your support system is in place: we'll help you stay strong.", successPending: "Confirming your payment…",
