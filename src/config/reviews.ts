@@ -6,9 +6,12 @@
  * `reviews.examples`: the three texts supplied by the owner, Emma R. / Sophie M. / Lucas D., FR + EN) so the design is visible. Set SHOW_PLACEHOLDERS to false before launch to skip the screen until
  * real reviews exist. Never invent reviews, names or figures.
  */
-export type Review = { name: string; title: string; body: string; verified?: boolean };
+export type Review = { name: string; title: string; body: string; verified?: boolean; photo?: string };
 
 export const REVIEWS: Review[] = [];
+
+/** Portraits for the placeholder cards, in the same order as `reviews.examples` (Emma R., Sophie M., Lucas D.). Replace with real, consented photos. */
+export const EXAMPLE_PHOTOS = ["/reviews/emma.jpg", "/reviews/sophie.jpg", "/reviews/lucas.jpg"];
 
 /** Placeholder cards while there are no real reviews. Turn off before launch. */
 export const SHOW_PLACEHOLDERS = true;

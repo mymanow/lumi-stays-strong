@@ -1,6 +1,6 @@
 import { Star } from "lucide-react";
 import { useI18n } from "@/i18n";
-import { RATING, reviewsToShow } from "@/config/reviews";
+import { EXAMPLE_PHOTOS, RATING, reviewsToShow } from "@/config/reviews";
 
 export function reviewsAvailable(examples: { name: string; title: string; body: string }[]) {
   return reviewsToShow(examples).items.length > 0;
@@ -23,10 +23,14 @@ export function ReviewsScreen() {
         </div>
       )}
       <ul className="cascade flex flex-col gap-4">
-        {items.map((r) => (
+        {items.map((r, i) => {
+          const photo = example ? EXAMPLE_PHOTOS[i] : ("photo" in r ? r.photo : undefined);
+          return (
           <li key={r.name} className="tone-light rounded-[24px] bg-white p-5 shadow-sm">
             <div className="flex items-center gap-3">
-              <span aria-hidden className="flex h-10 w-10 items-center justify-center rounded-full bg-[#dfe3fb] font-medium text-[#2e3865]">{r.name.charAt(0)}</span>
+              {photo
+                ? <img src={photo} alt="" width={48} height={48} loading="lazy" className="h-12 w-12 shrink-0 rounded-full object-cover" />
+                : <span aria-hidden className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#dfe3fb] font-medium text-[#2e3865]">{r.name.charAt(0)}</span>}
               <div className="flex-1">
                 <div className="text-base font-medium">{r.name}</div>
                 {example ? (
@@ -42,7 +46,8 @@ export function ReviewsScreen() {
             <p className="mt-3 text-base font-semibold">{r.title}</p>
             <p className="mt-1 text-base leading-snug">{r.body}</p>
           </li>
-        ))}
+          );
+        })}
       </ul>
     </>
   );
