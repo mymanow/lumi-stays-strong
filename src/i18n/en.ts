@@ -382,9 +382,9 @@ export const en: typeof fr = {
     quarterly: "Quarterly", weekly: "Weekly", priceQuarterly: "€24.99 / 3 months", priceWeekly: "€3.99 / week",
     needEmail: "Add your email first: your subscription will follow you on all your devices.",
     error: "Checkout can't load right now.",
-    successTitle: "Thank you.", successBody: "Your unlimited coach is ready.", successPending: "Confirming your payment…",
+    successTitle: "Congratulations!", successBody: "Your unlimited coach is ready. Your support system is in place: we'll help you stay strong.", successPending: "Confirming your payment…",
     successLate: "Confirmation is taking a little while. It will arrive within a few minutes.",
-    toCoach: "Talk to the coach",
+    toCoach: "Let's go!",
   },
   journey: {
     title: "Your journey", sub: "General landmarks, not a schedule: everyone moves at their own pace.",

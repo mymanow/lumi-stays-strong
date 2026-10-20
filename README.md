@@ -102,7 +102,7 @@ After step 22, show the Whop paywall page /subscribe (closable, with "Plus tard"
 - If the user is still anonymous, first ask them to link an email (keeps premium across devices) and prefill it.
 - Edge Function `create-whop-checkout`: authenticated; creates a checkout configuration server-side for the chosen plan with metadata { supabase_user_id }, returns the session id. Whop API key in Supabase secrets only.
 - Edge Function `whop-webhook`: public, verifies Whop's signature; on `payment.succeeded` and `membership.went_valid` upsert subscriptions as 'active' using metadata.supabase_user_id; on the membership-ended event (check the exact name in Whop's docs, e.g. membership.went_invalid) and `payment.failed` after retries set 'inactive'. Service role, idempotent.
-- /subscribe/success: poll the subscriptions row for a few seconds, then thank the user and link back to the coach.
+- /subscribe/success: poll the subscriptions row for a few seconds, then thank the user and link back to the coach. Once active the page is a dusk celebration "Félicitations !" (a warm light rises behind Lumi, six small stars orbit her, she floats; button "C'est parti !" to the coach); while pending it shows Lumi and "On confirme ton paiement…" with no button.
 - Premium = active subscription row, re-checked server-side by the coach function. NEVER block the user's own data (counter, check-ins, history, vault, SOS, crisis resources); only the unlimited coach is premium.
 
 ## Coach Edge Function (Supabase)

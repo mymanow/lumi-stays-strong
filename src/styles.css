@@ -307,3 +307,15 @@ body::before, .stage-light::before, .stage-dusk::before, .stage-night::before {
 /* Notification permission screen: our own dialog gently rises in. */
 .notify-dialog { animation: notify-in 0.6s cubic-bezier(0.2, 0.8, 0.3, 1) 0.2s both; }
 @keyframes notify-in { from { opacity: 0; transform: translateY(14px) scale(0.97); } to { opacity: 1; transform: none; } }
+
+/* Payment success: a warm light rises behind Lumi, six small stars orbit her, she floats gently. */
+.success-glow { opacity: 0; transform: translateY(60px) scale(0.5); background: radial-gradient(circle, rgba(255, 226, 160, 0.75) 0%, rgba(201, 187, 255, 0.35) 45%, rgba(201, 187, 255, 0) 70%); }
+.success-glow-on { animation: success-rise 1.8s cubic-bezier(0.2, 0.8, 0.3, 1) both, success-pulse 4s ease-in-out 1.8s infinite; }
+@keyframes success-rise { from { opacity: 0; transform: translateY(60px) scale(0.5); } to { opacity: 1; transform: none; } }
+@keyframes success-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+.success-orbit { animation: success-orbit 18s linear infinite; }
+@keyframes success-orbit { to { transform: rotate(360deg); } }
+.success-star { position: absolute; left: 50%; top: 50%; width: 12px; height: 12px; margin: -6px 0 0 -6px; background: #FFF3CF; opacity: 0; clip-path: polygon(50% 0%, 61% 38%, 100% 50%, 61% 62%, 50% 100%, 39% 62%, 0% 50%, 39% 38%); transform: rotate(var(--a)) translateY(-118px); animation: success-star 0.8s ease-out both; }
+@keyframes success-star { from { opacity: 0; transform: rotate(var(--a)) translateY(-60px) scale(0.3); } to { opacity: 1; transform: rotate(var(--a)) translateY(-118px) scale(1); } }
+.success-float { animation: success-float 4s ease-in-out 1.2s infinite; }
+@keyframes success-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }

@@ -380,9 +380,9 @@ export const fr = {
     quarterly: "Trimestriel", weekly: "Hebdomadaire", priceQuarterly: "24,99 € / 3 mois", priceWeekly: "3,99 € / semaine",
     needEmail: "Ajoute d'abord ton e-mail : ton abonnement te suivra sur tous tes appareils.",
     error: "Le paiement ne peut pas se charger pour le moment.",
-    successTitle: "Merci.", successBody: "Ton coach illimité est prêt.", successPending: "On confirme ton paiement…",
+    successTitle: "Félicitations !", successBody: "Ton coach illimité est prêt. Ton système de soutien est en place : on t'aide à tenir bon.", successPending: "On confirme ton paiement…",
     successLate: "La confirmation prend un peu de temps. Elle arrivera d'ici quelques minutes.",
-    toCoach: "Parler au coach",
+    toCoach: "C'est parti !",
   },
   journey: {
     title: "Ton parcours", sub: "Des repères généraux, pas un calendrier : chacun avance à son rythme.",
