@@ -16,7 +16,7 @@ import { createWhopCheckout } from "@/lib/account.functions";
 const WhopEmbed = lazy(() => import("@/components/hold/WhopEmbed"));
 
 export const Route = createFileRoute("/subscribe")({
-  validateSearch: z.object({ from: z.string().optional() }),
+  validateSearch: z.object({ from: z.string().optional(), plan: z.enum(["monthly", "yearly"]).optional() }),
   head: () => ({
     meta: [
       { property: "og:type", content: "website" },
@@ -45,7 +45,8 @@ function Subscribe() {
   const { ready, session, isAnonymous } = useApp();
   const navigate = useNavigate();
   const create = useServerFn(createWhopCheckout);
-  const [plan, setPlan] = useState<PlanKey>("yearly");
+  const search = Route.useSearch();
+  const [plan, setPlan] = useState<PlanKey>(search.plan ?? "yearly");
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [failed, setFailed] = useState(false);
