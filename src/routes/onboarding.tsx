@@ -77,6 +77,7 @@ function Onboarding() {
   const [source, setSource] = useState("");
   const [goal, setGoal] = useState("");
   const [rules, setRules] = useState<string[]>([]);
+  const [celebrateResult, setCelebrateResult] = useState(false); // confetti on the paywall result, only when arriving forward from the pitch
   const [celebrate, setCelebrate] = useState(false); // play the plan-ready celebration once, only when arriving forward
   const [leaving, setLeaving] = useState<"fwd" | "back" | null>(null);
   const [dir, setDir] = useState<"fwd" | "back">("fwd");
@@ -297,7 +298,7 @@ function Onboarding() {
       return (
         <Stage key="flow" tone="dusk">
           <div className={`${outClass} mx-auto flex min-h-svh max-w-[480px] flex-col px-6 pb-4 pt-3`}>
-            <PaywallResult plan={plan} onPlan={setPlan} onBack={() => transition(() => go(19), "back")}
+            <PaywallResult plan={plan} onPlan={setPlan} celebrate={celebrateResult} onCelebrated={() => setCelebrateResult(false)} onBack={() => transition(() => go(19), "back")}
               onStart={() => { void updateProfile({ onboarding_step: 21 }); navigate({ to: "/subscribe", search: checkoutSearch(plan) }); }}
               onSimulate={() => { void updateProfile({ onboarding_step: 21 }); navigate({ to: "/subscribe/success", search: { simulate: "1" } }); }} />
           </div>
@@ -306,6 +307,7 @@ function Onboarding() {
     case 19:
       body = <PlanPitch value={plan} onChange={setPlan} />;
       tone = "dusk";
+      onNext = () => { setCelebrateResult(true); void go(20); };
       if (SIMULATE_PAYMENT) {
         // Preview only: jump to the post-payment screen without paying or creating any subscription.
         skipLabel = t("pitch.simulate");

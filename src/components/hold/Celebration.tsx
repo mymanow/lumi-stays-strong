@@ -14,9 +14,10 @@ function rng(seed: number) {
 /**
  * Calm one-shot celebration around its parent's centre: two soft rings and a gentle "rain" of small dots, stars and
  * petals that rise in an arc, drift down and fade. Removes itself after ~4s. Nothing at all with reduced motion.
- * Place it inside a `relative` box centred on the thing being celebrated.
+ * Place it inside a `relative` box centred on the thing being celebrated. `rise`/`fall` scale how far the shapes go up and down
+ * (use a small rise and a big fall when the thing sits at the very top of the screen).
  */
-export function Celebration({ onDone }: { onDone?: (() => void) | undefined }) {
+export function Celebration({ onDone, rise = 1, fall = 1 }: { onDone?: (() => void) | undefined; rise?: number; fall?: number }) {
   const [alive, setAlive] = useState(() => !reduced());
   const bits = useMemo(() => {
     const r = rng(7);
@@ -25,12 +26,12 @@ export function Celebration({ onDone }: { onDone?: (() => void) | undefined }) {
       const dx = side * (20 + r() * 150);
       return {
         i, dx, dx2: dx * (1.1 + r() * 0.5) + (r() - 0.5) * 40,
-        up: -(90 + r() * 130), down: 40 + r() * 150,
+        up: -(90 + r() * 130) * rise, down: (40 + r() * 150) * fall,
         size: 5 + r() * 7, dur: 2.6 + r() * 1.2, delay: 0.4 + r() * 0.8,
         color: COLORS[Math.floor(r() * COLORS.length)]!, shape: ["dot", "star", "petal"][Math.floor(r() * 3)]!,
       };
     });
-  }, []);
+  }, [rise, fall]);
 
   useEffect(() => {
     if (!alive) { onDone?.(); return; }

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { ChevronDown, Heart, Lock, MessageCircle, PenLine, Star, Zap } from "lucide-react";
 import { useI18n } from "@/i18n";
 import { Lumi } from "./Lumi";
+import { Celebration } from "./Celebration";
 import { PrimaryButton } from "./Common";
 import { BackIcon } from "./Icons";
 import { RATING } from "@/config/reviews";
@@ -28,7 +29,7 @@ export function targetDate(lang: string, now = new Date()) {
  * dynamic target date (today + 90 days), reassurance (slogan, feature chips, stars only with a real rating) and the
  * two plans. The CTA goes to the checkout of the selected plan.
  */
-export function PaywallResult({ plan, onPlan, onStart, onSimulate, onBack }: { plan: PlanKey; onPlan: (p: PlanKey) => void; onStart: () => void; onSimulate: () => void; onBack: () => void }) {
+export function PaywallResult({ plan, onPlan, onStart, onSimulate, onBack, celebrate = false, onCelebrated }: { plan: PlanKey; onPlan: (p: PlanKey) => void; onStart: () => void; onSimulate: () => void; onBack: () => void; celebrate?: boolean; onCelebrated?: (() => void) | undefined }) {
   const { t, tl, lang } = useI18n();
   const [loaded, setLoaded] = useState(() => reduced());
   const [more, setMore] = useState(false); // the weekly plan stays hidden until "show more plans"
@@ -72,12 +73,13 @@ export function PaywallResult({ plan, onPlan, onStart, onSimulate, onBack }: { p
     <div className="flex flex-1 flex-col text-center text-white">
       <div className="fade-up relative flex justify-center">
         <button type="button" onClick={onBack} aria-label={t("common.back")} className="glass absolute left-0 top-0 flex h-11 w-11 items-center justify-center rounded-full text-foreground"><BackIcon /></button>
-        <Lumi size={52} stage={2} emotion="happy" label="" />
+        {celebrate && <Celebration onDone={onCelebrated} rise={0.3} fall={2.4} />}
+        <div className={celebrate ? "ready-hop" : ""}><Lumi size={52} stage={2} emotion="happy" label="" /></div>
       </div>
       <h1 id="q20p" className="fade-up font-display mt-2 text-[28px] leading-tight" style={{ "--d": "80ms" } as React.CSSProperties}>{t("paywall.title")}</h1>
       <p className="fade-up mx-auto mt-2 max-w-[340px] text-[15px] leading-snug opacity-85" style={{ "--d": "160ms" } as React.CSSProperties}>{t("paywall.sub")}</p>
       <div className="fade-up mt-3 flex justify-center" style={{ "--d": "240ms" } as React.CSSProperties}>
-        <span className="rounded-full border-2 border-white/60 bg-white/15 px-7 py-2.5 text-xl font-semibold" data-testid="target-date">{targetDate(lang)}</span>
+        <span className={`rounded-full border-2 border-white/60 bg-white/15 px-7 py-2.5 text-xl font-semibold ${celebrate ? "date-shine" : ""}`} data-testid="target-date">{targetDate(lang)}</span>
       </div>
 
       <div className="fade-up mt-4" style={{ "--d": "320ms" } as React.CSSProperties}>
