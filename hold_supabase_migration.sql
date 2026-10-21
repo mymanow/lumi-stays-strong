@@ -198,3 +198,17 @@ ALTER TABLE public.profiles
   CHECK (acquisition_source IS NULL OR acquisition_source IN ('tiktok', 'google', 'word_of_mouth', 'quora', 'app_store', 'instagram_facebook', 'reddit', 'other'));
 
 COMMENT ON COLUMN public.profiles.acquisition_source IS 'Onboarding "How did you learn about us?" answer. Owner-only (profile RLS); analytics only, never sent to the coach.';
+
+
+-- ===== 0009_whop_premium =====
+-- Paywall Whop Elements : is_premium est dérivé de status (écrit uniquement par le webhook /api/public/whop-webhook),
+-- il ne peut donc jamais le contredire. Les colonnes whop_* permettent d'ignorer les webhooks livrés en retard.
+ALTER TABLE public.subscriptions
+  ADD COLUMN IF NOT EXISTS is_premium boolean GENERATED ALWAYS AS (status = 'active') STORED,
+  ADD COLUMN IF NOT EXISTS whop_status text,
+  ADD COLUMN IF NOT EXISTS cancel_at_period_end boolean NOT NULL DEFAULT false,
+  ADD COLUMN IF NOT EXISTS whop_synced_at timestamptz;
+
+COMMENT ON COLUMN public.subscriptions.is_premium IS 'true tant que l''abonnement Whop donne accès (active, trialing, past_due, canceling).';
+COMMENT ON COLUMN public.subscriptions.whop_status IS 'Statut brut de la membership Whop (active, trialing, past_due, canceling, canceled, expired…).';
+COMMENT ON COLUMN public.subscriptions.whop_synced_at IS 'updated_at de la membership Whop du dernier webhook appliqué ; les livraisons plus anciennes sont ignorées.';

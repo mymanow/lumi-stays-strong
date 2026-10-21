@@ -4,6 +4,7 @@ import { useI18n } from "@/i18n";
 import { useApp } from "@/lib/app-state";
 import { supabase } from "@/integrations/supabase/client";
 import { Lumi } from "@/components/hold/Lumi";
+import { AccountLinker } from "@/components/hold/AccountLinker";
 import { Stage } from "@/components/hold/Common";
 import { APP_NAME, SIMULATE_PAYMENT } from "@/config/app";
 
@@ -18,17 +19,23 @@ export const Route = createFileRoute("/subscribe/success")({
       { property: "og:description", content: "Ton coach illimité est prêt." },
     ],
   }),
-  validateSearch: (s: Record<string, unknown>) => ({ simulate: typeof s["simulate"] === "string" ? s["simulate"] : undefined }),
+  // Whop appends `payment` and `status` (succeeded | failed | canceled) after an off-site step such as 3DS.
+  validateSearch: (s: Record<string, unknown>): { simulate?: string; status?: string } => ({
+    ...(typeof s["simulate"] === "string" ? { simulate: s["simulate"] } : {}),
+    ...(typeof s["status"] === "string" ? { status: s["status"] } : {}),
+  }),
   component: Success,
 });
 
 function Success() {
   const { t } = useI18n();
-  const { session, reload } = useApp();
-  const simulated = SIMULATE_PAYMENT && !!Route.useSearch().simulate; // preview from the pitch page: nothing is paid or stored
+  const { session, isAnonymous, reload } = useApp();
+  const search = Route.useSearch();
+  const simulated = SIMULATE_PAYMENT && !!search.simulate; // preview from the pitch page: nothing is paid or stored
+  const failed = search.status === "failed" || search.status === "canceled"; // a declined or abandoned off-site step lands here too
   const [state, setState] = useState<"pending" | "active" | "late">(simulated ? "active" : "pending");
   useEffect(() => {
-    if (simulated || !session) return;
+    if (simulated || failed || !session) return;
     let tries = 0;
     const id = setInterval(async () => {
       tries++;
@@ -37,8 +44,22 @@ function Success() {
       else if (tries >= 10) { setState("late"); clearInterval(id); }
     }, 1500);
     return () => clearInterval(id);
-  }, [session, reload, simulated]);
+  }, [session, reload, simulated, failed]);
   const active = state === "active";
+  if (failed) {
+    return (
+      <Stage tone="dusk">
+        <div className="relative mx-auto flex min-h-svh max-w-[480px] flex-col items-center px-6 pb-8 pt-8 text-center text-white">
+          <p className="font-display text-3xl">{APP_NAME}</p>
+          <div className="flex flex-1 flex-col items-center justify-center">
+            <Lumi size={110} stage={2} emotion="neutral" label="" />
+            <h1 role="alert" className="mt-8 text-3xl leading-tight">{t("subscribe.paymentFailed")}</h1>
+          </div>
+          <Link to="/" className="flex min-h-[68px] w-full items-center justify-center rounded-[26px] bg-white text-lg font-bold text-[#2e3865]">{t("subscribe.backHome")}</Link>
+        </div>
+      </Stage>
+    );
+  }
   return (
     <Stage tone="dusk">
       <div className="relative mx-auto flex min-h-svh max-w-[480px] flex-col items-center px-6 pb-8 pt-8 text-center text-white">
@@ -58,6 +79,13 @@ function Success() {
           <h1 className={`mt-8 text-4xl leading-tight ${active ? "fade-up" : ""}`} style={{ "--d": "700ms" } as React.CSSProperties}>{active ? t("subscribe.successTitle") : t("subscribe.successPending")}</h1>
           <p className={`mt-3 text-lg ${active ? "fade-up" : ""}`} style={{ "--d": "1000ms" } as React.CSSProperties} aria-live="polite">{active ? t("subscribe.successBody") : state === "late" ? t("subscribe.successLate") : ""}</p>
         </div>
+        {active && isAnonymous && !simulated && (
+          <div className="glass fade-up mb-4 w-full rounded-[24px] p-5 text-left" style={{ "--d": "1200ms" } as React.CSSProperties}>
+            <p className="font-semibold">{t("subscribe.secureTitle")}</p>
+            <p className="mb-4 mt-1 text-sm text-white/80">{t("subscribe.secureBody")}</p>
+            <AccountLinker redirectPath="/coach" />
+          </div>
+        )}
         {state !== "pending" && (
           <Link to="/coach" className="fade-up flex min-h-[68px] w-full items-center justify-center rounded-[26px] bg-white text-lg font-bold text-[#2e3865]" style={{ "--d": active ? "1400ms" : "0ms" } as React.CSSProperties}>{t("subscribe.toCoach")}</Link>
         )}

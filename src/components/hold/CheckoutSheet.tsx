@@ -1,44 +1,50 @@
-import { lazy, Suspense, useCallback, useEffect, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { ClientOnly } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useI18n } from "@/i18n";
 import { useApp } from "@/lib/app-state";
-import { AccountLinker } from "./AccountLinker";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Skeleton } from "@/components/ui/skeleton";
-import { WHOP_PLANS, type PlanKey } from "@/config/whop";
+import type { PlanKey } from "@/config/whop";
 import { createWhopCheckout } from "@/lib/account.functions";
+import { Skeleton } from "@/components/ui/skeleton";
 
-const WhopEmbed = lazy(() => import("./WhopEmbed"));
+const WhopCheckout = lazy(() => import("./WhopCheckout"));
 const PLANS: PlanKey[] = ["quarterly", "weekly"];
+const returnUrl = () => window.location.origin + "/subscribe/success";
 
 function CheckoutSkeleton() {
   return <div className="flex flex-col gap-3" aria-busy="true"><Skeleton className="h-12 rounded-[24px] bg-white/20" /><Skeleton className="h-40 rounded-[24px] bg-white/20" /><Skeleton className="h-12 rounded-[24px] bg-white/20" /></div>;
 }
 
 /**
- * The only place where a subscription is started: a bottom sheet with the Whop checkout of the selected plan.
- * Without an email-linked account it first asks for the email (the webhook needs the user id). `onPlan` adds a small plan
- * switch (used from Settings and the coach, where no plan was chosen beforehand).
+ * The only place where a subscription is started: a bottom sheet with the Whop Elements checkout (email + card) of the
+ * selected plan. Anonymous sessions pay directly: the checkout configuration carries the user id for the webhook, and
+ * the success page then offers to link an email. `onPlan` adds a small plan switch (used from Settings and the coach,
+ * where no plan was chosen beforehand).
  */
 export function CheckoutSheet({ open, onOpenChange, plan, onPlan }: { open: boolean; onOpenChange: (o: boolean) => void; plan: PlanKey; onPlan?: ((p: PlanKey) => void) | undefined }) {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { ready, session, isAnonymous } = useApp();
   const create = useServerFn(createWhopCheckout);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [failed, setFailed] = useState(false);
   const [attempt, setAttempt] = useState(0);
+  const configs = useRef<Partial<Record<PlanKey, string>>>({}); // a checkout configuration is reusable: mint once per plan
 
   const load = useCallback(async () => {
-    if (!open || !session || isAnonymous) return;
-    setLoading(true); setFailed(false); setSessionId(null);
+    if (!open || !session) return;
+    setFailed(false);
+    const cached = configs.current[plan];
+    if (cached) { setSessionId(cached); return; }
+    setLoading(true); setSessionId(null);
     try {
-      const r = await create({ data: { planId: WHOP_PLANS[plan], returnUrl: window.location.origin + "/subscribe/success" } });
-      if (r.sessionId) setSessionId(r.sessionId); else setFailed(true);
+      const r = await create({ data: { plan, returnUrl: returnUrl() } });
+      if (r.sessionId) { configs.current[plan] = r.sessionId; setSessionId(r.sessionId); } else setFailed(true);
     } catch { setFailed(true); }
     setLoading(false);
-  }, [open, session, isAnonymous, plan, create]);
+  }, [open, session, plan, create]);
+  const retry = () => { delete configs.current[plan]; setAttempt((a) => a + 1); };
 
   useEffect(() => { void load(); }, [load, attempt]);
 
@@ -58,20 +64,16 @@ export function CheckoutSheet({ open, onOpenChange, plan, onPlan }: { open: bool
           </div>
         )}
         <div className="mt-5">
-          {!ready ? <CheckoutSkeleton /> : isAnonymous ? (
-            <div>
-              <p className="mb-4 text-white/85">{t("subscribe.needEmail")}</p>
-              <AccountLinker redirectPath="/" />
-            </div>
-          ) : loading ? <CheckoutSkeleton /> : failed || !sessionId ? (
+          {!ready || loading ? <CheckoutSkeleton /> : failed || !sessionId ? (
             <div role="alert" className="glass rounded-[24px] p-5 text-center">
               <p>{t("subscribe.error")}</p>
-              <button type="button" onClick={() => setAttempt((a) => a + 1)} className="mt-4 min-h-11 rounded-full border border-white/70 px-5">{t("common.retry")}</button>
+              <button type="button" onClick={retry} className="mt-4 min-h-11 rounded-full border border-white/70 px-5">{t("common.retry")}</button>
             </div>
           ) : (
             <ClientOnly fallback={<CheckoutSkeleton />}>
               <Suspense fallback={<CheckoutSkeleton />}>
-                <WhopEmbed sessionId={sessionId} email={session?.user.email ?? undefined} />
+                <WhopCheckout key={`${sessionId}-${attempt}`} checkoutConfiguration={sessionId} locale={lang} returnUrl={returnUrl()}
+                  email={!isAnonymous ? session?.user.email ?? undefined : undefined} onError={() => setFailed(true)} />
               </Suspense>
             </ClientOnly>
           )}

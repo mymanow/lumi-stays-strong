@@ -1,8 +1,28 @@
+import type { Appearance } from "@whop/elements-react";
+
 export type PlanKey = "quarterly" | "weekly";
 
+/**
+ * Whop variant IDs (prefixed `plan_`) of the "Plan No Contact" product (store nocontactai).
+ * Not secret: read in the browser AND on the server, so the server only ever sells / unlocks these two variants.
+ */
+export const VARIANT_ID_3MOIS = (import.meta.env["VITE_WHOP_VARIANT_3MOIS"] as string | undefined) || "plan_3MOIS_A_REMPLACER";
+export const VARIANT_ID_HEBDO = (import.meta.env["VITE_WHOP_VARIANT_HEBDO"] as string | undefined) || "plan_HEBDO_A_REMPLACER";
+
 export const WHOP_PLANS: Record<PlanKey, string> = {
-  quarterly: (import.meta.env["VITE_WHOP_PLAN_QUARTERLY"] as string | undefined) || "plan_12345",
-  weekly: (import.meta.env["VITE_WHOP_PLAN_WEEKLY"] as string | undefined) || "plan_67890",
+  quarterly: VARIANT_ID_3MOIS,
+  weekly: VARIANT_ID_HEBDO,
 };
 
-export const WHOP_ACCENT = "#F4B94E";
+/** Reverse lookup used by the webhook: null for any variant that is not ours. */
+export function planKeyForVariant(variantId: string | null | undefined): PlanKey | null {
+  if (!variantId) return null;
+  if (variantId === VARIANT_ID_3MOIS) return "quarterly";
+  if (variantId === VARIANT_ID_HEBDO) return "weekly";
+  return null;
+}
+
+/** Whop frames on the dusk checkout sheet: dark, gold accent (≈ #F4B94E). */
+export const WHOP_APPEARANCE: Appearance = {
+  theme: { appearance: "dark", accentColor: "amber", grayColor: "slate" },
+};

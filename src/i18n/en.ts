@@ -404,8 +404,10 @@ export const en: typeof fr = {
     rule: "If you slip, {companion} never holds it against you. We start again together.",
   },
   subscribe: {
-    needEmail: "Add your email first: your subscription will follow you on all your devices.",
     error: "Checkout can't load right now.",
+    paymentFailed: "The payment didn't go through. You haven't been charged.", backHome: "Back to home",
+    secureTitle: "Keep your access on all your devices.",
+    secureBody: "Add your email: your subscription stays tied to your account, even if you change phones.",
     successTitle: "Congratulations!", successBody: "Your unlimited coach is ready. Your support system is in place: we'll help you stay strong.", successPending: "Confirming your payment…",
     successLate: "Confirmation is taking a little while. It will arrive within a few minutes.",
     toCoach: "Let's go!",

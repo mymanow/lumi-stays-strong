@@ -402,8 +402,10 @@ export const fr = {
     rule: "Si tu craques, {companion} ne t'en veut pas. On repart ensemble.",
   },
   subscribe: {
-    needEmail: "Ajoute d'abord ton e-mail : ton abonnement te suivra sur tous tes appareils.",
     error: "Le paiement ne peut pas se charger pour le moment.",
+    paymentFailed: "Le paiement n'a pas abouti. Aucun montant n'a été débité.", backHome: "Revenir à l'accueil",
+    secureTitle: "Garde ton accès sur tous tes appareils.",
+    secureBody: "Ajoute ton e-mail : ton abonnement restera lié à ton compte, même si tu changes de téléphone.",
     successTitle: "Félicitations !", successBody: "Ton coach illimité est prêt. Ton système de soutien est en place : on t'aide à tenir bon.", successPending: "On confirme ton paiement…",
     successLate: "La confirmation prend un peu de temps. Elle arrivera d'ici quelques minutes.",
     toCoach: "C'est parti !",

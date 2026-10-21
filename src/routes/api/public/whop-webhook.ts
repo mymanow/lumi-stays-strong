@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { planKeyForVariant } from "@/config/whop";
 
 // Standard Webhooks verification: HMAC-SHA256 over `${id}.${timestamp}.${body}` keyed with the literal secret bytes.
 async function verify(secret: string, id: string, ts: string, body: string, sigHeader: string) {
@@ -16,10 +17,27 @@ async function verify(secret: string, id: string, ts: string, body: string, sigH
   });
 }
 
-const ACTIVATE = new Set(["payment.succeeded", "membership.went_valid", "membership.activated"]);
-const DEACTIVATE = new Set(["membership.went_invalid", "membership.deactivated", "payment.failed"]);
+// Whop API v1 membership events. "Created / paid" arrives as membership.activated, "canceled / expired" as
+// membership.deactivated; membership.updated repeats both and covers renewals. The payload is always the full
+// membership, so its `status` is the source of truth whatever the event name.
+const MEMBERSHIP_EVENTS = new Set(["membership.activated", "membership.deactivated", "membership.updated", "membership.cancel_at_period_end_changed"]);
+// `canceling` = cancellation scheduled at period end, `past_due` = Whop's retry grace period: access is kept.
+const ACCESS_STATUSES = new Set(["active", "trialing", "past_due", "canceling", "completed"]);
 
-type WhopEvent = { type?: string; action?: string; data?: Record<string, any> };
+type WhopMembership = {
+  id?: string;
+  status?: string;
+  plan_id?: string;
+  user_id?: string | null;
+  metadata?: Record<string, unknown> | null;
+  current_period_end?: string | null;
+  expires_at?: string | null;
+  cancel_at_period_end?: boolean;
+  updated_at?: string;
+};
+type WhopEvent = { id?: string; type?: string; data?: WhopMembership };
+
+const ok = (msg = "ok") => new Response(msg, { status: 200 });
 
 export const Route = createFileRoute("/api/public/whop-webhook")({
   server: {
@@ -33,34 +51,49 @@ export const Route = createFileRoute("/api/public/whop-webhook")({
         const sig = request.headers.get("webhook-signature") ?? "";
         if (!id || !ts || !sig || !(await verify(secret, id, ts, body, sig))) return new Response("invalid signature", { status: 401 });
 
-        const evt = JSON.parse(body) as WhopEvent;
-        const type = evt.type ?? evt.action ?? "";
-        const d: any = evt.data ?? {};
-        const membership = d.membership ?? d;
-        const metadata = d.metadata ?? membership.metadata ?? d.checkout_configuration?.metadata ?? {};
-        const userId: string | undefined = metadata.supabase_user_id;
-        if (!userId || !/^[0-9a-f-]{36}$/i.test(userId)) return new Response("ignored", { status: 200 });
+        let evt: WhopEvent;
+        try { evt = JSON.parse(body) as WhopEvent; } catch { return new Response("bad json", { status: 400 }); }
+        const type = evt.type ?? "";
+        const m = evt.data ?? {};
+        if (!MEMBERSHIP_EVENTS.has(type)) return ok("ignored");
 
-        // payment.failed only deactivates when Whop reports no further retries.
-        if (type === "payment.failed" && d.will_retry !== false && d.retries_exhausted !== true) return new Response("ok", { status: 200 });
-        if (!ACTIVATE.has(type) && !DEACTIVATE.has(type)) return new Response("ignored", { status: 200 });
+        // Only our two variants unlock Hold: the Whop store may sell other products.
+        const plan = planKeyForVariant(m.plan_id);
+        if (!plan) return ok("ignored: other variant");
 
-        const planId: string | undefined = d.plan?.id ?? d.plan_id ?? membership.plan?.id;
-        const plan = planId && planId === (process.env["WHOP_PLAN_WEEKLY"] ?? "plan_67890") ? "weekly" : "quarterly";
-        const periodEnd = membership.renewal_period_end ?? membership.expires_at ?? null;
+        const userId = m.metadata?.["supabase_user_id"];
+        if (typeof userId !== "string" || !/^[0-9a-f-]{36}$/i.test(userId)) {
+          console.warn("whop webhook: membership without supabase_user_id", m.id, type);
+          return ok("ignored: no user");
+        }
 
+        const isActive = m.status ? ACCESS_STATUSES.has(m.status) : type === "membership.activated";
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+        // Retries and replays can arrive out of order: never let an older snapshot overwrite a newer one,
+        // and never let an old membership ending switch off a newer one (re-subscription after a cancel).
+        const { data: current } = await supabaseAdmin.from("subscriptions")
+          .select("status, whop_membership_id, whop_synced_at").eq("user_id", userId).maybeSingle();
+        if (current) {
+          const sameMembership = current.whop_membership_id === m.id;
+          if (sameMembership && current.whop_synced_at && m.updated_at && new Date(m.updated_at) <= new Date(current.whop_synced_at)) return ok("stale");
+          if (!sameMembership && !isActive && current.status === "active") return ok("ignored: older membership");
+        }
+
         const { error } = await supabaseAdmin.from("subscriptions").upsert({
           user_id: userId,
-          status: ACTIVATE.has(type) ? "active" : "inactive",
+          status: isActive ? "active" : "inactive",
           plan,
-          whop_membership_id: membership.id?.startsWith?.("mem_") ? membership.id : d.membership_id ?? null,
-          whop_user_id: d.user?.id ?? d.user_id ?? null,
-          current_period_end: typeof periodEnd === "number" ? new Date(periodEnd * 1000).toISOString() : periodEnd,
+          whop_status: m.status ?? null,
+          whop_membership_id: m.id ?? null,
+          whop_user_id: m.user_id ?? null,
+          current_period_end: m.current_period_end ?? m.expires_at ?? null,
+          cancel_at_period_end: m.cancel_at_period_end ?? false,
+          whop_synced_at: m.updated_at ?? new Date().toISOString(),
           updated_at: new Date().toISOString(),
         }, { onConflict: "user_id" });
         if (error) { console.error("whop webhook upsert", error); return new Response("db error", { status: 500 }); }
-        return new Response("ok", { status: 200 });
+        return ok();
       },
     },
   },
