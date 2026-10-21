@@ -7,7 +7,7 @@ const rows = new Map<string, Record<string, unknown>>();
 vi.mock("@/integrations/supabase/client.server", () => ({
   supabaseAdmin: {
     from: () => ({
-      select: () => ({ eq: (_c: string, uid: string) => ({ maybeSingle: async () => ({ data: rows.get(uid) ?? null }) }) }),
+      select: () => ({ eq: (_c: string, uid: string) => ({ maybeSingle: () => ({ overrideTypes: async () => ({ data: rows.get(uid) ?? null }) }) }) }),
       upsert: async (row: Record<string, unknown>) => { rows.set(row["user_id"] as string, { ...rows.get(row["user_id"] as string), ...row }); return { error: null }; },
     }),
   },
