@@ -107,7 +107,8 @@ export const Route = createFileRoute("/api/public/whop-webhook")({
           whop_synced_at: m.updated_at ?? new Date().toISOString(),
           updated_at: new Date().toISOString(),
         };
-        const { error } = await supabaseAdmin.from("subscriptions").upsert(subscription, { onConflict: "user_id" });
+        const { error } = await supabaseAdmin.from("subscriptions")
+          .upsert<Database["public"]["Tables"]["subscriptions"]["Insert"]>(subscription, { onConflict: "user_id" });
         if (error) { console.error("whop webhook upsert", error); return new Response("db error", { status: 500 }); }
         return ok();
       },
