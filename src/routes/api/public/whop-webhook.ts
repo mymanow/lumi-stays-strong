@@ -1,5 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { planKeyForVariant } from "@/config/whop";
+import type { Database } from "@/integrations/supabase/types";
+
+// The external database includes the Whop columns from hold_supabase_migration.sql.
+// Keep this contract local: the generated integration types must not be edited.
+type WhopSubscriptionSnapshot = {
+  status: string;
+  whop_membership_id: string | null;
+  whop_synced_at: string | null;
+};
+type WhopSubscriptionInsert = Database["public"]["Tables"]["subscriptions"]["Insert"] & {
+  whop_status: string | null;
+  cancel_at_period_end: boolean;
+  whop_synced_at: string;
+};
 
 // Standard Webhooks verification: HMAC-SHA256 over `${id}.${timestamp}.${body}` keyed with the literal secret bytes.
 async function verify(secret: string, id: string, ts: string, body: string, sigHeader: string) {
@@ -73,14 +87,15 @@ export const Route = createFileRoute("/api/public/whop-webhook")({
         // Retries and replays can arrive out of order: never let an older snapshot overwrite a newer one,
         // and never let an old membership ending switch off a newer one (re-subscription after a cancel).
         const { data: current } = await supabaseAdmin.from("subscriptions")
-          .select("status, whop_membership_id, whop_synced_at").eq("user_id", userId).maybeSingle();
+          .select("status, whop_membership_id, whop_synced_at").eq("user_id", userId).maybeSingle()
+          .overrideTypes<WhopSubscriptionSnapshot | null, { merge: false }>();
         if (current) {
           const sameMembership = current.whop_membership_id === m.id;
           if (sameMembership && current.whop_synced_at && m.updated_at && new Date(m.updated_at) <= new Date(current.whop_synced_at)) return ok("stale");
           if (!sameMembership && !isActive && current.status === "active") return ok("ignored: older membership");
         }
 
-        const { error } = await supabaseAdmin.from("subscriptions").upsert({
+        const subscription: WhopSubscriptionInsert = {
           user_id: userId,
           status: isActive ? "active" : "inactive",
           plan,
@@ -91,7 +106,9 @@ export const Route = createFileRoute("/api/public/whop-webhook")({
           cancel_at_period_end: m.cancel_at_period_end ?? false,
           whop_synced_at: m.updated_at ?? new Date().toISOString(),
           updated_at: new Date().toISOString(),
-        }, { onConflict: "user_id" });
+        };
+        const { error } = await supabaseAdmin.from("subscriptions")
+          .upsert<Database["public"]["Tables"]["subscriptions"]["Insert"]>(subscription, { onConflict: "user_id" });
         if (error) { console.error("whop webhook upsert", error); return new Response("db error", { status: 500 }); }
         return ok();
       },

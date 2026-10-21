@@ -15,6 +15,7 @@
 - Red flags and the photos/voice notes/videos of "Mes rappels" live only in IndexedDB (src/lib/keepsakes.ts), like the vault: never upload them, never send them to the coach.
 - Coach AI runs in the /api/coach server route (bearer-verified, quota via ai_usage + subscriptions) — never call AI from the browser.
 - Whop: checkout config created in a server function (client sends a plan key, never a variant ID) and rendered with @whop/elements-react inside CheckoutSheet; subscriptions written only by /api/public/whop-webhook (membership.* events, our two variants only) with service role. is_premium is a generated column from status. SQL changes go in hold_supabase_migration.sql.
+- Whop webhook uses a local typed contract for external database columns absent from generated integration types; preserve the existing SQL contract without editing generated files or changing the database.
 - Onboarding has six breakup questions (situation, last contact range, feelings after, current feelings, hope, goal) saved to owner-only profile columns after each step (see drizzle/migrations/0003_onboarding_v2_answers.sql). Only motivation and situation type reach the coach context; feelings never do.
 - After the hope question, onboarding asks "How did you learn about {app}?" (8 options) saved to the owner-only `profiles.acquisition_source` column (drizzle/migrations/0006_acquisition_source.sql). It is for acquisition analytics only and never reaches the coach.
 
