@@ -208,40 +208,30 @@ export type Database = {
       }
       subscriptions: {
         Row: {
-          cancel_at_period_end: boolean
           current_period_end: string | null
-          is_premium: boolean | null
           plan: string | null
           status: string
           updated_at: string
           user_id: string
           whop_membership_id: string | null
-          whop_status: string | null
-          whop_synced_at: string | null
           whop_user_id: string | null
         }
         Insert: {
-          cancel_at_period_end?: boolean
           current_period_end?: string | null
           plan?: string | null
           status?: string
           updated_at?: string
           user_id: string
           whop_membership_id?: string | null
-          whop_status?: string | null
-          whop_synced_at?: string | null
           whop_user_id?: string | null
         }
         Update: {
-          cancel_at_period_end?: boolean
           current_period_end?: string | null
           plan?: string | null
           status?: string
           updated_at?: string
           user_id?: string
           whop_membership_id?: string | null
-          whop_status?: string | null
-          whop_synced_at?: string | null
           whop_user_id?: string | null
         }
         Relationships: []
