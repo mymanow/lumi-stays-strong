@@ -212,3 +212,9 @@ ALTER TABLE public.subscriptions
 COMMENT ON COLUMN public.subscriptions.is_premium IS 'true tant que l''abonnement Whop donne accès (active, trialing, past_due, canceling).';
 COMMENT ON COLUMN public.subscriptions.whop_status IS 'Statut brut de la membership Whop (active, trialing, past_due, canceling, canceled, expired…).';
 COMMENT ON COLUMN public.subscriptions.whop_synced_at IS 'updated_at de la membership Whop du dernier webhook appliqué ; les livraisons plus anciennes sont ignorées.';
+
+
+-- ===== 0010_revoke_trigger_function_rpc =====
+-- handle_new_user est une fonction de trigger SECURITY DEFINER : personne ne doit pouvoir l'appeler via /rest/v1/rpc
+-- (alerte Supabase 0028/0029). Le trigger on_auth_user_created continue de fonctionner.
+REVOKE EXECUTE ON FUNCTION public.handle_new_user() FROM PUBLIC, anon, authenticated;
