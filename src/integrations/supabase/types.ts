@@ -70,6 +70,7 @@ export type Database = {
           created_at: string
           id: string
           mood: number | null
+          note: string | null
           occurred_at: string
           previous_streak_seconds: number | null
           trigger: string | null
@@ -80,6 +81,7 @@ export type Database = {
           created_at?: string
           id?: string
           mood?: number | null
+          note?: string | null
           occurred_at?: string
           previous_streak_seconds?: number | null
           trigger?: string | null
@@ -90,6 +92,7 @@ export type Database = {
           created_at?: string
           id?: string
           mood?: number | null
+          note?: string | null
           occurred_at?: string
           previous_streak_seconds?: number | null
           trigger?: string | null
@@ -100,11 +103,13 @@ export type Database = {
       }
       profiles: {
         Row: {
+          acquisition_source: string | null
           age: number | null
           best_streak_seconds: number
           coach_tone: string
           commitment_at: string | null
           created_at: string
+          current_feelings: string[]
           difficulty_level: string | null
           difficulty_score: number | null
           dominant_emotion: string | null
@@ -114,8 +119,12 @@ export type Database = {
           id: string
           language: string
           last_contact_at: string | null
+          last_contact_feelings: string[]
+          last_contact_range: string | null
           motivation: string | null
           name: string | null
+          no_contact_goal: string | null
+          no_contact_rules: string[]
           onboarding_completed: boolean
           onboarding_step: number
           reasons: string[]
@@ -128,11 +137,13 @@ export type Database = {
           triggers: string[]
         }
         Insert: {
+          acquisition_source?: string | null
           age?: number | null
           best_streak_seconds?: number
           coach_tone?: string
           commitment_at?: string | null
           created_at?: string
+          current_feelings?: string[]
           difficulty_level?: string | null
           difficulty_score?: number | null
           dominant_emotion?: string | null
@@ -142,8 +153,12 @@ export type Database = {
           id: string
           language?: string
           last_contact_at?: string | null
+          last_contact_feelings?: string[]
+          last_contact_range?: string | null
           motivation?: string | null
           name?: string | null
+          no_contact_goal?: string | null
+          no_contact_rules?: string[]
           onboarding_completed?: boolean
           onboarding_step?: number
           reasons?: string[]
@@ -156,11 +171,13 @@ export type Database = {
           triggers?: string[]
         }
         Update: {
+          acquisition_source?: string | null
           age?: number | null
           best_streak_seconds?: number
           coach_tone?: string
           commitment_at?: string | null
           created_at?: string
+          current_feelings?: string[]
           difficulty_level?: string | null
           difficulty_score?: number | null
           dominant_emotion?: string | null
@@ -170,8 +187,12 @@ export type Database = {
           id?: string
           language?: string
           last_contact_at?: string | null
+          last_contact_feelings?: string[]
+          last_contact_range?: string | null
           motivation?: string | null
           name?: string | null
+          no_contact_goal?: string | null
+          no_contact_rules?: string[]
           onboarding_completed?: boolean
           onboarding_step?: number
           reasons?: string[]

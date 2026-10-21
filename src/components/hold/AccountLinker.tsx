@@ -14,7 +14,7 @@ export function AccountLinker({ redirectPath = "/settings" }: { redirectPath?: s
   const [state, setState] = useState<"idle" | "sending" | "sent" | "error" | "invalid">("idle");
 
   if (session && !isAnonymous && session.user.email) {
-    return <p className="rounded-2xl border border-secondary/40 bg-secondary/10 p-4 text-foreground">{t("account.linked", { email: session.user.email })}</p>;
+    return <p className="rounded-[24px] border border-white bg-white/60 p-4 text-foreground">{t("account.linked", { email: session.user.email })}</p>;
   }
 
   const send = async (e: React.FormEvent) => {
@@ -30,15 +30,15 @@ export function AccountLinker({ redirectPath = "/settings" }: { redirectPath?: s
       <form onSubmit={send} className="flex flex-col gap-3" noValidate>
         <label className="flex flex-col gap-1 text-sm text-muted-foreground">{t("account.email")}
           <input type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} aria-invalid={state === "invalid"}
-            className="min-h-12 rounded-xl border border-line bg-surface px-4 text-base text-foreground" />
+            className="min-h-12 glass rounded-[20px] px-4 text-base text-foreground" />
         </label>
-        <PrimaryButton type="submit" disabled={state === "sending"}>{t("account.send")}</PrimaryButton>
+        <PrimaryButton arrow={false} type="submit" disabled={state === "sending"}>{t("account.send")}</PrimaryButton>
         <p aria-live="polite" className="text-sm text-muted-foreground">
           {state === "sent" && t("account.sent")}{state === "error" && t("account.error")}{state === "invalid" && t("account.invalid")}
         </p>
       </form>
       {OAUTH_PROVIDERS.map((p) => (
-        <button key={p} type="button" onClick={() => lovableOAuth(p)} className="min-h-12 rounded-2xl border border-line bg-surface font-medium">
+        <button key={p} type="button" onClick={() => lovableOAuth(p)} className="min-h-12 glass rounded-[24px] font-medium">
           {t(p === "google" ? "account.google" : "account.apple")}
         </button>
       ))}

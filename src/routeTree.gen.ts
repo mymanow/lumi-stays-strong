@@ -14,14 +14,14 @@ import { Route as CheckinRouteImport } from './routes/checkin'
 import { Route as CoachRouteImport } from './routes/coach'
 import { Route as CrisisRouteImport } from './routes/crisis'
 import { Route as HistoryRouteImport } from './routes/history'
+import { Route as JourneyRouteImport } from './routes/journey'
 import { Route as LumiRouteImport } from './routes/lumi'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as PrivacyRouteImport } from './routes/privacy'
-import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as RemindersRouteImport } from './routes/reminders'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SigninRouteImport } from './routes/signin'
 import { Route as SosRouteImport } from './routes/sos'
-import { Route as SubscribeRouteImport } from './routes/subscribe'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as ApiCoachRouteImport } from './routes/api/coach'
 import { Route as SubscribeSuccessRouteImport } from './routes/subscribe.success'
@@ -52,6 +52,11 @@ const HistoryRoute = HistoryRouteImport.update({
   path: '/history',
   getParentRoute: () => rootRouteImport,
 } as any)
+const JourneyRoute = JourneyRouteImport.update({
+  id: '/journey',
+  path: '/journey',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LumiRoute = LumiRouteImport.update({
   id: '/lumi',
   path: '/lumi',
@@ -67,9 +72,9 @@ const PrivacyRoute = PrivacyRouteImport.update({
   path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProfileRoute = ProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
+const RemindersRoute = RemindersRouteImport.update({
+  id: '/reminders',
+  path: '/reminders',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SettingsRoute = SettingsRouteImport.update({
@@ -87,11 +92,6 @@ const SosRoute = SosRouteImport.update({
   path: '/sos',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SubscribeRoute = SubscribeRouteImport.update({
-  id: '/subscribe',
-  path: '/subscribe',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
@@ -103,9 +103,9 @@ const ApiCoachRoute = ApiCoachRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const SubscribeSuccessRoute = SubscribeSuccessRouteImport.update({
-  id: '/success',
-  path: '/success',
-  getParentRoute: () => SubscribeRoute,
+  id: '/subscribe/success',
+  path: '/subscribe/success',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicWhopWebhookRoute = ApiPublicWhopWebhookRouteImport.update({
   id: '/api/public/whop-webhook',
@@ -119,14 +119,14 @@ export interface FileRoutesByFullPath {
   '/coach': typeof CoachRoute
   '/crisis': typeof CrisisRoute
   '/history': typeof HistoryRoute
+  '/journey': typeof JourneyRoute
   '/lumi': typeof LumiRoute
   '/onboarding': typeof OnboardingRoute
   '/privacy': typeof PrivacyRoute
-  '/profile': typeof ProfileRoute
+  '/reminders': typeof RemindersRoute
   '/settings': typeof SettingsRoute
   '/signin': typeof SigninRoute
   '/sos': typeof SosRoute
-  '/subscribe': typeof SubscribeRouteWithChildren
   '/terms': typeof TermsRoute
   '/api/coach': typeof ApiCoachRoute
   '/subscribe/success': typeof SubscribeSuccessRoute
@@ -138,14 +138,14 @@ export interface FileRoutesByTo {
   '/coach': typeof CoachRoute
   '/crisis': typeof CrisisRoute
   '/history': typeof HistoryRoute
+  '/journey': typeof JourneyRoute
   '/lumi': typeof LumiRoute
   '/onboarding': typeof OnboardingRoute
   '/privacy': typeof PrivacyRoute
-  '/profile': typeof ProfileRoute
+  '/reminders': typeof RemindersRoute
   '/settings': typeof SettingsRoute
   '/signin': typeof SigninRoute
   '/sos': typeof SosRoute
-  '/subscribe': typeof SubscribeRouteWithChildren
   '/terms': typeof TermsRoute
   '/api/coach': typeof ApiCoachRoute
   '/subscribe/success': typeof SubscribeSuccessRoute
@@ -158,14 +158,14 @@ export interface FileRoutesById {
   '/coach': typeof CoachRoute
   '/crisis': typeof CrisisRoute
   '/history': typeof HistoryRoute
+  '/journey': typeof JourneyRoute
   '/lumi': typeof LumiRoute
   '/onboarding': typeof OnboardingRoute
   '/privacy': typeof PrivacyRoute
-  '/profile': typeof ProfileRoute
+  '/reminders': typeof RemindersRoute
   '/settings': typeof SettingsRoute
   '/signin': typeof SigninRoute
   '/sos': typeof SosRoute
-  '/subscribe': typeof SubscribeRouteWithChildren
   '/terms': typeof TermsRoute
   '/api/coach': typeof ApiCoachRoute
   '/subscribe/success': typeof SubscribeSuccessRoute
@@ -179,14 +179,14 @@ export interface FileRouteTypes {
     | '/coach'
     | '/crisis'
     | '/history'
+    | '/journey'
     | '/lumi'
     | '/onboarding'
     | '/privacy'
-    | '/profile'
+    | '/reminders'
     | '/settings'
     | '/signin'
     | '/sos'
-    | '/subscribe'
     | '/terms'
     | '/api/coach'
     | '/subscribe/success'
@@ -198,14 +198,14 @@ export interface FileRouteTypes {
     | '/coach'
     | '/crisis'
     | '/history'
+    | '/journey'
     | '/lumi'
     | '/onboarding'
     | '/privacy'
-    | '/profile'
+    | '/reminders'
     | '/settings'
     | '/signin'
     | '/sos'
-    | '/subscribe'
     | '/terms'
     | '/api/coach'
     | '/subscribe/success'
@@ -217,14 +217,14 @@ export interface FileRouteTypes {
     | '/coach'
     | '/crisis'
     | '/history'
+    | '/journey'
     | '/lumi'
     | '/onboarding'
     | '/privacy'
-    | '/profile'
+    | '/reminders'
     | '/settings'
     | '/signin'
     | '/sos'
-    | '/subscribe'
     | '/terms'
     | '/api/coach'
     | '/subscribe/success'
@@ -237,16 +237,17 @@ export interface RootRouteChildren {
   CoachRoute: typeof CoachRoute
   CrisisRoute: typeof CrisisRoute
   HistoryRoute: typeof HistoryRoute
+  JourneyRoute: typeof JourneyRoute
   LumiRoute: typeof LumiRoute
   OnboardingRoute: typeof OnboardingRoute
   PrivacyRoute: typeof PrivacyRoute
-  ProfileRoute: typeof ProfileRoute
+  RemindersRoute: typeof RemindersRoute
   SettingsRoute: typeof SettingsRoute
   SigninRoute: typeof SigninRoute
   SosRoute: typeof SosRoute
-  SubscribeRoute: typeof SubscribeRouteWithChildren
   TermsRoute: typeof TermsRoute
   ApiCoachRoute: typeof ApiCoachRoute
+  SubscribeSuccessRoute: typeof SubscribeSuccessRoute
   ApiPublicWhopWebhookRoute: typeof ApiPublicWhopWebhookRoute
 }
 
@@ -287,6 +288,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HistoryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/journey': {
+      id: '/journey'
+      path: '/journey'
+      fullPath: '/journey'
+      preLoaderRoute: typeof JourneyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lumi': {
       id: '/lumi'
       path: '/lumi'
@@ -308,11 +316,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/profile': {
-      id: '/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof ProfileRouteImport
+    '/reminders': {
+      id: '/reminders'
+      path: '/reminders'
+      fullPath: '/reminders'
+      preLoaderRoute: typeof RemindersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/settings': {
@@ -336,13 +344,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SosRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/subscribe': {
-      id: '/subscribe'
-      path: '/subscribe'
-      fullPath: '/subscribe'
-      preLoaderRoute: typeof SubscribeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/terms': {
       id: '/terms'
       path: '/terms'
@@ -359,10 +360,10 @@ declare module '@tanstack/react-router' {
     }
     '/subscribe/success': {
       id: '/subscribe/success'
-      path: '/success'
+      path: '/subscribe/success'
       fullPath: '/subscribe/success'
       preLoaderRoute: typeof SubscribeSuccessRouteImport
-      parentRoute: typeof SubscribeRoute
+      parentRoute: typeof rootRouteImport
     }
     '/api/public/whop-webhook': {
       id: '/api/public/whop-webhook'
@@ -374,34 +375,23 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface SubscribeRouteChildren {
-  SubscribeSuccessRoute: typeof SubscribeSuccessRoute
-}
-
-const SubscribeRouteChildren: SubscribeRouteChildren = {
-  SubscribeSuccessRoute: SubscribeSuccessRoute,
-}
-
-const SubscribeRouteWithChildren = SubscribeRoute._addFileChildren(
-  SubscribeRouteChildren,
-)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CheckinRoute: CheckinRoute,
   CoachRoute: CoachRoute,
   CrisisRoute: CrisisRoute,
   HistoryRoute: HistoryRoute,
+  JourneyRoute: JourneyRoute,
   LumiRoute: LumiRoute,
   OnboardingRoute: OnboardingRoute,
   PrivacyRoute: PrivacyRoute,
-  ProfileRoute: ProfileRoute,
+  RemindersRoute: RemindersRoute,
   SettingsRoute: SettingsRoute,
   SigninRoute: SigninRoute,
   SosRoute: SosRoute,
-  SubscribeRoute: SubscribeRouteWithChildren,
   TermsRoute: TermsRoute,
   ApiCoachRoute: ApiCoachRoute,
+  SubscribeSuccessRoute: SubscribeSuccessRoute,
   ApiPublicWhopWebhookRoute: ApiPublicWhopWebhookRoute,
 }
 export const routeTree = rootRouteImport

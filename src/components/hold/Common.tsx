@@ -1,7 +1,8 @@
 import { Link } from "@tanstack/react-router";
-import type { ReactNode } from "react";
+import { Fragment, type ReactNode } from "react";
 import { useI18n, type Lang } from "@/i18n";
 import { crisisLineFor } from "@/lib/domain";
+import { ArrowRight } from "lucide-react";
 import { PhoneIcon } from "./Icons";
 import { useHydrated } from "@tanstack/react-router";
 
@@ -25,10 +26,10 @@ export function CrisisLink({ className = "" }: { className?: string }) {
 export function LangSwitch({ onChange }: { onChange?: (l: Lang) => void }) {
   const { lang, setLang, t } = useI18n();
   return (
-    <div role="group" aria-label={t("common.language")} className="inline-flex rounded-full border border-line bg-surface p-1">
+    <div role="group" aria-label={t("common.language")} className="glass inline-flex rounded-full p-1">
       {(["fr", "en"] as const).map((l) => (
         <button key={l} type="button" aria-pressed={lang === l} onClick={() => { setLang(l); onChange?.(l); }}
-          className={`min-h-9 min-w-11 rounded-full px-3 text-sm font-medium ${lang === l ? "bg-secondary text-secondary-foreground" : "text-muted-foreground"}`}>
+          className={`min-h-9 min-w-11 rounded-full px-3 text-sm font-medium ${lang === l ? "bg-white text-[#2e3865]" : "text-muted-foreground"}`}>
           {l.toUpperCase()}
         </button>
       ))}
@@ -41,57 +42,87 @@ export function FullLoader() {
   return <div className="flex min-h-screen items-center justify-center text-muted-foreground" role="status">{t("common.loading")}</div>;
 }
 
-export function PrimaryButton({ children, className = "", ...rest }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+/** Main CTA: indigo→violet gradient with glow when active, soft periwinkle gradient when disabled. */
+export function PrimaryButton({ children, className = "", arrow = true, ...rest }: React.ButtonHTMLAttributes<HTMLButtonElement> & { arrow?: boolean }) {
   return (
-    <button {...rest} className={`min-h-12 w-full rounded-2xl bg-primary px-6 text-base font-semibold text-primary-foreground transition-opacity disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lumi ${className}`}>
+    <button {...rest} className={`group flex min-h-[68px] w-full items-center justify-center gap-3 rounded-[26px] border border-white/25 bg-[linear-gradient(90deg,#6366F1_0%,#8B7CF8_100%)] px-6 text-lg font-bold text-white shadow-[0_14px_34px_-10px_rgba(99,102,241,0.65)] transition-[transform,box-shadow,filter] hover:brightness-110 active:scale-[0.98] disabled:cursor-not-allowed disabled:border-transparent disabled:bg-[linear-gradient(135deg,#9A9AF4_0%,#B4A6FA_100%)] disabled:shadow-[0_10px_30px_-12px_rgba(154,154,244,0.55)] disabled:hover:brightness-100 disabled:active:scale-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${className}`}>
       {children}
+      {arrow && <ArrowRight aria-hidden className="h-5 w-5 shrink-0 transition-transform group-enabled:group-hover:translate-x-0.5" strokeWidth={2.5} />}
     </button>
   );
 }
 
 export function SecondaryButton({ children, className = "", ...rest }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
-    <button {...rest} className={`min-h-12 w-full rounded-2xl border border-line bg-surface px-6 text-base font-medium text-foreground disabled:opacity-40 ${className}`}>
+    <button {...rest} className={`glass min-h-14 w-full rounded-full px-6 text-base font-semibold text-foreground disabled:opacity-40 ${className}`}>
       {children}
     </button>
   );
 }
 
 export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <section className={`rounded-2xl border border-line bg-surface p-5 ${className}`}>{children}</section>;
+  return <section className={`glass rounded-[24px] p-5 ${className}`}>{children}</section>;
 }
 
 export function PageTitle({ children }: { children: ReactNode }) {
-  return <h1 className="mb-6 text-3xl font-semibold">{children}</h1>;
+  return <h1 className="mb-6 text-4xl">{children}</h1>;
 }
 
 export function SosButton({ className = "" }: { className?: string }) {
   const { t } = useI18n();
   return (
-    <Link to="/sos" className={`flex min-h-14 w-full items-center justify-center rounded-2xl bg-primary px-6 text-lg font-semibold text-primary-foreground shadow-[0_0_30px_-8px_var(--primary)] ${className}`}>
+    <Link to="/sos" className={`flex min-h-14 w-full items-center justify-center rounded-full bg-primary px-6 text-lg font-bold text-primary-foreground shadow-[0_10px_28px_-8px_rgba(46,56,101,0.6)] ${className}`}>
       {t("home.sos")}
     </Link>
   );
 }
 
-export function ChoiceList<T extends string>({ options, value, onChange, multi = false, labelledBy }: {
+export function ChoiceList<T extends string>({ options, value, onChange, multi = false, labelledBy, grid = false, details }: {
   options: { value: T; label: string }[]; value: T[]; onChange: (v: T[]) => void; multi?: boolean; labelledBy?: string;
+  /** Tile layout: 3 columns of centered tiles, the last option spans the full width (e.g. durations). */
+  grid?: boolean;
+  /** Optional explanation per option, unfolded under the selected one (and folded again when another is picked). */
+  details?: Partial<Record<T, string>>;
 }) {
   return (
-    <div role={multi ? "group" : "radiogroup"} aria-labelledby={labelledBy} className="flex flex-col gap-3">
-      {options.map((o) => {
+    <div role={multi ? "group" : "radiogroup"} aria-labelledby={labelledBy} className={`cascade ${grid ? "grid grid-cols-3 gap-3" : "flex flex-col gap-3"}`}>
+      {options.map((o, i) => {
         const selected = value.includes(o.value);
-        return (
-          <button key={o.value} type="button" role={multi ? "checkbox" : "radio"} aria-checked={selected}
+        const last = i === options.length - 1;
+        const detail = details?.[o.value];
+        const button = (
+          <button type="button" role={multi ? "checkbox" : "radio"} aria-checked={selected} aria-describedby={detail ? `choice-detail-${o.value}` : undefined}
             onClick={() => onChange(multi ? (selected ? value.filter((v) => v !== o.value) : [...value, o.value]) : [o.value])}
-            className={`flex min-h-13 items-center justify-between rounded-2xl border px-5 py-3 text-left text-base transition-colors ${selected ? "border-secondary bg-secondary/10 text-foreground" : "border-line bg-surface text-foreground"}`}>
+            className={grid
+              ? `choice flex items-center justify-center rounded-[24px] px-3 py-3 text-center text-base font-medium transition-colors ${last && options.length % 3 === 1 ? "col-span-3 min-h-14" : "min-h-24"} `
+              : "choice flex min-h-14 w-full items-center justify-between rounded-[28px] px-5 py-3 text-left text-base font-medium transition-colors"}>
             <span>{o.label}</span>
-            <span aria-hidden className={`ml-3 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border ${selected ? "border-secondary bg-secondary text-secondary-foreground" : "border-line"}`}>
-              {selected && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M5 12l5 5 9-10" /></svg>}
-            </span>
+            {!grid && !detail && (
+              <span aria-hidden className={`ml-3 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border ${selected ? "border-primary bg-primary text-primary-foreground" : "border-line"}`}>
+                {selected && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M5 12l5 5 9-10" /></svg>}
+              </span>
+            )}
           </button>
+        );
+        if (!detail || grid) return <Fragment key={o.value}>{button}</Fragment>;
+        // One rounded card: the chosen answer on top, its explanation flush underneath on a darker tint.
+        return (
+          <div key={o.value} className="overflow-hidden rounded-[28px]">
+            <div className={selected ? "[&>button]:rounded-b-none [&>button]:border-b-0" : ""}>{button}</div>
+            <div id={`choice-detail-${o.value}`} aria-hidden={!selected} data-open={selected}
+              className="grid transition-[grid-template-rows,opacity] duration-300 ease-out" style={{ gridTemplateRows: selected ? "1fr" : "0fr", opacity: selected ? 1 : 0 }}>
+              <div className="overflow-hidden">
+                <p className="px-5 py-5 text-[17px] leading-relaxed text-[#2e3865]" style={{ background: "rgba(124, 146, 235, 0.30)" }}>{detail}</p>
+              </div>
+            </div>
+          </div>
         );
       })}
     </div>
   );
+}
+
+/** Full-screen scene: light (periwinkle), dusk (violet) or night (deep indigo). Swaps the palette via CSS variables. */
+export function Stage({ tone = "light", children, className = "" }: { tone?: "light" | "dusk" | "night"; children: ReactNode; className?: string }) {
+  return <div className={`stage-${tone} min-h-svh w-full ${className}`}>{children}</div>;
 }

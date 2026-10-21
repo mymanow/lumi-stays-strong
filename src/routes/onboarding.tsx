@@ -1,17 +1,30 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useI18n, interpolate } from "@/i18n";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { useI18n } from "@/i18n";
 import { useApp, type ProfilePatch } from "@/lib/app-state";
 import { Lumi } from "@/components/hold/Lumi";
-import { ChoiceList, FullLoader, LangSwitch, PrimaryButton, useCrisisLine } from "@/components/hold/Common";
+import { ChoiceList, FullLoader, LangSwitch, PrimaryButton, Stage, useCrisisLine } from "@/components/hold/Common";
 import { BackIcon } from "@/components/hold/Icons";
-import { HoldButton } from "@/components/hold/HoldButton";
-import { AccountLinker } from "@/components/hold/AccountLinker";
+import { Greeting } from "@/components/hold/Greeting";
+import { InfoBody, INFO_KINDS, INFO_TONE } from "@/components/hold/OnboardingInfo";
+import { AloneScreen } from "@/components/hold/AloneScreen";
+import { ReviewsScreen, reviewsAvailable } from "@/components/hold/ReviewsScreen";
+import { PlanReady } from "@/components/hold/PlanReady";
+import { CompanionShowcase } from "@/components/hold/CompanionShowcase";
+import { SIMULATE_PAYMENT } from "@/config/app";
+import { PaywallResult } from "@/components/hold/PaywallResult";
+import { PlanPitch } from "@/components/hold/PlanPitch";
+import type { PlanKey } from "@/config/whop";
+import { NotifyPermission } from "@/components/hold/NotifyPermission";
+import { notifyScreenApplicable } from "@/lib/notify";
+import { ReminderIntro } from "@/components/hold/ReminderIntro";
+import { PhoneShowcase } from "@/components/hold/PhoneShowcase";
+import { PlanBuilding } from "@/components/hold/PlanBuilding";
 import { APP_NAME } from "@/config/app";
-import { commitmentPhraseKeys } from "@/lib/domain";
-import { ScoreCalculation, ScoreProfile } from "@/components/hold/ScoreScreens";
-import { calculateScore, readScoreFactors, defaultReminderTime, levelForScore, type ScoreResult } from "@/lib/score";
-import { ReminderControl } from "@/components/hold/ReminderControl";
+import { CONTACT_RANGE_DAYS, DEFAULT_REMINDER_TIME, MOTIVATIONS, SITUATIONS, type ContactRange } from "@/lib/domain";
+
+// Loaded only when the checkout button is pressed (keeps the payment code out of the onboarding bundle).
+const CheckoutSheet = lazy(() => import("@/components/hold/CheckoutSheet").then((m) => ({ default: m.CheckoutSheet })));
 
 export const Route = createFileRoute("/onboarding")({
   head: () => ({
@@ -27,21 +40,27 @@ export const Route = createFileRoute("/onboarding")({
   component: Onboarding,
 });
 
-const TOTAL = 12;
-const HARDSHIPS = ["text_urge", "rumination", "lost", "guilt", "pain", "overwhelmed"] as const;
-const TRIGGERS = ["evening", "social_media", "loneliness", "alcohol", "argument", "anniversary", "other"] as const;
-const DURATIONS = ["lt_6m", "6_12m", "1_3y", "gt_3y"] as const;
-const RECENCY = ["lt_week", "w1_4", "m1_3", "gt_3m"] as const;
-const SITUATIONS = ["infidelity_healing", "one_sided_love", "toxic", "blocked_ghosted", "divorce_long_term", "breakup", "situationship_ended", "mutual_breakup", "ex_moved_on", "first_love", "on_off", "long_relationship_ended"] as const;
-const MOTIVATIONS = ["take_back_control", "win_back", "move_on", "unsure"] as const;
-const SOCIALS = ["sometimes", "several_daily", "never"] as const;
-const EMOTIONS = ["calm", "disgust", "joy", "anger", "fear", "sadness"] as const;
-const GENDERS = ["woman", "man", "undisclosed"] as const;
+const TOTAL = 20;
+const LAST_CONTACT = ["today", "week", "month", "m1_3", "m3_6", "gt_6m"] as const;
+const AFTER = ["worse", "ignored", "nothing_changed", "saw_upsetting", "argued", "cold", "not_yet"] as const;
+const NOW = ["devastated", "angry", "hoping", "guilty", "confused", "lonely", "okay"] as const;
+const GOALS = ["d7", "d14", "d30", "d60", "d90", "d180", "open"] as const;
+const RULES = ["no_texting", "no_stalking", "no_old_photos", "no_meeting", "no_reply_except", "no_asking_friends", "no_running_into"] as const;
+const SOURCES = ["tiktok", "google", "word_of_mouth", "quora", "app_store", "instagram_facebook", "reddit", "other"] as const;
 
-function toLocalInput(d: Date) {
-  const p = (n: number) => String(n).padStart(2, "0");
-  return { date: `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`, time: `${p(d.getHours())}:${p(d.getMinutes())}` };
+const only = <T extends string>(list: readonly T[], value?: string | null) => (list.some((v) => v === value) ? (value as string) : "");
+const onlyMany = <T extends string>(list: readonly T[], values?: string[] | null) => (values ?? []).filter((v) => list.some((x) => x === v));
+
+function Question({ id, title, sub }: { id: string; title: string; sub?: string }) {
+  return (
+    <div className="fade-up mb-6">
+      <h1 id={id} className="text-[32px] leading-tight md:text-4xl">{title}</h1>
+      {sub && <p className="mt-2 text-muted-foreground">{sub}</p>}
+    </div>
+  );
 }
+
+const prefersReducedMotion = () => typeof window !== "undefined" && !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
 function Onboarding() {
   const { t, tl, lang } = useI18n();
@@ -49,57 +68,51 @@ function Onboarding() {
   const navigate = useNavigate();
   const crisis = useCrisisLine();
   const [step, setStep] = useState(0);
-  const [scoreScreen, setScoreScreen] = useState<"calculate" | "profile" | null>(null);
-  const [scoreResult, setScoreResult] = useState<ScoreResult | null>(null);
-  const [animateProfile, setAnimateProfile] = useState(false);
-  const [subStep, setSubStep] = useState(0); // within step 1: intro, name, hardship, contact date, triggers
-  const [hardest, setHardest] = useState<string[]>([]);
+  const [subStep, setSubStep] = useState(0); // within step 1: 0 intro, 1 name, 2 greeting
   const [init, setInit] = useState(false);
   const [name, setName] = useState("");
-  const [contact, setContact] = useState(() => toLocalInput(new Date()));
-  const [triggers, setTriggers] = useState<string[]>([]);
-  type S = { duration: string; endedBy: string; endedChoice?: string | undefined; firstBreakup: string; situation: string; motivation: string; emotion: string; gender: string };
-  const [single, setSingle] = useState<S>({ duration: "", endedBy: "", firstBreakup: "", situation: "", motivation: "", emotion: "", gender: "" });
-  const [sub3, setSub3] = useState(0); // within step 3: 0 endedBy, 1 recency
-  const [recency, setRecency] = useState("");
-  const [sub6, setSub6] = useState(0); // within step 6: 0 motivation, 1 social media
-  const [socials, setSocials] = useState("");
-  const [age, setAge] = useState(30);
-  const [reminder, setReminder] = useState({ enabled: false, time: "21:30" });
+  const [situation, setSituation] = useState("");
+  const [lastContact, setLastContact] = useState("");
+  const [after, setAfter] = useState<string[]>([]);
+  const [now, setNow] = useState<string[]>([]);
+  const [hope, setHope] = useState("");
+  const [source, setSource] = useState("");
+  const [goal, setGoal] = useState("");
+  const [rules, setRules] = useState<string[]>([]);
+  const [checkoutOpen, setCheckoutOpen] = useState(false); // Whop checkout sheet opened by the paywall result button
+  const [celebrateResult, setCelebrateResult] = useState(false); // confetti on the paywall result, only when arriving forward from the pitch
+  const [celebrate, setCelebrate] = useState(false); // play the plan-ready celebration once, only when arriving forward
+  const [leaving, setLeaving] = useState<"fwd" | "back" | null>(null);
+  const [dir, setDir] = useState<"fwd" | "back">("fwd");
+  const [infoStep, setInfoStep] = useState(1); // within step 9: the information screens (1..INFO_KINDS.length)
+  const [plan, setPlan] = useState<PlanKey>("quarterly"); // plan highlighted on the pitch page (the pitch page itself has no payment button; the paywall result screen after it does)
+  const [reminder, setReminder] = useState({ enabled: false, time: DEFAULT_REMINDER_TIME });
 
   useEffect(() => {
     if (!ready || !profile || init) return;
     if (profile.onboarding_completed) { navigate({ to: "/" }); return; }
     setStep(profile.onboarding_step ?? 0);
-    if (profile.last_contact_at) setContact(toLocalInput(new Date(profile.last_contact_at)));
-    setTriggers(profile.triggers ?? []);
-    const savedHardest = localStorage.getItem(`hold_onboarding_hardest_${profile.id}`);
-    const hasHardest = HARDSHIPS.some((value) => value === savedHardest);
-    if (hasHardest && savedHardest) setHardest([savedHardest]);
-    if (profile.name) { setName(profile.name); setSubStep(hasHardest ? 3 : 2); }
-    if (profile.last_contact_at) setSubStep(4);
-    const savedRecency = localStorage.getItem(`hold_onboarding_recency_${profile.id}`);
-    if (savedRecency && RECENCY.some((v) => v === savedRecency)) setRecency(savedRecency);
-    if ((profile.onboarding_step ?? 0) === 3 && profile.ended_by) setSub3(1);
-    const savedSocials = localStorage.getItem(`hold_onboarding_socials_${profile.id}`);
-    const hasSocials = !!savedSocials && SOCIALS.some((v) => v === savedSocials);
-    if (savedSocials && hasSocials) setSocials(savedSocials);
-    if ((profile.onboarding_step ?? 0) === 6 && profile.motivation && hasSocials) setSub6(1);
-    setSingle({
-      duration: profile.relationship_duration ?? "", endedBy: profile.ended_by ?? "",
-      firstBreakup: profile.first_breakup == null ? "" : profile.first_breakup ? "yes" : "no",
-      situation: profile.situation_type ?? "", motivation: profile.motivation ?? "",
-      emotion: profile.dominant_emotion ?? "", gender: profile.gender ?? "",
-    });
-    if (profile.age) setAge(profile.age);
-    setReminder({ enabled: false, time: defaultReminderTime(profile.triggers ?? []) });
-    const factors = readScoreFactors(profile.score_factors);
-    if (profile.difficulty_score != null && factors) {
-      setScoreResult({ score: profile.difficulty_score, level: levelForScore(profile.difficulty_score), factors, points: 0, computedAt: profile.score_computed_at ?? "" });
-      if (profile.onboarding_step === 10 && !profile.commitment_at) setScoreScreen("profile");
-    }
+    if (profile.name) { setName(profile.name); setSubStep(1); }
+    setSituation(only(SITUATIONS, profile.situation_type));
+    setLastContact(only(LAST_CONTACT, profile.last_contact_range));
+    setAfter(onlyMany(AFTER, profile.last_contact_feelings));
+    setNow(onlyMany(NOW, profile.current_feelings));
+    setHope(only(MOTIVATIONS, profile.motivation));
+    setSource(only(SOURCES, profile.acquisition_source));
+    setGoal(only(GOALS, profile.no_contact_goal));
+    setRules(onlyMany(RULES, profile.no_contact_rules));
     setInit(true);
   }, [ready, profile, init, navigate]);
+
+  /** Fade the current screen out (160ms), then run the change; the next screen fades in. Instant with reduced motion. */
+  const transition = (action: () => void, direction: "fwd" | "back" = "fwd") => {
+    if (leaving) return;
+    setDir(direction);
+    if (prefersReducedMotion()) { action(); return; }
+    setLeaving(direction);
+    window.setTimeout(() => { action(); setLeaving(null); }, 160);
+  };
+  const outClass = leaving ? `screen-out-${leaving}` : `screen-in-${dir}`;
 
   const go = async (next: number, patch: ProfilePatch = {}) => {
     setStep(next);
@@ -107,298 +120,235 @@ function Onboarding() {
     await updateProfile({ ...patch, onboarding_step: next });
   };
 
-  const prepareScore = (selectedAge: number, replay = true) => {
-    if (!profile) return;
-    const result = calculateScore(profile);
-    setScoreResult(result);
-    setScoreScreen(replay ? "calculate" : "profile");
-    setAnimateProfile(replay);
-    window.scrollTo(0, 0);
-    void updateProfile({ age: selectedAge, onboarding_step: 10, difficulty_score: result.score, difficulty_level: result.level, score_factors: result.factors, score_computed_at: result.computedAt });
-  };
-
-  const finish = async () => {
-    await updateProfile({ onboarding_completed: true, onboarding_step: TOTAL });
-    navigate({ to: "/subscribe", search: { from: "onboarding" } });
-  };
+  // The paywall result is now the last screen: pressing any of its buttons completes the onboarding.
+  const complete = () => updateProfile({ onboarding_completed: true, onboarding_step: TOTAL });
+  const finish = async () => { await complete(); navigate({ to: "/" }); };
 
   const opts = <T extends string>(group: string, values: readonly T[]) =>
     values.map((v) => ({ value: v, label: t(`options.${group}.${v}`) }));
 
-  const pick = (key: keyof S) => (v: string[]) => setSingle((s) => ({ ...s, [key]: v[0] ?? "" }));
 
-  const commitPhrases = useMemo(() => commitmentPhraseKeys(single.motivation, single.situation).map((k) => t(k)), [single, t]);
+  const hasReviews = reviewsAvailable(tl<{ name: string; title: string; body: string }[]>("reviews.examples"));
 
   if (!ready || !init) return <FullLoader />;
 
-  if (scoreScreen === "calculate") return <ScoreCalculation onComplete={() => { setStep(10); setScoreScreen("profile"); }} />;
-  if (scoreScreen === "profile" && scoreResult) return <ScoreProfile result={scoreResult} animate={animateProfile} onBack={() => { setAnimateProfile(false); setScoreScreen(null); go(9); }} onContinue={() => { setAnimateProfile(false); setScoreScreen(null); go(10); }} />;
-
-  const Question = ({ id, title, sub }: { id: string; title: string; sub?: string }) => (
-    <div className="mb-6">
-      <h1 id={id} className="text-2xl font-semibold leading-snug md:text-3xl">{title}</h1>
-      {sub && <p className="mt-2 text-muted-foreground">{sub}</p>}
-    </div>
-  );
 
   let body: React.ReactNode = null;
   let canNext = true;
+  let tone: "light" | "dusk" | "night" = "light";
   let onNext: () => void = () => go(step + 1);
+  let nextLabel = t("common.next");
+  let onSkip: (() => void) | null = null; // optional questions: text link under the button
+  let skipLabel = t("onb.skip");
 
   switch (step) {
     case 0:
       return (
-        <div className="mx-auto flex min-h-screen max-w-[480px] flex-col px-6 pb-8 pt-6">
+        <Stage key="welcome" tone="dusk"><div className={`${outClass} mx-auto flex min-h-svh max-w-[480px] flex-col px-6 pb-8 pt-6`}>
           <div className="flex items-center justify-between">
             <span className="font-display text-2xl">{APP_NAME}</span>
             <LangSwitch onChange={(l) => updateProfile({ language: l })} />
           </div>
           <div className="flex flex-1 flex-col items-center justify-center text-center">
-            <Lumi size={110} stage={3} />
-            <h1 className="mt-8 text-3xl font-semibold leading-tight md:text-4xl">{t("welcome.headline")}</h1>
-            <p className="mt-4 text-lg text-muted-foreground">{t("welcome.sub")}</p>
+            <div className="fade-up"><Lumi size={120} stage={3} emotion="happy" /></div>
+            <h1 className="fade-up mt-8 text-4xl leading-tight md:text-5xl" style={{ "--d": "200ms" } as React.CSSProperties}>{t("welcome.headline")}</h1>
+            <p className="fade-up mt-4 text-lg text-muted-foreground" style={{ "--d": "350ms" } as React.CSSProperties}>{t("welcome.sub")}</p>
           </div>
-          <PrimaryButton onClick={() => go(1, { language: lang })}>{t("welcome.start")}</PrimaryButton>
+          <PrimaryButton onClick={() => transition(() => go(1, { language: lang }))}>{t("welcome.start")}</PrimaryButton>
           <button type="button" onClick={() => navigate({ to: "/signin" })} className="mt-3 min-h-11 text-foreground underline-offset-4 hover:underline">{t("welcome.haveAccount")}</button>
           <p className="mt-4 text-center text-xs text-muted-foreground">
             <a href={`tel:${crisis.tel}`} className="underline-offset-4 hover:underline">{t("crisis.disclaimer", { number: crisis.number })}</a>
           </p>
-        </div>
+        </div></Stage>
       );
     case 1:
       if (subStep === 0) {
         return (
-          <div className="mx-auto flex min-h-screen max-w-[480px] flex-col px-6 pb-6 pt-6">
+          <Stage key="intro" tone="dusk"><div className={`${outClass} mx-auto flex min-h-svh max-w-[480px] flex-col px-6 pb-6 pt-6`}>
             <div>
-              <button type="button" onClick={() => go(0)} aria-label={t("common.back")} className="flex h-11 w-11 items-center justify-center rounded-full text-muted-foreground hover:bg-surface"><BackIcon /></button>
+              <button type="button" onClick={() => transition(() => go(0), "back")} aria-label={t("common.back")} className="glass flex h-11 w-11 items-center justify-center rounded-full text-foreground"><BackIcon /></button>
             </div>
             <div className="flex flex-1 flex-col items-center justify-center text-center">
-              <Lumi size={110} stage={3} />
-              <h1 className="mt-8 text-3xl font-semibold leading-tight md:text-4xl">{t("onb.introTitle")}</h1>
-              <p className="mt-4 text-lg text-muted-foreground">{t("onb.introSub")}</p>
+              <div className="fade-up"><Lumi size={120} stage={3} emotion="happy" /></div>
+              <h1 className="fade-up mt-8 text-4xl leading-tight md:text-5xl" style={{ "--d": "200ms" } as React.CSSProperties}>{t("onb.introTitle")}</h1>
+              <p className="fade-up mt-4 text-lg text-muted-foreground" style={{ "--d": "350ms" } as React.CSSProperties}>{t("onb.introSub")}</p>
             </div>
-            <div className="sticky bottom-0 bg-background pb-2 pt-3">
-              <PrimaryButton onClick={() => { setSubStep(1); window.scrollTo(0, 0); }}>{t("common.next")}</PrimaryButton>
+            <div className="sticky bottom-0 pb-2 pt-3">
+              <PrimaryButton onClick={() => transition(() => { setSubStep(1); window.scrollTo(0, 0); })}>{t("common.next")}</PrimaryButton>
             </div>
-          </div>
+          </div></Stage>
         );
       }
-      if (subStep === 1) {
-        body = (<>
-          <Question id="q-name" title={t("onb.nameTitle")} />
-          <input value={name} maxLength={40} aria-label={t("onb.nameTitle")} placeholder={t("onb.namePh")}
-            onChange={(e) => setName(e.target.value)}
-            className="min-h-12 w-full rounded-xl border border-line bg-surface px-4 text-base text-foreground placeholder:text-muted-foreground/60" />
-        </>);
-        canNext = name.trim().length > 0;
-        onNext = async () => {
-          await updateProfile({ name: name.trim() });
-          setSubStep(2);
-          window.scrollTo(0, 0);
-        };
-        break;
-      }
       if (subStep === 2) {
-        body = (<>
-          <Question id="q-hardest" title={t("onb.hardestTitle")} sub={t("onb.hardestSub")} />
-          <ChoiceList labelledBy="q-hardest" options={opts("hardest", HARDSHIPS)} value={hardest} onChange={setHardest} />
-        </>);
-        canNext = hardest.length === 1;
-        onNext = () => {
-          const answer = hardest[0];
-          if (!profile || !answer) return;
-          localStorage.setItem(`hold_onboarding_hardest_${profile.id}`, answer);
-          setSubStep(3);
-          window.scrollTo(0, 0);
-        };
-        break;
-      }
-      if (subStep === 3) {
-        body = (<>
-          <Question id="q1" title={t("onb.lastContact")} />
-          <label className="flex flex-col gap-1 text-sm text-muted-foreground">{t("onb.date")}
-            <input type="date" value={contact.date} max={toLocalInput(new Date()).date} onChange={(e) => setContact({ ...contact, date: e.target.value })}
-              className="min-h-12 rounded-xl border border-line bg-surface px-3 text-base text-foreground [color-scheme:dark]" />
-          </label>
-        </>);
-        canNext = !!contact.date;
-        onNext = () => {
-          setSubStep(4);
-          window.scrollTo(0, 0);
-        };
-        break;
+        return (
+          <Stage key="greeting" tone="dusk"><div className={`${outClass} mx-auto flex min-h-svh max-w-[480px] flex-col px-6 pb-6 pt-6`}>
+            <div>
+              <button type="button" onClick={() => transition(() => setSubStep(1), "back")} aria-label={t("common.back")} className="glass flex h-11 w-11 items-center justify-center rounded-full text-foreground"><BackIcon /></button>
+            </div>
+            <Greeting name={name.trim()} />
+            <div className="fade-up sticky bottom-0 pb-2 pt-3" style={{ "--d": "3300ms" } as React.CSSProperties}>
+              <PrimaryButton onClick={() => transition(() => go(2))}>{t("onb.greet.cta")}</PrimaryButton>
+            </div>
+          </div></Stage>
+        );
       }
       body = (<>
-        <h2 id="q1b" className="mb-4 text-xl font-semibold">{t("onb.triggersTitle")}</h2>
-        <ChoiceList multi labelledBy="q1b" options={opts("triggers", TRIGGERS)} value={triggers} onChange={setTriggers} />
+        <Question id="q-name" title={t("onb.nameTitle")} />
+        <input value={name} maxLength={40} aria-label={t("onb.nameTitle")} placeholder={t("onb.namePh")}
+          onChange={(e) => setName(e.target.value)}
+          className="glass min-h-14 w-full rounded-[28px] px-5 text-base text-foreground placeholder:text-muted-foreground/70" />
       </>);
-      canNext = true;
-      onNext = () => {
-        let d = new Date(`${contact.date}T${contact.time}`);
-        if (isNaN(d.getTime()) || d > new Date()) d = new Date();
-        go(2, { last_contact_at: d.toISOString(), triggers });
-      };
+      canNext = name.trim().length > 0;
+      onNext = async () => { setSubStep(2); window.scrollTo(0, 0); await updateProfile({ name: name.trim() }); };
       break;
     case 2:
-      body = (<><Question id="q2" title={t("onb.duration")} /><ChoiceList labelledBy="q2" options={opts("duration", DURATIONS)} value={[single.duration]} onChange={pick("duration")} /></>);
-      canNext = !!single.duration; onNext = () => go(3, { relationship_duration: single.duration });
+      body = (<><Question id="q2" title={t("onb.situationTitle")} sub={t("onb.situationSub")} />
+        <ChoiceList labelledBy="q2" options={opts("situation", SITUATIONS)} details={Object.fromEntries(SITUATIONS.map((v) => [v, t(`options.situationInfo.${v}`)]))} value={situation ? [situation] : []} onChange={(v) => setSituation(v[0] ?? "")} /></>);
+      canNext = !!situation; onNext = () => go(3, { situation_type: situation });
       break;
-    case 3: {
-      if (sub3 === 1) {
-        body = (<><Question id="q3b" title={t("onb.recencyTitle")} sub={t("onb.recencySub")} />
-          <ChoiceList labelledBy="q3b" options={opts("recency", RECENCY)} value={recency ? [recency] : []}
-            onChange={(v) => setRecency(v[0] ?? "")} /></>);
-        canNext = !!recency;
-        onNext = () => {
-          if (profile && recency) localStorage.setItem(`hold_onboarding_recency_${profile.id}`, recency);
-          go(4);
-        };
-        break;
-      }
-      const sel = single.endedBy === "them" ? [single.endedChoice ?? "them_him"] : [single.endedChoice ?? single.endedBy];
-      body = (<><Question id="q3" title={t("onb.endedBy")} />
-        <ChoiceList labelledBy="q3" options={opts("endedBy", ["me", "them_him", "them_her", "mutual"] as const)} value={sel}
-          onChange={(v) => setSingle((s) => ({ ...s, endedChoice: v[0], endedBy: v[0]?.startsWith("them") ? "them" : v[0] ?? "" }))} /></>);
-      canNext = !!single.endedBy;
-      onNext = async () => {
-        await updateProfile({ ended_by: single.endedBy });
-        setSub3(1);
-        window.scrollTo(0, 0);
+    case 3:
+      body = (<><Question id="q3" title={t("onb.lastContactTitle")} />
+        <ChoiceList labelledBy="q3" options={opts("lastContact", LAST_CONTACT)} value={lastContact ? [lastContact] : []} onChange={(v) => setLastContact(v[0] ?? "")} /></>);
+      canNext = !!lastContact;
+      onNext = () => {
+        const days = CONTACT_RANGE_DAYS[lastContact as ContactRange] ?? 0;
+        go(4, { last_contact_range: lastContact, last_contact_at: new Date(Date.now() - days * 86400000).toISOString() });
       };
       break;
-    }
     case 4:
-      body = (<><Question id="q4" title={t("onb.firstBreakup")} /><ChoiceList labelledBy="q4" options={opts("firstBreakup", ["yes", "no"] as const)} value={[single.firstBreakup]} onChange={pick("firstBreakup")} /></>);
-      canNext = !!single.firstBreakup; onNext = () => go(5, { first_breakup: single.firstBreakup === "yes" });
+      body = (<><Question id="q4" title={t("onb.afterTitle")} sub={t("onb.multiSub")} />
+        <ChoiceList multi labelledBy="q4" options={opts("after", AFTER)} value={after}
+          onChange={(v) => setAfter(v.includes("not_yet") && !after.includes("not_yet") ? ["not_yet"] : v.filter((x) => x !== "not_yet" || v.length === 1))} /></>);
+      canNext = after.length > 0; onNext = () => go(5, { last_contact_feelings: after });
       break;
     case 5:
-      body = (<><Question id="q5" title={t("onb.situation")} /><ChoiceList labelledBy="q5" options={opts("situation", SITUATIONS)} value={[single.situation]} onChange={pick("situation")} /></>);
-      canNext = !!single.situation; onNext = () => go(6, { situation_type: single.situation });
+      body = (<><Question id="q5" title={t("onb.nowTitle")} sub={t("onb.multiSub")} />
+        <ChoiceList multi labelledBy="q5" options={opts("now", NOW)} value={now} onChange={setNow} /></>);
+      canNext = now.length > 0; onNext = () => go(6, { current_feelings: now });
       break;
-    case 6: {
-      if (sub6 === 1) {
-        body = (<><Question id="q6b" title={t("onb.socialsTitle")} />
-          <ChoiceList labelledBy="q6b" options={opts("socials", SOCIALS)} value={socials ? [socials] : []} onChange={(v) => setSocials(v[0] ?? "")} /></>);
-        canNext = !!socials;
-        onNext = () => {
-          if (profile && socials) localStorage.setItem(`hold_onboarding_socials_${profile.id}`, socials);
-          go(7);
-        };
-        break;
-      }
-      body = (<><Question id="q6" title={t("onb.motivation")} sub={t("onb.motivationSub")} /><ChoiceList labelledBy="q6" options={opts("motivation", MOTIVATIONS)} value={[single.motivation]} onChange={pick("motivation")} /></>);
-      canNext = !!single.motivation;
-      onNext = async () => {
-        await updateProfile({ motivation: single.motivation });
-        setSub6(1);
-        window.scrollTo(0, 0);
-      };
+    case 6:
+      body = (<><Question id="q6" title={t("onb.hopeTitle")} sub={t("onb.hopeSub")} />
+        <ChoiceList labelledBy="q6" options={opts("motivation", MOTIVATIONS)} details={Object.fromEntries(MOTIVATIONS.map((v) => [v, t(`options.motivationInfo.${v}`)]))} value={hope ? [hope] : []} onChange={(v) => setHope(v[0] ?? "")} /></>);
+      canNext = !!hope; onNext = () => go(7, { motivation: hope });
       break;
-    }
     case 7:
-      body = (<><Question id="q7" title={t("onb.emotion")} /><ChoiceList labelledBy="q7" options={opts("emotion", EMOTIONS)} value={[single.emotion]} onChange={pick("emotion")} /></>);
-      canNext = !!single.emotion; onNext = () => go(8, { dominant_emotion: single.emotion });
+      body = (<><Question id="q7" title={t("onb.sourceTitle")} sub={t("onb.sourceSub")} />
+        <ChoiceList labelledBy="q7" options={opts("source", SOURCES)} value={source ? [source] : []} onChange={(v) => setSource(v[0] ?? "")} /></>);
+      canNext = !!source; onNext = () => go(8, { acquisition_source: source });
       break;
     case 8:
-      body = (<><Question id="q8" title={t("onb.gender")} sub={t("onb.genderSub")} /><ChoiceList labelledBy="q8" options={opts("gender", GENDERS)} value={[single.gender]} onChange={pick("gender")} /></>);
-      canNext = !!single.gender; onNext = () => go(9, { gender: single.gender });
+      body = (<><Question id="q8" title={t("onb.goalTitle")} sub={t("onb.goalSub")} />
+        <ChoiceList grid labelledBy="q8" options={opts("goal", GOALS)} value={goal ? [goal] : []} onChange={(v) => setGoal(v[0] ?? "")} /></>);
+      canNext = !!goal; onNext = () => { setInfoStep(1); void go(9, { no_contact_goal: goal }); };
+      onSkip = () => { setGoal(""); setInfoStep(1); void go(9, { no_contact_goal: null }); };
       break;
     case 9:
-      body = (<><Question id="q9" title={t("onb.age")} sub={t("onb.ageSub")} /><AgeWheel value={age} onChange={setAge} unit={t("onb.ageUnit")} labelledBy="q9" /></>);
-      onNext = () => prepareScore(age, !scoreResult);
+      {
+        const kind = INFO_KINDS[infoStep - 1]!;
+        body = <InfoBody kind={kind} name={name.trim()} />;
+        tone = INFO_TONE[kind];
+        onNext = () => {
+          window.scrollTo(0, 0);
+          if (infoStep < INFO_KINDS.length) setInfoStep(infoStep + 1);
+          else go(10);
+        };
+      }
       break;
     case 10:
-      body = (<>
-        <Question id="q11" title={t("commit.title")} />
-        <ul className="mb-10 flex flex-col gap-3">
-          {commitPhrases.map((p) => <li key={p} className="font-display text-xl leading-snug">{p}</li>)}
-        </ul>
-        <HoldButton onComplete={() => go(11, { commitment_at: new Date().toISOString() })} />
-      </>);
-      canNext = false;
+      body = (<><Question id="q10" title={t("onb.rulesTitle")} sub={t("onb.rulesSub")} />
+        <ChoiceList multi labelledBy="q10" options={opts("rules", RULES)} value={rules} onChange={setRules} /></>);
+      onNext = () => go(11, { no_contact_rules: rules });
       break;
     case 11:
-      body = (<>
-        <Question id="q12" title={t("plan.title")} />
-        <ul className="mb-8 flex flex-col gap-3">
-          {tl<string[]>("plan.rows").map((r) => (
-            <li key={r} className="flex items-center gap-3 rounded-2xl border border-line bg-surface p-4">
-              <span aria-hidden className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-secondary text-secondary-foreground">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M5 12l5 5 9-10" /></svg>
-              </span>
-              {interpolate(r)}
-            </li>
-          ))}
-        </ul>
-        <ReminderControl value={reminder} onChange={setReminder} />
-      </>);
-      onNext = () => go(12, { reminder_enabled: false, reminder_time: reminder.time });
-      break;
+      return (
+        <Stage key="flow" tone="dusk">
+          <AloneScreen key="alone" name={name.trim()} onDone={() => go(hasReviews ? 12 : 13)} />
+        </Stage>
+      );
     case 12:
-      body = (<>
-        <div className="mb-6 flex justify-center"><Lumi size={60} stage={2} /></div>
-        <Question id="q13" title={t("account.title")} sub={t("account.sub")} />
-        <AccountLinker />
-        <button type="button" onClick={finish} className="mt-6 min-h-12 w-full text-foreground underline-offset-4 hover:underline">{t("account.skip")}</button>
-      </>);
-      canNext = false;
+      body = <ReviewsScreen />;
+      tone = "dusk";
+      break;
+    case 13:
+      return (
+        <Stage key="flow" tone="light">
+          <PlanBuilding key="build" onDone={() => { setCelebrate(true); void go(14); }} />
+        </Stage>
+      );
+    case 14:
+      body = <PlanReady name={name.trim()} goal={goal} celebrate={celebrate} onCelebrated={() => setCelebrate(false)} />;
+      tone = "dusk";
+      nextLabel = t("ready.start");
+      break;
+    case 15:
+      body = <PhoneShowcase />;
+      tone = "dusk";
+      break;
+    case 16:
+      body = <CompanionShowcase />;
+      tone = "dusk";
+      break;
+    case 17:
+      body = <ReminderIntro />;
+      onNext = () => go(notifyScreenApplicable() ? 18 : 19); // no notification support and not an iPhone: skip the permission screen
+      break;
+    case 18:
+      body = <NotifyPermission onEnabled={() => setReminder((r) => ({ ...r, enabled: true }))} />;
+      onNext = () => go(19, { reminder_enabled: reminder.enabled, reminder_time: reminder.time }); // the plan/reminder screen is gone: save the choice here
+      break;
+    case 20:
+      return (
+        <Stage key="flow" tone="dusk">
+          <div className={`${outClass} mx-auto flex min-h-svh max-w-[480px] flex-col px-6 pb-4 pt-3`}>
+            <PaywallResult plan={plan} onPlan={setPlan} celebrate={celebrateResult} onCelebrated={() => setCelebrateResult(false)} onBack={() => transition(() => go(19), "back")}
+              onStart={() => { void complete(); setCheckoutOpen(true); }}
+              onSkip={() => void finish()}
+              onSimulate={() => { void complete(); navigate({ to: "/subscribe/success", search: { simulate: "1" } }); }} />
+          </div>
+          {checkoutOpen && <Suspense fallback={null}><CheckoutSheet open={checkoutOpen} onOpenChange={setCheckoutOpen} plan={plan} /></Suspense>}
+        </Stage>
+      );
+    case 19:
+      body = <PlanPitch value={plan} onChange={setPlan} />;
+      tone = "dusk";
+      onNext = () => { setCelebrateResult(true); void go(20); };
+      if (SIMULATE_PAYMENT) {
+        // Preview only: jump to the post-payment screen without paying or creating any subscription.
+        skipLabel = t("pitch.simulate");
+        onSkip = () => { void complete(); navigate({ to: "/subscribe/success", search: { simulate: "1" } }); };
+      }
       break;
   }
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-[480px] flex-col px-6 pb-8 pt-4">
+    <Stage key="flow" tone={tone}>
+    <div className="mx-auto flex min-h-svh max-w-[480px] flex-col px-6 pb-8 pt-4">
       <div className="mb-6 flex items-center gap-3">
-        <button type="button" onClick={() => {
-          if (step === 10 && scoreResult) { setScoreScreen("profile"); setAnimateProfile(false); }
-          else if (step === 6) { if (sub6 > 0) { setSub6(0); window.scrollTo(0, 0); } else go(5); }
-          else if (step === 3) { if (sub3 > 0) { setSub3(0); window.scrollTo(0, 0); } else go(2); }
+        <button type="button" onClick={() => transition(() => {
+          if (step === 9 && infoStep > 1) { setInfoStep(infoStep - 1); window.scrollTo(0, 0); }
           else if (step === 1 && subStep > 0) setSubStep(subStep - 1);
+          else if (step === 14) go(hasReviews ? 12 : 10); // skip the loading scene
+          else if (step === 13) go(hasReviews ? 12 : 10);
+          else if (step === 12) go(10);
+          else if (step === 19) go(notifyScreenApplicable() ? 18 : 17);
           else go(step - 1);
-        }} aria-label={t("common.back")} className="flex h-11 w-11 items-center justify-center rounded-full text-muted-foreground hover:bg-surface"><BackIcon /></button>
-        <div className="h-1 flex-1 overflow-hidden rounded-full bg-line" role="progressbar" aria-valuemin={0} aria-valuemax={TOTAL} aria-valuenow={step} aria-label={t("onb.progress", { n: step, total: TOTAL })}>
-          <div className="h-full rounded-full bg-secondary transition-all" style={{ width: `${(step / TOTAL) * 100}%` }} />
+        }, "back")} aria-label={t("common.back")} className="glass flex h-11 w-11 items-center justify-center rounded-full text-foreground"><BackIcon /></button>
+        <div className="h-2 flex-1 overflow-hidden rounded-full bg-white/50" role="progressbar" aria-valuemin={0} aria-valuemax={TOTAL} aria-valuenow={step} aria-label={t("onb.progress", { n: step, total: TOTAL })}>
+          <div className="h-full rounded-full bg-[var(--progress)] transition-all" style={{ width: `${((step + (step === 9 ? (infoStep - 1) / INFO_KINDS.length : 0)) / TOTAL) * 100}%` }} />
         </div>
       </div>
-      <div className="flex-1">{body}</div>
-      {(canNext || ![10, 12].includes(step)) && (
-        <div className="sticky bottom-0 mt-8 bg-background pb-2 pt-3">
-          <PrimaryButton disabled={!canNext} onClick={onNext}>{t("common.next")}</PrimaryButton>
+      <div key={`${step}-${subStep}-${infoStep}`} className={`${outClass} flex flex-1 flex-col`}>
+        <div className="flex-1">{body}</div>
+      {(canNext || step !== 21) && (
+        <div className="fade-up sticky bottom-0 mt-8 pb-2 pt-3" style={{ "--d": "450ms" } as React.CSSProperties}>
+          <PrimaryButton disabled={!canNext} onClick={() => transition(onNext)}>{nextLabel}</PrimaryButton>
+          {onSkip && (
+            <button type="button" onClick={() => transition(onSkip!)} className="mt-2 min-h-11 w-full text-sm text-muted-foreground underline-offset-4 hover:underline">{skipLabel}</button>
+          )}
         </div>
       )}
-    </div>
-  );
-}
-
-function AgeWheel({ value, onChange, unit, labelledBy }: { value: number; onChange: (n: number) => void; unit: string; labelledBy: string }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const ITEM = 52;
-  const ages = useMemo(() => Array.from({ length: 83 }, (_, i) => 18 + i), []);
-  useEffect(() => { ref.current?.scrollTo({ top: (value - 18) * ITEM }); }, []); // eslint-disable-line react-hooks/exhaustive-deps
-  const timer = useRef<number | null>(null);
-  return (
-    <div className="relative mx-auto w-48">
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-1/2 h-[52px] -translate-y-1/2 rounded-xl border border-secondary bg-secondary/10" />
-      <div ref={ref} role="listbox" tabIndex={0} aria-labelledby={labelledBy} aria-activedescendant={`age-${value}`}
-        className="h-[260px] snap-y snap-mandatory overflow-y-auto py-[104px] focus-visible:outline-2 focus-visible:outline-lumi [scrollbar-width:none]"
-        onScroll={(e) => {
-          const el = e.currentTarget;
-          if (timer.current) clearTimeout(timer.current);
-          timer.current = window.setTimeout(() => onChange(Math.min(100, Math.max(18, 18 + Math.round(el.scrollTop / ITEM)))), 80);
-        }}
-        onKeyDown={(e) => {
-          if (e.key !== "ArrowUp" && e.key !== "ArrowDown") return;
-          e.preventDefault();
-          const n = Math.min(100, Math.max(18, value + (e.key === "ArrowDown" ? 1 : -1)));
-          onChange(n); ref.current?.scrollTo({ top: (n - 18) * ITEM, behavior: "smooth" });
-        }}>
-        {ages.map((a) => (
-          <div key={a} id={`age-${a}`} role="option" aria-selected={a === value} onClick={() => { onChange(a); ref.current?.scrollTo({ top: (a - 18) * ITEM, behavior: "smooth" }); }}
-            className={`flex h-[52px] snap-center items-center justify-center font-display text-2xl ${a === value ? "text-foreground" : "text-muted-foreground/50"}`}>
-            {a} {a === value && <span className="ml-2 font-sans text-sm text-muted-foreground">{unit}</span>}
-          </div>
-        ))}
       </div>
     </div>
+    </Stage>
   );
 }
-

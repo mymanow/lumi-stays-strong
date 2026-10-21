@@ -6,6 +6,7 @@ import { APP_NAME } from "@/config/app";
 import { CoachIcon, HistoryIcon, HomeIcon, SettingsIcon } from "./Icons";
 import { FullLoader } from "./Common";
 import { Lumi } from "./Lumi";
+import { msUntilNext, showNotification } from "@/lib/notify";
 
 const NAV = [
   { to: "/", key: "nav.home", Icon: HomeIcon },
@@ -18,6 +19,18 @@ const NAV = [
 export function AppShell({ children, wide = false }: { children: ReactNode; wide?: boolean }) {
   const { t } = useI18n();
   const { ready, profile } = useApp();
+  const reminderOn = !!profile?.reminder_enabled;
+  const reminderTime = profile?.reminder_time?.slice(0, 5) ?? "21:30";
+  // Daily reminder: fires while the app is open. No push server, so it can't wake a closed app.
+  useEffect(() => {
+    if (!reminderOn) return;
+    let timer: ReturnType<typeof setTimeout>;
+    const arm = () => {
+      timer = setTimeout(() => { void showNotification(t("plan.notifTitle"), t("plan.notifBody")); arm(); }, msUntilNext(reminderTime));
+    };
+    arm();
+    return () => clearTimeout(timer);
+  }, [reminderOn, reminderTime, t]);
   const navigate = useNavigate();
   useEffect(() => {
     if (ready && profile && !profile.onboarding_completed) navigate({ to: "/onboarding" });
@@ -26,34 +39,34 @@ export function AppShell({ children, wide = false }: { children: ReactNode; wide
 
   return (
     <div className="min-h-screen md:flex">
-      <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col gap-2 border-r border-line bg-surface/40 p-5 md:flex">
+      <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col gap-2 glass border-y-0 border-l-0 p-5 md:flex">
         <div className="mb-6 flex items-center gap-2">
-          <Lumi size={22} breathe={false} label="" />
+          <Lumi size={26} breathe={false} emotion="happy" label="" />
           <span className="font-display text-2xl">{APP_NAME}</span>
         </div>
         <nav aria-label={t("nav.main")} className="flex flex-col gap-1">
           {NAV.map(({ to, key, Icon }) => (
             <Link key={to} to={to} activeOptions={{ exact: to === "/" }}
-              className="flex min-h-11 items-center gap-3 rounded-xl px-3 text-muted-foreground hover:bg-surface"
-              activeProps={{ className: "bg-surface text-foreground", "aria-current": "page" }}>
+              className="flex min-h-11 items-center gap-3 rounded-full px-4 font-medium text-muted-foreground hover:bg-white/40"
+              activeProps={{ className: "bg-white text-[#2e3865]", "aria-current": "page" }}>
               <Icon /> <span>{t(key)}</span>
             </Link>
           ))}
         </nav>
-        <Link to="/sos" className="mt-auto flex min-h-14 items-center justify-center rounded-2xl bg-primary px-4 text-center font-semibold text-primary-foreground">
+        <Link to="/sos" className="mt-auto flex min-h-14 items-center justify-center rounded-full bg-primary px-4 text-center font-bold text-primary-foreground">
           {t("home.sos")}
         </Link>
       </aside>
 
       <main className={`mx-auto w-full flex-1 px-5 pb-28 pt-8 md:px-10 md:pb-10 ${wide ? "max-w-6xl" : "max-w-3xl"}`}>{children}</main>
 
-      <nav aria-label={t("nav.main")} className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-background/95 backdrop-blur md:hidden" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
+      <nav aria-label={t("nav.main")} className="fixed inset-x-0 bottom-0 z-40 glass border-x-0 border-b-0 md:hidden" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
         <ul className="grid grid-cols-4">
           {NAV.map(({ to, key, Icon }) => (
             <li key={to}>
               <Link to={to} activeOptions={{ exact: to === "/" }}
                 className="flex min-h-16 flex-col items-center justify-center gap-1 text-xs text-muted-foreground"
-                activeProps={{ className: "text-secondary", "aria-current": "page" }}>
+                activeProps={{ className: "font-bold text-foreground", "aria-current": "page" }}>
                 <Icon /> {t(key)}
               </Link>
             </li>

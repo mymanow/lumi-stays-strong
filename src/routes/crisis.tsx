@@ -26,19 +26,19 @@ function Crisis() {
   ];
   return (
     <div className="mx-auto min-h-screen max-w-xl px-6 py-6">
-      <button type="button" onClick={() => router.history.back()} aria-label={t("common.back")} className="mb-4 flex h-11 w-11 items-center justify-center rounded-full text-muted-foreground hover:bg-surface"><BackIcon /></button>
-      <h1 className="text-3xl font-semibold">{t("crisis.title")}</h1>
+      <button type="button" onClick={() => router.history.back()} aria-label={t("common.back")} className="mb-4 flex h-11 w-11 items-center justify-center rounded-full text-muted-foreground hover:bg-white/40"><BackIcon /></button>
+      <h1 className="text-4xl">{t("crisis.title")}</h1>
       <p className="mt-3 mb-8 text-muted-foreground">{t("crisis.intro")}</p>
       <ul className="flex flex-col gap-3">
         {lines.map((l) => (
           <li key={l.tel}>
-            <a href={`tel:${l.tel}`} className="flex min-h-14 items-center gap-3 rounded-2xl border border-line bg-surface px-5 py-3 text-lg">
+            <a href={`tel:${l.tel}`} className="flex min-h-14 items-center gap-3 glass rounded-[24px] px-5 py-3 text-lg">
               <PhoneIcon className="text-primary" /> {l.label}
             </a>
           </li>
         ))}
         <li>
-          <a href="https://findahelpline.com" target="_blank" rel="noreferrer" className="flex min-h-14 items-center rounded-2xl border border-line px-5 text-lg underline-offset-4 hover:underline">{t("crisis.other")}</a>
+          <a href="https://findahelpline.com" target="_blank" rel="noreferrer" className="flex min-h-14 items-center rounded-full border border-white/80 px-5 text-lg underline-offset-4 hover:underline">{t("crisis.other")}</a>
         </li>
       </ul>
     </div>

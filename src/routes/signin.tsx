@@ -38,14 +38,14 @@ function SignIn() {
         <LangSwitch />
       </div>
       <div className="my-8 flex justify-center"><Lumi size={70} stage={2} /></div>
-      <h1 className="text-3xl font-semibold">{t("signin.title")}</h1>
+      <h1 className="text-4xl">{t("signin.title")}</h1>
       <p className="mt-2 mb-6 text-muted-foreground">{t("signin.sub")}</p>
       <form onSubmit={submit} noValidate className="flex flex-col gap-3">
         <label className="flex flex-col gap-1 text-sm text-muted-foreground">{t("account.email")}
           <input type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)}
-            className="min-h-12 rounded-xl border border-line bg-surface px-4 text-base text-foreground" />
+            className="min-h-12 glass rounded-[20px] px-4 text-base text-foreground" />
         </label>
-        <PrimaryButton type="submit" disabled={state === "sending"}>{t("signin.send")}</PrimaryButton>
+        <PrimaryButton arrow={false} type="submit" disabled={state === "sending"}>{t("signin.send")}</PrimaryButton>
         <p aria-live="polite" className="text-sm text-muted-foreground">
           {state === "sent" && t("signin.sent")}{state === "error" && t("account.error")}{state === "invalid" && t("account.invalid")}
         </p>
