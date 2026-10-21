@@ -218,3 +218,16 @@ COMMENT ON COLUMN public.subscriptions.whop_synced_at IS 'updated_at de la membe
 -- handle_new_user est une fonction de trigger SECURITY DEFINER : personne ne doit pouvoir l'appeler via /rest/v1/rpc
 -- (alerte Supabase 0028/0029). Le trigger on_auth_user_created continue de fonctionner.
 REVOKE EXECUTE ON FUNCTION public.handle_new_user() FROM PUBLIC, anon, authenticated;
+
+
+-- ===== 0011_rls_auth_uid_initplan =====
+-- Performance RLS (alerte Supabase 0003) : (select auth.uid()) est évalué une fois par requête au lieu d'une fois par ligne.
+-- Même règle d'accès qu'avant : chacun ne voit et ne modifie que ses propres lignes.
+ALTER POLICY "own profile select" ON public.profiles USING (id = (select auth.uid()));
+ALTER POLICY "own profile insert" ON public.profiles WITH CHECK (id = (select auth.uid()));
+ALTER POLICY "own profile update" ON public.profiles USING (id = (select auth.uid())) WITH CHECK (id = (select auth.uid()));
+ALTER POLICY "own profile delete" ON public.profiles USING (id = (select auth.uid()));
+ALTER POLICY "own events" ON public.contact_events USING (user_id = (select auth.uid())) WITH CHECK (user_id = (select auth.uid()));
+ALTER POLICY "own checkins" ON public.checkins USING (user_id = (select auth.uid())) WITH CHECK (user_id = (select auth.uid()));
+ALTER POLICY "own sub read" ON public.subscriptions USING (user_id = (select auth.uid()));
+ALTER POLICY "own usage read" ON public.ai_usage USING (user_id = (select auth.uid()));
