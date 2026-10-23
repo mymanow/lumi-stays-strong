@@ -8,3 +8,7 @@ export const MANAGE_SUBSCRIPTION_URL = "https://whop.com/@me/settings/membership
 /** TEST ONLY: shows a "simulate payment" button on the plan pitch page to preview the post-payment screens without paying.
  *  It never writes a subscription. Set to false before launch. */
 export const SIMULATE_PAYMENT = true;
+
+/** Shows the "Ton rétablissement commence maintenant" plan pitch (onboarding step 19) before the paywall result.
+ *  false: the reminder screens lead straight to the paywall result (step 20). */
+export const SHOW_PLAN_PITCH = false;

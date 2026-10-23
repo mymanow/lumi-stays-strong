@@ -11,7 +11,7 @@ import { AloneScreen } from "@/components/hold/AloneScreen";
 import { ReviewsScreen, reviewsAvailable } from "@/components/hold/ReviewsScreen";
 import { PlanReady } from "@/components/hold/PlanReady";
 import { CompanionShowcase } from "@/components/hold/CompanionShowcase";
-import { SIMULATE_PAYMENT } from "@/config/app";
+import { SHOW_PLAN_PITCH, SIMULATE_PAYMENT } from "@/config/app";
 import { PaywallResult } from "@/components/hold/PaywallResult";
 import { PlanPitch } from "@/components/hold/PlanPitch";
 import type { PlanKey } from "@/config/whop";
@@ -91,7 +91,8 @@ function Onboarding() {
   useEffect(() => {
     if (!ready || !profile || init) return;
     if (profile.onboarding_completed) { navigate({ to: "/" }); return; }
-    setStep(profile.onboarding_step ?? 0);
+    const saved = profile.onboarding_step ?? 0;
+    setStep(!SHOW_PLAN_PITCH && saved === 19 ? 20 : saved); // a hidden pitch step resumes on the paywall result
     if (profile.name) { setName(profile.name); setSubStep(1); }
     setSituation(only(SITUATIONS, profile.situation_type));
     setLastContact(only(LAST_CONTACT, profile.last_contact_range));
@@ -114,7 +115,9 @@ function Onboarding() {
   };
   const outClass = leaving ? `screen-out-${leaving}` : `screen-in-${dir}`;
 
-  const go = async (next: number, patch: ProfilePatch = {}) => {
+  const go = async (target: number, patch: ProfilePatch = {}) => {
+    const next = !SHOW_PLAN_PITCH && target === 19 ? 20 : target; // pitch hidden: go straight to the paywall result
+    if (next === 20 && target === 19) setCelebrateResult(true); // keep the arrival confetti the pitch used to trigger
     setStep(next);
     window.scrollTo(0, 0);
     await updateProfile({ ...patch, onboarding_step: next });
@@ -300,7 +303,7 @@ function Onboarding() {
       return (
         <Stage key="flow" tone="dusk">
           <div className={`${outClass} mx-auto flex min-h-svh max-w-[480px] flex-col px-6 pb-4 pt-3`}>
-            <PaywallResult plan={plan} onPlan={setPlan} celebrate={celebrateResult} onCelebrated={() => setCelebrateResult(false)} onBack={() => transition(() => go(19), "back")}
+            <PaywallResult plan={plan} onPlan={setPlan} celebrate={celebrateResult} onCelebrated={() => setCelebrateResult(false)} onBack={() => transition(() => go(SHOW_PLAN_PITCH ? 19 : notifyScreenApplicable() ? 18 : 17), "back")}
               onStart={() => { void complete(); setCheckoutOpen(true); }}
               onSkip={() => void finish()}
               onSimulate={() => { void complete(); navigate({ to: "/subscribe/success", search: { simulate: "1" } }); }} />

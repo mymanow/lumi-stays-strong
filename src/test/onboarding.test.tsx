@@ -221,10 +221,8 @@ describe("onboarding questions", () => {
     expect(updateProfile).toHaveBeenLastCalledWith({ onboarding_step: 17 });
     expect(screen.getByRole("heading", { name: /A gentle reminder every day to hold on/ })).toBeInTheDocument();
     fireEvent.click(next());
-    expect(updateProfile).toHaveBeenLastCalledWith({ onboarding_step: 19 }); // jsdom has no Notification API: the permission screen is skipped
-    expect(screen.getByRole("heading", { name: /Your recovery starts now/ })).toBeInTheDocument();
-    fireEvent.click(next());
-    expect(updateProfile).toHaveBeenLastCalledWith({ onboarding_step: 20 });
+    expect(updateProfile).toHaveBeenLastCalledWith({ onboarding_step: 20 }); // jsdom has no Notification API: the permission screen is skipped, and the hidden plan pitch (SHOW_PLAN_PITCH) too
+    expect(screen.queryByRole("heading", { name: /Your recovery starts now/ })).not.toBeInTheDocument();
     expect(screen.getByRole("heading", { name: en.paywall.title })).toBeInTheDocument(); // commitment and "plan ready" screens were removed
   });
 
