@@ -102,6 +102,13 @@ export const en: typeof fr = {
     "ctaTrial": "Start my {days}-day free trial",
     "trialNote": "No payment due now · Cancel anytime",
     "trialBadge": "{days} days free",
+    "proPill": "{app} - No Contact Pro",
+    "journeyTitle": "Your recovery starts [tonight].\nNot tomorrow.",
+    "journeySub": "Have everything you need the next time the urge to write hits.",
+    "journeyToday": { "title": "Today · Instant access", "sub": "Get the right support in place." },
+    "journeyReminder": { "title": "In {n} day · Receive a reminder", "sub": "Before anything is charged." },
+    "journeyBilling": { "title": "In {n} days · Billing starts", "sub": "Cancel anytime before." },
+    "journeyNoCommit": { "title": "Anytime · No commitment", "sub": "Cancel your subscription whenever you like." },
     "quarterly": {
       "name": "Quarterly (90 days)",
       "billed": "{days} days free, then €39.00 every 3 months.",

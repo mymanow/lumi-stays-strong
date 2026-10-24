@@ -100,6 +100,13 @@ export const fr = {
     "ctaTrial": "Commencer mes {days} jours gratuits",
     "trialNote": "Aucun paiement aujourd'hui · Annulable à tout moment",
     "trialBadge": "{days} jours gratuits",
+    "proPill": "{app} - No Contact Pro",
+    "journeyTitle": "Ton rétablissement commence [ce soir].\nPas demain.",
+    "journeySub": "Aie tout ce qu'il te faut pour la prochaine fois que l'envie d'écrire revient.",
+    "journeyToday": { "title": "Aujourd'hui · Accès immédiat", "sub": "Mets en place le bon soutien." },
+    "journeyReminder": { "title": "Dans {n} jour · Reçois un rappel", "sub": "Avant tout prélèvement." },
+    "journeyBilling": { "title": "Dans {n} jours · Début de la facturation", "sub": "Annulable à tout moment avant." },
+    "journeyNoCommit": { "title": "Quand tu veux · Sans engagement", "sub": "Annule ton abonnement à tout moment." },
     "quarterly": {
       "name": "Trimestriel (90 jours)",
       "billed": "{days} jours gratuits, puis 39,00 € tous les 3 mois.",

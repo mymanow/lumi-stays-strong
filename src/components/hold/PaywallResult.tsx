@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Check, ChevronDown, Heart, Lock, MessageCircle, PenLine, Star, Zap } from "lucide-react";
+import { BellRing, Check, ChevronDown, Crown, Heart, Lock, MessageCircle, PenLine, Star, Zap } from "lucide-react";
 import { useI18n } from "@/i18n";
 import { Lumi } from "./Lumi";
 import { Celebration } from "./Celebration";
@@ -8,6 +8,7 @@ import { BackIcon } from "./Icons";
 import { RATING } from "@/config/reviews";
 import { SIMULATE_PAYMENT } from "@/config/app";
 import { TRIAL_DAYS, type PlanKey } from "@/config/whop";
+import { TRIAL_REMINDER_LEAD_MS } from "@/lib/trial-reminder";
 
 export const TARGET_DAYS = 90;
 const CHIP_ICONS = [MessageCircle, Zap, Heart, PenLine];
@@ -17,6 +18,54 @@ const reduced = () => typeof window !== "undefined" && !!window.matchMedia?.("(p
 /** Today + 90 days, as a readable date in the app language. */
 export function targetDate(lang: string, now = new Date()) {
   return new Intl.DateTimeFormat(lang === "fr" ? "fr-FR" : "en-US", { dateStyle: "long" }).format(new Date(now.getTime() + TARGET_DAYS * 86400000));
+}
+
+/** "[word]" in a translated title is highlighted, "\n" breaks the line. */
+function Highlight({ text }: { text: string }) {
+  return <>{text.split("\n").map((line, l) => (
+    <span key={l} className="block">{line.split(/(\[[^\]]+\])/).map((p, i) => p.startsWith("[") ? <span key={i} className="text-[#D4CBFF]">{p.slice(1, -1)}</span> : <span key={i}>{p}</span>)}</span>
+  ))}</>;
+}
+
+/**
+ * What happens next with the selected plan. With a free trial: access today, the reminder e-mail (sent when
+ * 48 h are left, see /api/public/trial-reminders) and the day billing starts. Without one: no trial is promised.
+ */
+function Journey({ plan }: { plan: PlanKey }) {
+  const { t } = useI18n();
+  const trial = TRIAL_DAYS[plan];
+  const reminderDay = Math.max(0, trial - Math.round(TRIAL_REMINDER_LEAD_MS / 86400000));
+  const steps = trial > 0
+    ? [
+      { Icon: Check, title: t("paywall.journeyToday.title"), sub: t("paywall.journeyToday.sub") },
+      { Icon: BellRing, title: t("paywall.journeyReminder.title", { n: reminderDay }), sub: t("paywall.journeyReminder.sub") },
+      { Icon: Crown, title: t("paywall.journeyBilling.title", { n: trial }), sub: t("paywall.journeyBilling.sub") },
+    ]
+    : [
+      { Icon: Check, title: t("paywall.journeyToday.title"), sub: t("paywall.journeyToday.sub") },
+      { Icon: Crown, title: t("paywall.journeyNoCommit.title"), sub: t("paywall.journeyNoCommit.sub") },
+    ];
+  return (
+    <section className="fade-up mt-7 text-left" style={{ "--d": "360ms" } as React.CSSProperties} aria-labelledby="paywall-journey">
+      <div className="flex justify-center">
+        <span className="rounded-full border-2 border-white/70 bg-white/10 px-5 py-1.5 text-[17px] font-semibold tracking-wide shadow-[0_0_24px_-6px_rgba(212,203,255,0.7)]">{t("paywall.proPill")}</span>
+      </div>
+      <h2 id="paywall-journey" className="font-display mt-6 text-[32px] leading-[1.1]"><Highlight text={t("paywall.journeyTitle")} /></h2>
+      <p className="mt-3 text-[15px] leading-snug opacity-70">{t("paywall.journeySub")}</p>
+      <ol className="mt-6 flex flex-col">
+        {steps.map(({ Icon, title, sub }, i) => (
+          <li key={title} className="relative flex gap-4 pb-6 last:pb-0">
+            {i < steps.length - 1 && <span aria-hidden className={`absolute left-[19px] top-10 h-[calc(100%-26px)] w-1 rounded-full ${i === 0 ? "bg-[#2B2A6B]/70" : "bg-gradient-to-b from-white/35 to-white/10"}`} />}
+            <span aria-hidden className={`relative z-[1] flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${i === steps.length - 1 ? "bg-white text-[#2B2A6B]" : "bg-[#D9CEFF] text-[#3B3F9E]"}`}><Icon size={19} /></span>
+            <span>
+              <span className="block text-[17px] font-semibold leading-snug">{title}</span>
+              <span className="block text-[15px] leading-snug opacity-60">{sub}</span>
+            </span>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
 }
 
 /**
@@ -95,6 +144,8 @@ export function PaywallResult({ plan, onPlan, onStart, onSimulate, onSkip, onBac
           })}
         </ul>
       </div>
+
+      <Journey plan={plan} />
 
       <div className="fade-up mt-5 pt-3" role="radiogroup" aria-label={t("paywall.plans")} style={{ "--d": "400ms" } as React.CSSProperties}>
         {card("quarterly")}

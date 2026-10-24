@@ -266,6 +266,19 @@ describe("paywall result screen", () => {
     expect(navigateMock).not.toHaveBeenCalled(); // no separate paywall page any more
   });
 
+  it("shows what happens next before the plans: the trial timeline on quarterly, no trial promise on weekly", () => {
+    Object.assign(profile, { onboarding_step: 20 });
+    render(<Component />);
+    expect(screen.getByRole("heading", { name: /Your recovery starts tonight/ })).toBeInTheDocument();
+    expect(screen.getByText("In 1 day · Receive a reminder")).toBeInTheDocument(); // reminder e-mail when 48 h of the 3-day trial are left
+    expect(screen.getByText("In 3 days · Billing starts")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /Show more plans/ }));
+    fireEvent.click(screen.getByRole("radio", { name: /Weekly/ }));
+    expect(screen.queryByText("In 1 day · Receive a reminder")).toBeNull();
+    expect(screen.queryByText(/Billing starts/)).toBeNull();
+    expect(screen.getByText(en.paywall.journeyNoCommit.title)).toBeInTheDocument();
+  });
+
   it("keeps the weekly plan hidden until 'Show more plans' and sends it to the checkout once chosen", async () => {
     Object.assign(profile, { onboarding_step: 20 });
     render(<Component />);
