@@ -24,6 +24,12 @@ export const fr = {
   },
   ownReasons: {"title": "Tes raisons de tenir.", "add": "Ajouter une raison", "placeholder": "Ce qui compte pour toi…", "limit": "Jusqu’à 3 raisons personnelles."},
   info: {
+    hands: {
+      title: "{name}, tu es entre de bonnes mains !", titleNoName: "Tu es entre de bonnes mains !",
+      sub: "{app} réunit un coach IA, des techniques reconnues contre l'envie d'écrire et ce que la recherche dit de la rupture.",
+      research: "Recherche sur la rupture", coach: "Coach IA", techniques: "Outils anti-envie",
+      app: "{app}", caption: "La recherche sur la rupture, le coach IA et les outils anti-envie se rejoignent dans {app}.",
+    },
     slips: {
       title: "{name}, beaucoup de craquages arrivent dans un moment de faiblesse",
       sub: "C'est pour ça que la volonté seule ne suffit pas.",

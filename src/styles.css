@@ -235,6 +235,18 @@ body::before, .stage-light::before, .stage-dusk::before, .stage-night::before {
   100% { opacity: 0; transform: translateY(8px) scale(0.3); }
 }
 
+/* "You are in good hands": the light passes over each node in turn, drifts across the scene and makes Lumi glow. */
+.hands-avatar { display: flex; align-items: center; justify-content: center; border-radius: 9999px; border: 2px solid rgba(255,255,255,0.7); background: rgba(255,255,255,0.22); color: #fff; box-shadow: 0 6px 16px -8px rgba(0,0,0,0.45); }
+.hands-pill { background: rgba(255,255,255,0.1); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08); animation: hands-pill 3.6s ease-in-out infinite both; }
+@keyframes hands-pill {
+  0%, 55%, 100% { background: rgba(255,255,255,0.1); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08); }
+  20% { background: rgba(255,255,255,0.26); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.35), 0 0 22px -4px rgba(212,203,255,0.65); }
+}
+.hands-light { background: radial-gradient(38% 30% at 30% 20%, rgba(200,190,255,0.32), transparent 70%), radial-gradient(30% 26% at 75% 70%, rgba(150,170,255,0.18), transparent 70%); animation: hands-light 9s ease-in-out infinite alternate; }
+@keyframes hands-light { from { transform: translate3d(-6%, -2%, 0); opacity: 0.75; } to { transform: translate3d(8%, 4%, 0); opacity: 1; } }
+.hands-halo { background: radial-gradient(circle, rgba(255,255,255,0.75) 0%, rgba(214,225,255,0.35) 38%, rgba(214,225,255,0) 70%); animation: hands-halo 3.6s ease-in-out infinite; }
+@keyframes hands-halo { 0%, 100% { opacity: 0.7; transform: translate(-50%, -50%) scale(0.92); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.06); } }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-delay: 0s !important;

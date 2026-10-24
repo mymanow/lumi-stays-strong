@@ -177,7 +177,7 @@ describe("onboarding questions", () => {
     expect(next()).toBeDisabled();
     fireEvent.click(screen.getByRole("button", { name: en.onb.skip }));
     expect(updateProfile).toHaveBeenCalledWith({ no_contact_goal: null, onboarding_step: 9 });
-    expect(screen.getByRole("heading", { name: "Alex, many slips happen in a moment of weakness" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Alex, you are in good hands!" })).toBeInTheDocument();
   });
 
   it("resumes with previously saved answers and ignores legacy values", () => {
@@ -190,9 +190,13 @@ describe("onboarding questions", () => {
     expect(screen.getByRole("radio", { checked: true })).toHaveTextContent(en.options.situation.mixed_signals);
   });
 
-  it("shows five information screens after the goal, then the rules", () => {
+  it("shows six information screens after the goal, starting with 'good hands', then the rules", () => {
     Object.assign(profile, { onboarding_step: 9 });
     render(<Component />);
+    expect(screen.getByRole("heading", { name: "Alex, you are in good hands!" })).toBeInTheDocument();
+    expect(screen.getByText(en.info.hands.coach)).toBeInTheDocument();
+    expect(screen.queryByRole("img", { name: /expert/i })).toBeNull(); // no team photos the app does not have
+    fireEvent.click(next());
     expect(screen.getByRole("heading", { name: "Alex, many slips happen in a moment of weakness" })).toBeInTheDocument();
     fireEvent.click(next());
     expect(screen.getByRole("heading", { name: en.info.bio.title })).toBeInTheDocument();
@@ -268,9 +272,9 @@ describe("onboarding questions", () => {
     fireEvent.click(next());
     fireEvent.click(next());
     fireEvent.click(screen.getByRole("button", { name: "Back" }));
-    expect(screen.getByRole("heading", { name: en.info.bio.title })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Back" }));
     expect(screen.getByRole("heading", { name: "Alex, many slips happen in a moment of weakness" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Back" }));
+    expect(screen.getByRole("heading", { name: "Alex, you are in good hands!" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Back" }));
     expect(screen.getByRole("heading", { name: en.onb.goalTitle })).toBeInTheDocument();
   });

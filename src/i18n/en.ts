@@ -26,6 +26,12 @@ export const en: typeof fr = {
   },
   ownReasons: {"title": "Your reasons to hold on.", "add": "Add a reason", "placeholder": "What matters to you…", "limit": "Up to 3 personal reasons."},
   info: {
+    hands: {
+      title: "{name}, you are in good hands!", titleNoName: "You are in good hands!",
+      sub: "{app} brings together an AI coach, recognised techniques against the urge to text, and what research says about breakups.",
+      research: "Breakup research", coach: "AI coach", techniques: "Anti-urge tools",
+      app: "{app}", caption: "Breakup research, the AI coach and anti-urge tools come together in {app}.",
+    },
     slips: {
       title: "{name}, many slips happen in a moment of weakness",
       sub: "That's why willpower alone isn't enough.",

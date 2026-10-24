@@ -4,11 +4,12 @@ import { APP_NAME } from "@/config/app";
 import { Lumi } from "./Lumi";
 import { ToolkitMarquee } from "./ToolkitMarquee";
 import { ScienceChart } from "./ScienceChart";
+import { GoodHands } from "./GoodHands";
 
-export type InfoKind = "slips" | "bio" | "compare" | "science" | "toolkit";
-export const INFO_KINDS: readonly InfoKind[] = ["slips", "bio", "compare", "science", "toolkit"];
+export type InfoKind = "hands" | "slips" | "bio" | "compare" | "science" | "toolkit";
+export const INFO_KINDS: readonly InfoKind[] = ["hands", "slips", "bio", "compare", "science", "toolkit"];
 /** Light scenes for the reassuring screens, deep scenes for the "why Hold" and "science" screens. */
-export const INFO_TONE: Record<InfoKind, "light" | "night"> = { slips: "light", bio: "light", compare: "night", science: "night", toolkit: "light" };
+export const INFO_TONE: Record<InfoKind, "light" | "night"> = { hands: "night", slips: "light", bio: "light", compare: "night", science: "night", toolkit: "light" };
 
 const BIO_ICONS: LucideIcon[] = [HeartCrack, Flame, Zap, RefreshCw, TrendingUp];
 
@@ -153,6 +154,7 @@ function Toolkit() {
 }
 
 export function InfoBody({ kind, name }: { kind: InfoKind; name: string }) {
+  if (kind === "hands") return <GoodHands name={name} />;
   if (kind === "slips") return <Slips name={name} />;
   if (kind === "bio") return <Bio />;
   if (kind === "compare") return <Compare />;
