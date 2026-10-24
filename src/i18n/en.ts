@@ -229,8 +229,8 @@ export const en: typeof fr = {
     greet: {
       hello: "Nice to meet you, {name}!",
       me: "I'm {companion}.",
-      promise: "I'll be here every time the urge to text comes back. You don't have to go through this alone.",
-      cta: "Let's begin",
+      promise: "Let's personalize your experience.",
+      cta: "Personalize my experience",
     },
     namePh: "Your first name, username, nickname…",
     situationTitle: "What brought you here today?",

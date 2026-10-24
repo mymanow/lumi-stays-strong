@@ -227,8 +227,8 @@ export const fr = {
     greet: {
       hello: "Enchantée, {name} !",
       me: "Moi, c'est {companion}.",
-      promise: "Je serai là chaque fois que l'envie d'écrire revient. Tu n'as pas à traverser ça seul·e.",
-      cta: "Commençons",
+      promise: "Personnalisons ton expérience.",
+      cta: "Personnaliser mon expérience",
     },
     namePh: "Ton prénom, ton pseudo, ton surnom…",
     situationTitle: "Qu'est-ce qui t'amène aujourd'hui ?",
