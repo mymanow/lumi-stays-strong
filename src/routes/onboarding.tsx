@@ -48,6 +48,8 @@ const GOALS = ["d7", "d14", "d30", "d60", "d90", "d180", "open"] as const;
 const RULES = ["no_texting", "no_stalking", "no_old_photos", "no_meeting", "no_reply_except", "no_asking_friends", "no_running_into"] as const;
 const SOURCES = ["tiktok", "google", "word_of_mouth", "quora", "app_store", "instagram_facebook", "reddit", "other"] as const;
 
+const AUTO_NEXT_MS = 350;
+
 const only = <T extends string>(list: readonly T[], value?: string | null) => (list.some((v) => v === value) ? (value as string) : "");
 const onlyMany = <T extends string>(list: readonly T[], values?: string[] | null) => (values ?? []).filter((v) => list.some((x) => x === v));
 
@@ -114,6 +116,15 @@ function Onboarding() {
     window.setTimeout(() => { action(); setLeaving(null); }, 160);
   };
   const outClass = leaving ? `screen-out-${leaving}` : `screen-in-${dir}`;
+
+  // Single-choice questions that move on by themselves once an answer is picked: a short pause shows the selection,
+  // then the same step change as the Continue button. A newer pick (or leaving the screen) cancels a pending one.
+  const autoTimer = useRef<number | null>(null);
+  const autoNext = (action: () => void) => {
+    if (autoTimer.current) window.clearTimeout(autoTimer.current);
+    autoTimer.current = window.setTimeout(() => { autoTimer.current = null; transition(action); }, AUTO_NEXT_MS);
+  };
+  useEffect(() => () => { if (autoTimer.current) window.clearTimeout(autoTimer.current); autoTimer.current = null; }, [step]);
 
   const go = async (target: number, patch: ProfilePatch = {}) => {
     const next = !SHOW_PLAN_PITCH && target === 19 ? 20 : target; // pitch hidden: go straight to the paywall result
@@ -209,15 +220,18 @@ function Onboarding() {
         <ChoiceList labelledBy="q2" options={opts("situation", SITUATIONS)} details={Object.fromEntries(SITUATIONS.map((v) => [v, t(`options.situationInfo.${v}`)]))} value={situation ? [situation] : []} onChange={(v) => setSituation(v[0] ?? "")} /></>);
       canNext = !!situation; onNext = () => go(3, { situation_type: situation });
       break;
-    case 3:
-      body = (<><Question id="q3" title={t("onb.lastContactTitle")} />
-        <ChoiceList labelledBy="q3" options={opts("lastContact", LAST_CONTACT)} value={lastContact ? [lastContact] : []} onChange={(v) => setLastContact(v[0] ?? "")} /></>);
-      canNext = !!lastContact;
-      onNext = () => {
-        const days = CONTACT_RANGE_DAYS[lastContact as ContactRange] ?? 0;
-        go(4, { last_contact_range: lastContact, last_contact_at: new Date(Date.now() - days * 86400000).toISOString() });
+    case 3: {
+      const saveLastContact = (range: string) => {
+        const days = CONTACT_RANGE_DAYS[range as ContactRange] ?? 0;
+        void go(4, { last_contact_range: range, last_contact_at: new Date(Date.now() - days * 86400000).toISOString() });
       };
+      body = (<><Question id="q3" title={t("onb.lastContactTitle")} />
+        <ChoiceList labelledBy="q3" options={opts("lastContact", LAST_CONTACT)} value={lastContact ? [lastContact] : []}
+          onChange={(v) => { const range = v[0] ?? ""; setLastContact(range); if (range) autoNext(() => saveLastContact(range)); }} /></>);
+      canNext = !!lastContact;
+      onNext = () => saveLastContact(lastContact);
       break;
+    }
     case 4:
       body = (<><Question id="q4" title={t("onb.afterTitle")} sub={t("onb.multiSub")} />
         <ChoiceList multi labelledBy="q4" options={opts("after", AFTER)} value={after}
@@ -236,7 +250,8 @@ function Onboarding() {
       break;
     case 7:
       body = (<><Question id="q7" title={t("onb.sourceTitle")} sub={t("onb.sourceSub")} />
-        <ChoiceList labelledBy="q7" options={opts("source", SOURCES)} value={source ? [source] : []} onChange={(v) => setSource(v[0] ?? "")} /></>);
+        <ChoiceList labelledBy="q7" options={opts("source", SOURCES)} value={source ? [source] : []}
+          onChange={(v) => { const picked = v[0] ?? ""; setSource(picked); if (picked) autoNext(() => void go(8, { acquisition_source: picked })); }} /></>);
       canNext = !!source; onNext = () => go(8, { acquisition_source: source });
       break;
     case 8:

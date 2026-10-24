@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, cleanup } from "@testing-library/react";
+import { act, fireEvent, render, screen, cleanup } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { en } from "@/i18n/en";
 
@@ -72,6 +72,31 @@ describe("onboarding questions", () => {
     const days = (Date.now() - new Date(patch.last_contact_at).getTime()) / 86400000;
     expect(days).toBeGreaterThan(30.9);
     expect(days).toBeLessThan(31.1);
+  });
+
+  it("Q2 and the 'how did you hear about us' question move on by themselves once an answer is picked", async () => {
+    vi.useFakeTimers();
+    try {
+      Object.assign(profile, { onboarding_step: 3 });
+      render(<Component />);
+      fireEvent.click(screen.getByRole("radio", { name: en.options.lastContact.m1_3 }));
+      expect(updateProfile).not.toHaveBeenCalled(); // short pause so the selection is visible
+      await act(async () => { await vi.advanceTimersByTimeAsync(400); });
+      expect(updateProfile.mock.calls[0]![0]).toMatchObject({ last_contact_range: "m1_3", onboarding_step: 4 });
+      expect(screen.getByRole("heading", { name: en.onb.afterTitle })).toBeInTheDocument();
+      cleanup(); updateProfile.mockClear();
+
+      Object.assign(profile, { onboarding_step: 7 });
+      render(<Component />);
+      fireEvent.click(screen.getByRole("radio", { name: en.options.source.google }));
+      fireEvent.click(screen.getByRole("radio", { name: en.options.source.tiktok })); // a newer pick replaces the pending one
+      await act(async () => { await vi.advanceTimersByTimeAsync(400); });
+      expect(updateProfile).toHaveBeenCalledTimes(1);
+      expect(updateProfile).toHaveBeenCalledWith({ acquisition_source: "tiktok", onboarding_step: 8 });
+      expect(screen.getByRole("heading", { name: en.onb.goalTitle })).toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it("Q3 is multi-select and 'I haven't reached out yet' is exclusive", () => {
