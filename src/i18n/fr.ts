@@ -73,7 +73,7 @@ export const fr = {
       sub: "Des chercheurs ont observé un lien entre contact avec l'ex et détresse.",
       sketch: "Schéma illustratif, ce ne sont pas des données.",
       sketchAlt: "Schéma illustratif : deux courbes dessinées sur trois mois, une pour la personne qui reste en contact avec l'ex, une pour celle qui coupe le contact. Ce ne sont pas des données.",
-      axisX: "Mois depuis la rupture", axisY: "Mieux-être",
+      axisX: "Mois depuis la rupture", axisY: "Bien-être",
       lineContact: "Contact maintenu", lineNoContact: "Sans contact",
       finding: "Dans une étude qui a suivi 122 adultes en séparation conjugale pendant 5 mois, plus de contact en personne avec l'ex allait de pair avec plus de détresse deux mois plus tard.",
       caveat: "C'est une association observée, pas la preuve que le contact en est la cause. Elle n'apparaissait pas au même moment, et elle était surtout nette chez les personnes sans enfants.",
