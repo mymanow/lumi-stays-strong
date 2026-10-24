@@ -293,6 +293,7 @@ function Onboarding() {
       break;
     case 17:
       body = <ReminderIntro />;
+      nextLabel = t("reminderIntro.cta");
       onNext = () => go(notifyScreenApplicable() ? 18 : 19); // no notification support and not an iPhone: skip the permission screen
       break;
     case 18:

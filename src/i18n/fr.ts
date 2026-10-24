@@ -160,7 +160,7 @@ export const fr = {
     later: "Tu pourras réessayer dans les réglages du navigateur.",
   },
   reminderIntro: {
-    title: "Un rappel doux [chaque jour] pour tenir bon", note: "Réglable ou désactivable quand tu veux",
+    title: "Reçois un rappel [2 jours] avant la fin de ton essai", note: "Aucun paiement aujourd'hui", cta: "Continuer GRATUITEMENT",
   },
   companion: {
     title: "Tu n'es [pas seul·e] dans ça", tools: ["Compteur", "SOS", "Coffre", "Parcours"], dayTitle: "Ta journée avec {app}", whens: ["Matin", "En journée", "Soir"], whats: ["un check-in de 30 secondes", "le SOS quand l'envie arrive", "écris dans le coffre, sans envoyer"],

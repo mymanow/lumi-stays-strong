@@ -162,7 +162,7 @@ export const en: typeof fr = {
     later: "You can try again in your browser settings.",
   },
   reminderIntro: {
-    title: "A gentle reminder [every day] to hold on", note: "Adjust or turn it off whenever you like",
+    title: "Get a reminder [2 days] before your trial ends", note: "No payment due now", cta: "Continue for FREE",
   },
   companion: {
     title: "You are [not alone] in this", tools: ["Counter", "SOS", "Vault", "Journey"], dayTitle: "Your day with {app}", whens: ["Morning", "Anytime", "Evening"], whats: ["a 30-second check-in", "SOS when the urge hits", "write it in the vault, don't send it"],
