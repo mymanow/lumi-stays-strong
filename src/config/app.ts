@@ -12,3 +12,7 @@ export const SIMULATE_PAYMENT = true;
 /** Shows the "Ton rétablissement commence maintenant" plan pitch (onboarding step 19) before the paywall result.
  *  false: the reminder screens lead straight to the paywall result (step 20). */
 export const SHOW_PLAN_PITCH = false;
+
+/** Shows the "Personnalisons ton parcours" intro (onboarding step 1, before the name question).
+ *  false: the welcome screen leads straight to the name question. */
+export const SHOW_ONBOARDING_INTRO = false;

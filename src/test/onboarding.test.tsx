@@ -181,6 +181,15 @@ describe("onboarding questions", () => {
     expect(screen.getByRole("heading", { name: en.onb.rulesTitle })).toBeInTheDocument();
   });
 
+  it("skips the hidden intro: step 1 opens on the name question, and back returns to the welcome", () => {
+    Object.assign(profile, { onboarding_step: 1, name: null });
+    render(<Component />);
+    expect(screen.queryByRole("heading", { name: en.onb.introTitle })).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: en.onb.nameTitle })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: en.common.back }));
+    expect(updateProfile).toHaveBeenLastCalledWith({ onboarding_step: 0 });
+  });
+
   it("greets the user by name after the name, before the first question", () => {
     Object.assign(profile, { onboarding_step: 1 });
     render(<Component />);

@@ -11,7 +11,7 @@ import { AloneScreen } from "@/components/hold/AloneScreen";
 import { ReviewsScreen, reviewsAvailable } from "@/components/hold/ReviewsScreen";
 import { PlanReady } from "@/components/hold/PlanReady";
 import { CompanionShowcase } from "@/components/hold/CompanionShowcase";
-import { SHOW_PLAN_PITCH, SIMULATE_PAYMENT } from "@/config/app";
+import { SHOW_ONBOARDING_INTRO, SHOW_PLAN_PITCH, SIMULATE_PAYMENT } from "@/config/app";
 import { PaywallResult } from "@/components/hold/PaywallResult";
 import { PlanPitch } from "@/components/hold/PlanPitch";
 import type { PlanKey } from "@/config/whop";
@@ -68,7 +68,7 @@ function Onboarding() {
   const navigate = useNavigate();
   const crisis = useCrisisLine();
   const [step, setStep] = useState(0);
-  const [subStep, setSubStep] = useState(0); // within step 1: 0 intro, 1 name, 2 greeting
+  const [subStep, setSubStep] = useState(SHOW_ONBOARDING_INTRO ? 0 : 1); // within step 1: 0 intro (hidden unless SHOW_ONBOARDING_INTRO), 1 name, 2 greeting
   const [init, setInit] = useState(false);
   const [name, setName] = useState("");
   const [situation, setSituation] = useState("");
@@ -329,7 +329,7 @@ function Onboarding() {
       <div className="mb-6 flex items-center gap-3">
         <button type="button" onClick={() => transition(() => {
           if (step === 9 && infoStep > 1) { setInfoStep(infoStep - 1); window.scrollTo(0, 0); }
-          else if (step === 1 && subStep > 0) setSubStep(subStep - 1);
+          else if (step === 1 && subStep > (SHOW_ONBOARDING_INTRO ? 0 : 1)) setSubStep(subStep - 1); // intro hidden: back from the name returns to the welcome
           else if (step === 14) go(hasReviews ? 12 : 10); // skip the loading scene
           else if (step === 13) go(hasReviews ? 12 : 10);
           else if (step === 12) go(10);
