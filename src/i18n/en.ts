@@ -99,9 +99,12 @@ export const en: typeof fr = {
     "plans": "Choose a plan",
     "perWeek": "/ week",
     "cta": "Start Radio Silence",
+    "ctaTrial": "Start my {days}-day free trial",
+    "trialNote": "No payment due now · Cancel anytime",
+    "trialBadge": "{days} days free",
     "quarterly": {
       "name": "Quarterly (90 days)",
-      "billed": "€39.00 billed every 3 months.",
+      "billed": "{days} days free, then €39.00 every 3 months.",
       "price": "€2.99"
     },
     "weekly": {

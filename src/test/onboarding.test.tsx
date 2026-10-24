@@ -2,6 +2,8 @@ import { fireEvent, render, screen, cleanup } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { en } from "@/i18n/en";
 
+const trialText = (s: string) => s.replace("{days}", "3"); // the quarterly plan has a 3-day free trial (TRIAL_DAYS)
+
 const { updateProfile, profile, navigateMock } = vi.hoisted(() => ({
   navigateMock: vi.fn(),
   updateProfile: vi.fn().mockResolvedValue(undefined),
@@ -256,9 +258,10 @@ describe("paywall result screen", () => {
     const expected = new Intl.DateTimeFormat("en-US", { dateStyle: "long" }).format(new Date(Date.now() + 90 * 86400000));
     expect(screen.getByTestId("target-date")).toHaveTextContent(expected);
     expect(screen.getByRole("radio", { name: /Quarterly/ })).toBeChecked();
-    expect(screen.getByText(en.paywall.quarterly.billed)).toBeInTheDocument();
+    expect(screen.getByText(trialText(en.paywall.quarterly.billed))).toBeInTheDocument();
+    expect(screen.getByText(en.paywall.trialNote)).toBeInTheDocument(); // the quarterly plan has a 3-day free trial
     expect(screen.queryByTestId("checkout")).toBeNull();
-    fireEvent.click(screen.getByRole("button", { name: en.paywall.cta }));
+    fireEvent.click(screen.getByRole("button", { name: trialText(en.paywall.ctaTrial) }));
     expect(await screen.findByTestId("checkout")).toHaveAttribute("data-plan", "quarterly");
     expect(navigateMock).not.toHaveBeenCalled(); // no separate paywall page any more
   });
@@ -269,6 +272,7 @@ describe("paywall result screen", () => {
     expect(screen.queryByRole("radio", { name: /Weekly/ })).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: /Show more plans/ }));
     fireEvent.click(screen.getByRole("radio", { name: /Weekly/ }));
+    expect(screen.queryByText(en.paywall.trialNote)).toBeNull(); // no free trial on the weekly plan
     fireEvent.click(screen.getByRole("button", { name: en.paywall.cta }));
     expect((await screen.findByTestId("checkout")).getAttribute("data-plan")).toBe("weekly");
   });
@@ -279,7 +283,7 @@ describe("paywall result screen", () => {
     fireEvent.click(screen.getByRole("button", { name: /Show more plans/ }));
     fireEvent.click(screen.getByRole("radio", { name: /Weekly/ }));
     fireEvent.click(screen.getByRole("button", { name: /Hide/ }));
-    fireEvent.click(screen.getByRole("button", { name: en.paywall.cta }));
+    fireEvent.click(screen.getByRole("button", { name: trialText(en.paywall.ctaTrial) }));
     expect((await screen.findByTestId("checkout")).getAttribute("data-plan")).toBe("quarterly");
   });
 
@@ -291,7 +295,7 @@ describe("paywall result screen", () => {
     expect(updateProfile).toHaveBeenCalledWith({ onboarding_completed: true, onboarding_step: 20 });
     expect(navigateMock).toHaveBeenCalledWith({ to: "/" });
     updateProfile.mockClear();
-    fireEvent.click(screen.getByRole("button", { name: en.paywall.cta }));
+    fireEvent.click(screen.getByRole("button", { name: trialText(en.paywall.ctaTrial) }));
     expect(updateProfile).toHaveBeenCalledWith({ onboarding_completed: true, onboarding_step: 20 });
   });
 

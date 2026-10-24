@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useI18n } from "@/i18n";
 import { useApp } from "@/lib/app-state";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import type { PlanKey } from "@/config/whop";
+import { TRIAL_DAYS, type PlanKey } from "@/config/whop";
 import { createWhopCheckout } from "@/lib/account.functions";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -53,7 +53,7 @@ export function CheckoutSheet({ open, onOpenChange, plan, onPlan }: { open: bool
       <SheetContent side="bottom" className="max-h-[92svh] overflow-y-auto rounded-t-[28px] border-0 bg-[#2a2f6e] px-6 pb-8 text-white">
         <SheetHeader className="text-left">
           <SheetTitle className="font-display text-2xl text-white">{t("paywall.cta")}</SheetTitle>
-          <SheetDescription className="text-white/80">{t(`paywall.${plan}.name`)} · {t(`paywall.${plan}.price`)} {t("paywall.perWeek")} · {t(`paywall.${plan}.billed`)}</SheetDescription>
+          <SheetDescription className="text-white/80">{t(`paywall.${plan}.name`)} · {t(`paywall.${plan}.price`)} {t("paywall.perWeek")} · {t(`paywall.${plan}.billed`, { days: TRIAL_DAYS[plan] })}</SheetDescription>
         </SheetHeader>
         {onPlan && (
           <div role="radiogroup" aria-label={t("paywall.plans")} className="mt-4 grid grid-cols-2 gap-2">

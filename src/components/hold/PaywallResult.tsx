@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ChevronDown, Heart, Lock, MessageCircle, PenLine, Star, Zap } from "lucide-react";
+import { Check, ChevronDown, Heart, Lock, MessageCircle, PenLine, Star, Zap } from "lucide-react";
 import { useI18n } from "@/i18n";
 import { Lumi } from "./Lumi";
 import { Celebration } from "./Celebration";
@@ -7,7 +7,7 @@ import { PrimaryButton } from "./Common";
 import { BackIcon } from "./Icons";
 import { RATING } from "@/config/reviews";
 import { SIMULATE_PAYMENT } from "@/config/app";
-import type { PlanKey } from "@/config/whop";
+import { TRIAL_DAYS, type PlanKey } from "@/config/whop";
 
 export const TARGET_DAYS = 90;
 const CHIP_ICONS = [MessageCircle, Zap, Heart, PenLine];
@@ -45,6 +45,7 @@ export function PaywallResult({ plan, onPlan, onStart, onSimulate, onSkip, onBac
   }
 
   const chips = tl<string[]>("paywall.chips");
+  const trial = TRIAL_DAYS[plan]; // the trial note and button only promise a free trial on a plan that has one
   const toggleMore = () => { if (more && plan === "weekly") onPlan("quarterly"); setMore((m) => !m); }; // never leave a hidden plan selected
   const card = (k: PlanKey) => {
     const on = plan === k;
@@ -54,7 +55,8 @@ export function PaywallResult({ plan, onPlan, onStart, onSimulate, onSkip, onBac
         {k === "quarterly" && <span className="absolute -top-3 left-4 rounded-full bg-[#7EE3D9] px-3 py-0.5 text-xs font-bold text-[#1f3a4a]">{t("paywall.best")}</span>}
         <span>
           <span className="font-display block text-xl">{t(`paywall.${k}.name`)}</span>
-          <span className={`block text-sm ${on ? "text-[#5b6390]" : "opacity-80"}`}>{t(`paywall.${k}.billed`)}</span>
+          {TRIAL_DAYS[k] > 0 && <span className={`mt-1 inline-block rounded-full px-2.5 py-0.5 text-xs font-bold ${on ? "bg-[#E9E6FF] text-[#4B3FA8]" : "bg-white/20 text-white"}`}>{t("paywall.trialBadge", { days: TRIAL_DAYS[k] })}</span>}
+          <span className={`block text-sm ${on ? "text-[#5b6390]" : "opacity-80"}`}>{t(`paywall.${k}.billed`, { days: TRIAL_DAYS[k] })}</span>
         </span>
         <span className="shrink-0 text-right">
           <span className="font-display block text-[26px] leading-none">{t(`paywall.${k}.price`)}</span>
@@ -108,7 +110,8 @@ export function PaywallResult({ plan, onPlan, onStart, onSimulate, onSkip, onBac
       </button>
 
       <div className="fade-up sticky bottom-0 mt-4 pb-1 pt-2" style={{ "--d": "480ms" } as React.CSSProperties}>
-        <PrimaryButton onClick={onStart}>{t("paywall.cta")}</PrimaryButton>
+        {trial > 0 && <p className="mb-2 flex items-center justify-center gap-1.5 text-sm font-semibold"><Check size={16} className="text-[#7EE39A]" strokeWidth={3} aria-hidden />{t("paywall.trialNote")}</p>}
+        <PrimaryButton onClick={onStart}>{trial > 0 ? t("paywall.ctaTrial", { days: trial }) : t("paywall.cta")}</PrimaryButton>
         <button type="button" onClick={onSkip} className="mt-1 min-h-10 w-full text-sm text-white/85 underline-offset-4 hover:underline">{t("paywall.skip")}</button>
         {SIMULATE_PAYMENT && <button type="button" onClick={onSimulate} className="mt-1 min-h-10 w-full text-sm text-white/70 underline-offset-4 hover:underline">{t("pitch.simulate")}</button>}
       </div>

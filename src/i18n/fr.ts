@@ -97,9 +97,12 @@ export const fr = {
     "plans": "Choisir une offre",
     "perWeek": "/ semaine",
     "cta": "Démarrer le Silence Radio",
+    "ctaTrial": "Commencer mes {days} jours gratuits",
+    "trialNote": "Aucun paiement aujourd'hui · Annulable à tout moment",
+    "trialBadge": "{days} jours gratuits",
     "quarterly": {
       "name": "Trimestriel (90 jours)",
-      "billed": "Facturé 39,00 € tous les 3 mois.",
+      "billed": "{days} jours gratuits, puis 39,00 € tous les 3 mois.",
       "price": "2,99 €"
     },
     "weekly": {

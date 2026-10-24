@@ -14,6 +14,10 @@ export const WHOP_PLANS: Record<PlanKey, string> = {
   weekly: VARIANT_ID_HEBDO,
 };
 
+/** Free trial set on the Whop pricing option (3 days on the quarterly plan, none on the weekly plan).
+ *  Must match Whop: the paywall, the bell screen and the trial-end reminder all rely on it. */
+export const TRIAL_DAYS: Record<PlanKey, number> = { quarterly: 3, weekly: 0 };
+
 /** Reverse lookup used by the webhook: null for any variant that is not ours. */
 export function planKeyForVariant(variantId: string | null | undefined): PlanKey | null {
   if (!variantId) return null;
