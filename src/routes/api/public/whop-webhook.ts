@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { planKeyForVariant } from "@/config/whop";
+import { toIso } from "@/lib/trial-reminder";
 import type { Database } from "@/integrations/supabase/types";
 
 // The external database includes the Whop columns from hold_supabase_migration.sql.
@@ -13,6 +14,7 @@ type WhopSubscriptionInsert = Database["public"]["Tables"]["subscriptions"]["Ins
   whop_status: string | null;
   cancel_at_period_end: boolean;
   whop_synced_at: string;
+  trial_ends_at?: string | null;
 };
 
 // Standard Webhooks verification: HMAC-SHA256 over `${id}.${timestamp}.${body}` keyed with the literal secret bytes.
@@ -44,6 +46,7 @@ type WhopMembership = {
   plan_id?: string;
   user_id?: string | null;
   metadata?: Record<string, unknown> | null;
+  renewal_period_end?: string | number | null; // Whop API v1: end of the current period (the trial while trialing)
   current_period_end?: string | null;
   expires_at?: string | null;
   cancel_at_period_end?: boolean;
@@ -95,6 +98,7 @@ export const Route = createFileRoute("/api/public/whop-webhook")({
           if (!sameMembership && !isActive && current.status === "active") return ok("ignored: older membership");
         }
 
+        const periodEnd = toIso(m.renewal_period_end) ?? m.current_period_end ?? m.expires_at ?? null;
         const subscription: WhopSubscriptionInsert = {
           user_id: userId,
           status: isActive ? "active" : "inactive",
@@ -102,7 +106,10 @@ export const Route = createFileRoute("/api/public/whop-webhook")({
           whop_status: m.status ?? null,
           whop_membership_id: m.id ?? null,
           whop_user_id: m.user_id ?? null,
-          current_period_end: m.current_period_end ?? m.expires_at ?? null,
+          current_period_end: periodEnd,
+          // While trialing, the current period is the free trial: its end drives the "2 days before" reminder.
+          // Left untouched otherwise, so the reminder bookkeeping survives later events.
+          ...(m.status === "trialing" ? { trial_ends_at: periodEnd } : {}),
           cancel_at_period_end: m.cancel_at_period_end ?? false,
           whop_synced_at: m.updated_at ?? new Date().toISOString(),
           updated_at: new Date().toISOString(),

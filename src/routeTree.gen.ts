@@ -25,6 +25,7 @@ import { Route as SosRouteImport } from './routes/sos'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as ApiCoachRouteImport } from './routes/api/coach'
 import { Route as SubscribeSuccessRouteImport } from './routes/subscribe.success'
+import { Route as ApiPublicTrialRemindersRouteImport } from './routes/api/public/trial-reminders'
 import { Route as ApiPublicWhopWebhookRouteImport } from './routes/api/public/whop-webhook'
 
 const IndexRoute = IndexRouteImport.update({
@@ -107,6 +108,11 @@ const SubscribeSuccessRoute = SubscribeSuccessRouteImport.update({
   path: '/subscribe/success',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicTrialRemindersRoute = ApiPublicTrialRemindersRouteImport.update({
+  id: '/api/public/trial-reminders',
+  path: '/api/public/trial-reminders',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicWhopWebhookRoute = ApiPublicWhopWebhookRouteImport.update({
   id: '/api/public/whop-webhook',
   path: '/api/public/whop-webhook',
@@ -130,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/api/coach': typeof ApiCoachRoute
   '/subscribe/success': typeof SubscribeSuccessRoute
+  '/api/public/trial-reminders': typeof ApiPublicTrialRemindersRoute
   '/api/public/whop-webhook': typeof ApiPublicWhopWebhookRoute
 }
 export interface FileRoutesByTo {
@@ -149,6 +156,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/api/coach': typeof ApiCoachRoute
   '/subscribe/success': typeof SubscribeSuccessRoute
+  '/api/public/trial-reminders': typeof ApiPublicTrialRemindersRoute
   '/api/public/whop-webhook': typeof ApiPublicWhopWebhookRoute
 }
 export interface FileRoutesById {
@@ -169,6 +177,7 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/api/coach': typeof ApiCoachRoute
   '/subscribe/success': typeof SubscribeSuccessRoute
+  '/api/public/trial-reminders': typeof ApiPublicTrialRemindersRoute
   '/api/public/whop-webhook': typeof ApiPublicWhopWebhookRoute
 }
 export interface FileRouteTypes {
@@ -190,6 +199,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/api/coach'
     | '/subscribe/success'
+    | '/api/public/trial-reminders'
     | '/api/public/whop-webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -209,6 +219,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/api/coach'
     | '/subscribe/success'
+    | '/api/public/trial-reminders'
     | '/api/public/whop-webhook'
   id:
     | '__root__'
@@ -228,6 +239,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/api/coach'
     | '/subscribe/success'
+    | '/api/public/trial-reminders'
     | '/api/public/whop-webhook'
   fileRoutesById: FileRoutesById
 }
@@ -248,6 +260,7 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   ApiCoachRoute: typeof ApiCoachRoute
   SubscribeSuccessRoute: typeof SubscribeSuccessRoute
+  ApiPublicTrialRemindersRoute: typeof ApiPublicTrialRemindersRoute
   ApiPublicWhopWebhookRoute: typeof ApiPublicWhopWebhookRoute
 }
 
@@ -365,6 +378,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SubscribeSuccessRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/trial-reminders': {
+      id: '/api/public/trial-reminders'
+      path: '/api/public/trial-reminders'
+      fullPath: '/api/public/trial-reminders'
+      preLoaderRoute: typeof ApiPublicTrialRemindersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/whop-webhook': {
       id: '/api/public/whop-webhook'
       path: '/api/public/whop-webhook'
@@ -392,6 +412,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   ApiCoachRoute: ApiCoachRoute,
   SubscribeSuccessRoute: SubscribeSuccessRoute,
+  ApiPublicTrialRemindersRoute: ApiPublicTrialRemindersRoute,
   ApiPublicWhopWebhookRoute: ApiPublicWhopWebhookRoute,
 }
 export const routeTree = rootRouteImport

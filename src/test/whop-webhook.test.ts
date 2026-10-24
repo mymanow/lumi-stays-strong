@@ -70,6 +70,21 @@ describe("whop webhook", () => {
     expect(rows.get(USER)).toMatchObject({ status: "active", whop_membership_id: "mem_new" });
   });
 
+  it("a trialing membership stores the trial end from renewal_period_end (ISO or Unix seconds)", async () => {
+    await send("membership.activated", membership({ status: "trialing", current_period_end: undefined, renewal_period_end: "2026-10-27T10:00:00Z" }));
+    expect(rows.get(USER)).toMatchObject({ status: "active", whop_status: "trialing", trial_ends_at: "2026-10-27T10:00:00.000Z", current_period_end: "2026-10-27T10:00:00.000Z" });
+    rows.clear();
+    await send("membership.activated", membership({ status: "trialing", renewal_period_end: 1793095200 }));
+    expect(rows.get(USER)?.["trial_ends_at"]).toBe(new Date(1793095200 * 1000).toISOString());
+  });
+
+  it("the trial end and reminder bookkeeping survive the conversion to a paid membership", async () => {
+    await send("membership.activated", membership({ status: "trialing", renewal_period_end: "2026-10-27T10:00:00Z" }));
+    rows.set(USER, { ...rows.get(USER), trial_reminder_sent_at: "2026-10-25T10:07:00Z" });
+    await send("membership.updated", membership({ status: "active", renewal_period_end: "2027-01-27T10:00:00Z", updated_at: "2026-10-27T10:00:05Z" }));
+    expect(rows.get(USER)).toMatchObject({ whop_status: "active", trial_ends_at: "2026-10-27T10:00:00.000Z", trial_reminder_sent_at: "2026-10-25T10:07:00Z", current_period_end: "2027-01-27T10:00:00.000Z" });
+  });
+
   it("ignores other products of the store and memberships without a Hold user", async () => {
     await send("membership.activated", membership({ plan_id: "plan_someOtherProduct" }));
     await send("membership.activated", membership({ metadata: {} }));

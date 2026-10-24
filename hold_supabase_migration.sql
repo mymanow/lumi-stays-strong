@@ -231,3 +231,36 @@ ALTER POLICY "own events" ON public.contact_events USING (user_id = (select auth
 ALTER POLICY "own checkins" ON public.checkins USING (user_id = (select auth.uid())) WITH CHECK (user_id = (select auth.uid()));
 ALTER POLICY "own sub read" ON public.subscriptions USING (user_id = (select auth.uid()));
 ALTER POLICY "own usage read" ON public.ai_usage USING (user_id = (select auth.uid()));
+
+
+-- ===== 0010_trial_reminder =====
+-- Essai gratuit de 3 jours (trimestriel) : rappel par e-mail 2 jours avant la fin, promis sur l'écran de la cloche.
+-- trial_ends_at est écrit par le webhook Whop tant que la membership est « trialing » ;
+-- trial_reminder_sent_at par /api/public/trial-reminders une fois l'e-mail envoyé (un seul rappel par abonnement).
+ALTER TABLE public.subscriptions
+  ADD COLUMN IF NOT EXISTS trial_ends_at timestamptz,
+  ADD COLUMN IF NOT EXISTS trial_reminder_sent_at timestamptz;
+
+COMMENT ON COLUMN public.subscriptions.trial_ends_at IS 'Fin de l''essai gratuit Whop (renewal_period_end pendant « trialing »).';
+COMMENT ON COLUMN public.subscriptions.trial_reminder_sent_at IS 'Envoi du rappel « ton essai se termine dans 2 jours ». Null = pas encore envoyé.';
+
+CREATE INDEX IF NOT EXISTS subscriptions_trial_reminder_idx
+  ON public.subscriptions (trial_ends_at)
+  WHERE whop_status = 'trialing' AND trial_reminder_sent_at IS NULL;
+
+-- Appel horaire de la route d'envoi (extensions pg_cron et pg_net : Database -> Extensions).
+-- Remplacer les deux valeurs entre < > avant d'exécuter ce bloc :
+--   <URL_DE_L_APP>  ex. https://hold-no-contact.vercel.app
+--   <CRON_SECRET>   la même valeur que la variable d'environnement CRON_SECRET de l'app
+CREATE EXTENSION IF NOT EXISTS pg_cron;
+CREATE EXTENSION IF NOT EXISTS pg_net;
+SELECT cron.unschedule('hold-trial-reminders') WHERE EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'hold-trial-reminders');
+SELECT cron.schedule(
+  'hold-trial-reminders',
+  '7 * * * *',
+  $$ SELECT net.http_post(
+       url := '<URL_DE_L_APP>/api/public/trial-reminders',
+       headers := jsonb_build_object('Authorization', 'Bearer <CRON_SECRET>', 'Content-Type', 'application/json'),
+       body := '{}'::jsonb
+     ); $$
+);

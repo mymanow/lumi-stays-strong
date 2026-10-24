@@ -164,6 +164,15 @@ export const en: typeof fr = {
     declined: "You can turn it on later in settings.",
     later: "You can try again in your browser settings.",
   },
+  trialEmail: {
+    subject: "Your {app} free trial ends in 2 days",
+    hello: "Hi {name},", helloNoName: "Hi,",
+    body: "A quick reminder, as promised: your {days}-day free trial ends on {date}. If you do nothing, your quarterly plan starts then: €39.00 will be charged, then every 3 months.",
+    keep: "Want to keep going? There's nothing to do.",
+    cancel: "Prefer to stop? Cancel before {date} here:",
+    sign: "Lumi and the {app} team",
+    tz: "Paris time",
+  },
   reminderIntro: {
     title: "Get a reminder [2 days] before your trial ends", note: "No payment due now", cta: "Continue for FREE",
   },

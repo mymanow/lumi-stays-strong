@@ -162,6 +162,15 @@ export const fr = {
     declined: "Tu pourras l'activer plus tard dans les réglages.",
     later: "Tu pourras réessayer dans les réglages du navigateur.",
   },
+  trialEmail: {
+    subject: "Ton essai gratuit {app} se termine dans 2 jours",
+    hello: "Bonjour {name},", helloNoName: "Bonjour,",
+    body: "Petit rappel, comme promis : ton essai gratuit de {days} jours se termine le {date}. Sans action de ta part, ton abonnement trimestriel démarre à ce moment-là : 39,00 € seront prélevés, puis tous les 3 mois.",
+    keep: "Tu veux continuer ? Tu n'as rien à faire.",
+    cancel: "Tu préfères arrêter ? Annule avant le {date} ici :",
+    sign: "Lumi et l'équipe {app}",
+    tz: "heure de Paris",
+  },
   reminderIntro: {
     title: "Reçois un rappel [2 jours] avant la fin de ton essai", note: "Aucun paiement aujourd'hui", cta: "Continuer GRATUITEMENT",
   },
