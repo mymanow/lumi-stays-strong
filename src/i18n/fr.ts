@@ -93,7 +93,7 @@ export const fr = {
       "Rappels à soi‑même",
       "Journal de décharge émotionnelle"
     ],
-    "best": "Meilleur prix",
+    "best": "Le plus populaire",
     "plans": "Choisir une offre",
     "perWeek": "/ semaine",
     "cta": "Démarrer le Silence Radio",
