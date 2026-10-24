@@ -234,7 +234,7 @@ describe("onboarding questions", () => {
     fireEvent.click(screen.getByRole("button", { name: en.reminderIntro.cta }));
     expect(updateProfile).toHaveBeenLastCalledWith({ onboarding_step: 20 }); // jsdom has no Notification API: the permission screen is skipped, and the hidden plan pitch (SHOW_PLAN_PITCH) too
     expect(screen.queryByRole("heading", { name: /Your recovery starts now/ })).not.toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: en.paywall.title })).toBeInTheDocument(); // commitment and "plan ready" screens were removed
+    expect(screen.getByRole("heading", { name: /Your recovery starts tonight/ })).toBeInTheDocument(); // commitment and "plan ready" screens were removed
   });
 
   it("goes back through the information screens to the goal question", () => {
@@ -252,11 +252,12 @@ describe("onboarding questions", () => {
 });
 
 describe("paywall result screen", () => {
-  it("shows today + 90 days, the quarterly plan first, and opens the checkout for the selected plan", async () => {
+  it("starts with the Pro pill (no plan-ready header), shows the quarterly plan first, and opens the checkout for the selected plan", async () => {
     Object.assign(profile, { onboarding_step: 20 });
     render(<Component />);
-    const expected = new Intl.DateTimeFormat("en-US", { dateStyle: "long" }).format(new Date(Date.now() + 90 * 86400000));
-    expect(screen.getByTestId("target-date")).toHaveTextContent(expected);
+    expect(screen.getByText(en.paywall.proPill)).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: en.paywall.title })).toBeNull();
+    expect(screen.queryByTestId("target-date")).toBeNull();
     expect(screen.getByRole("radio", { name: /Quarterly/ })).toBeChecked();
     expect(screen.getByText(trialText(en.paywall.quarterly.billed))).toBeInTheDocument();
     expect(screen.getByText(en.paywall.trialNote)).toBeInTheDocument(); // the quarterly plan has a 3-day free trial

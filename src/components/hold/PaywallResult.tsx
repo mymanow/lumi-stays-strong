@@ -1,24 +1,17 @@
 import { useEffect, useState } from "react";
-import { BellRing, Check, ChevronDown, Crown, Heart, Lock, MessageCircle, PenLine, Star, Zap } from "lucide-react";
+import { BellRing, Check, ChevronDown, Crown } from "lucide-react";
 import { useI18n } from "@/i18n";
 import { Lumi } from "./Lumi";
 import { Celebration } from "./Celebration";
 import { PrimaryButton } from "./Common";
 import { BackIcon } from "./Icons";
-import { RATING } from "@/config/reviews";
 import { SIMULATE_PAYMENT } from "@/config/app";
 import { TRIAL_DAYS, type PlanKey } from "@/config/whop";
 import { TRIAL_REMINDER_LEAD_MS } from "@/lib/trial-reminder";
 
-export const TARGET_DAYS = 90;
-const CHIP_ICONS = [MessageCircle, Zap, Heart, PenLine];
 const LOADING_MS = 2600;
 const reduced = () => typeof window !== "undefined" && !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
-/** Today + 90 days, as a readable date in the app language. */
-export function targetDate(lang: string, now = new Date()) {
-  return new Intl.DateTimeFormat(lang === "fr" ? "fr-FR" : "en-US", { dateStyle: "long" }).format(new Date(now.getTime() + TARGET_DAYS * 86400000));
-}
 
 /** "[word]" in a translated title is highlighted, "\n" breaks the line. */
 function Highlight({ text }: { text: string }) {
@@ -46,11 +39,8 @@ function Journey({ plan }: { plan: PlanKey }) {
       { Icon: Crown, title: t("paywall.journeyNoCommit.title"), sub: t("paywall.journeyNoCommit.sub") },
     ];
   return (
-    <section className="fade-up mt-7 text-left" style={{ "--d": "360ms" } as React.CSSProperties} aria-labelledby="paywall-journey">
-      <div className="flex justify-center">
-        <span className="rounded-full border-2 border-white/70 bg-white/10 px-5 py-1.5 text-[17px] font-semibold tracking-wide shadow-[0_0_24px_-6px_rgba(212,203,255,0.7)]">{t("paywall.proPill")}</span>
-      </div>
-      <h2 id="paywall-journey" className="font-display mt-6 text-[32px] leading-[1.1]"><Highlight text={t("paywall.journeyTitle")} /></h2>
+    <section className="fade-up mt-8 text-left" style={{ "--d": "80ms" } as React.CSSProperties} aria-labelledby="q20p">
+      <h1 id="q20p" className="font-display text-[34px] leading-[1.1]"><Highlight text={t("paywall.journeyTitle")} /></h1>
       <p className="mt-3 text-[15px] leading-snug opacity-70">{t("paywall.journeySub")}</p>
       <ol className="mt-6 flex flex-col">
         {steps.map(({ Icon, title, sub }, i) => (
@@ -69,12 +59,11 @@ function Journey({ plan }: { plan: PlanKey }) {
 }
 
 /**
- * Post-quiz result + price grid: a 2-3 s "calculating your calendar" animation, then the plan-ready header with the
- * dynamic target date (today + 90 days), reassurance (slogan, feature chips, stars only with a real rating) and the
- * two plans. The CTA goes to the checkout of the selected plan.
+ * Post-quiz paywall: a 2-3 s "calculating" animation, then the "Hold - No Contact Pro" pill, what happens next with
+ * the selected plan (trial timeline or no commitment) and the two plans. The CTA goes to the checkout of that plan.
  */
 export function PaywallResult({ plan, onPlan, onStart, onSimulate, onSkip, onBack, celebrate = false, onCelebrated }: { plan: PlanKey; onPlan: (p: PlanKey) => void; onStart: () => void; onSimulate: () => void; onSkip: () => void; onBack: () => void; celebrate?: boolean; onCelebrated?: (() => void) | undefined }) {
-  const { t, tl, lang } = useI18n();
+  const { t } = useI18n();
   const [loaded, setLoaded] = useState(() => reduced());
   const [more, setMore] = useState(false); // the weekly plan stays hidden until "show more plans"
   useEffect(() => {
@@ -93,7 +82,6 @@ export function PaywallResult({ plan, onPlan, onStart, onSimulate, onSkip, onBac
     );
   }
 
-  const chips = tl<string[]>("paywall.chips");
   const trial = TRIAL_DAYS[plan]; // the trial note and button only promise a free trial on a plan that has one
   const toggleMore = () => { if (more && plan === "weekly") onPlan("quarterly"); setMore((m) => !m); }; // never leave a hidden plan selected
   const card = (k: PlanKey) => {
@@ -117,32 +105,10 @@ export function PaywallResult({ plan, onPlan, onStart, onSimulate, onSkip, onBac
 
   return (
     <div className="flex flex-1 flex-col text-center text-white">
-      <div className="fade-up relative flex justify-center">
+      <div className="fade-up relative flex min-h-11 items-center justify-center">
         <button type="button" onClick={onBack} aria-label={t("common.back")} className="glass absolute left-0 top-0 flex h-11 w-11 items-center justify-center rounded-full text-foreground"><BackIcon /></button>
         {celebrate && <Celebration onDone={onCelebrated} rise={0.3} fall={2.4} />}
-        <div className={celebrate ? "ready-hop" : ""}><Lumi size={52} stage={2} emotion="happy" label="" /></div>
-      </div>
-      <h1 id="q20p" className="fade-up font-display mt-2 text-[28px] leading-tight" style={{ "--d": "80ms" } as React.CSSProperties}>{t("paywall.title")}</h1>
-      <p className="fade-up mx-auto mt-2 max-w-[340px] text-[15px] leading-snug opacity-85" style={{ "--d": "160ms" } as React.CSSProperties}>{t("paywall.sub")}</p>
-      <div className="fade-up mt-3 flex justify-center" style={{ "--d": "240ms" } as React.CSSProperties}>
-        <span className={`rounded-full border-2 border-white/60 bg-white/15 px-7 py-2.5 text-xl font-semibold ${celebrate ? "date-shine" : ""}`} data-testid="target-date">{targetDate(lang)}</span>
-      </div>
-
-      <div className="fade-up mt-4" style={{ "--d": "320ms" } as React.CSSProperties}>
-        <p className="font-display text-[18px] leading-snug">{t("paywall.slogan")}</p>
-        <p className="mt-1 text-sm tracking-wide opacity-80">{t("paywall.words")}</p>
-        {RATING && (
-          <p className="mt-3 flex items-center justify-center gap-2 text-sm" aria-label={`${RATING.value} / 5`}>
-            <span className="flex gap-0.5 text-[#f4b94e]">{[0, 1, 2, 3, 4].map((i) => <Star key={i} size={16} fill="currentColor" strokeWidth={0} aria-hidden />)}</span>
-            {RATING.value} · {RATING.people}
-          </p>
-        )}
-        <ul className="mt-3 grid grid-cols-2 gap-2">
-          {chips.map((c, i) => {
-            const Icon = CHIP_ICONS[i] ?? Lock;
-            return <li key={c} className="glass flex items-center justify-center gap-1.5 rounded-2xl px-2.5 py-2 text-[13px] font-medium leading-tight"><Icon size={14} className="shrink-0" aria-hidden />{c}</li>;
-          })}
-        </ul>
+        <span className={`rounded-full border-2 border-white/70 bg-white/10 px-4 py-1.5 text-[15px] font-semibold tracking-wide shadow-[0_0_24px_-6px_rgba(212,203,255,0.7)] ${celebrate ? "ready-hop" : ""}`}>{t("paywall.proPill")}</span>
       </div>
 
       <Journey plan={plan} />
