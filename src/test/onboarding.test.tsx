@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen, cleanup } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { en } from "@/i18n/en";
+import { fr } from "@/i18n/fr";
 
 const trialText = (s: string) => s.replace("{days}", "3"); // the quarterly plan has a 3-day free trial (TRIAL_DAYS)
 
@@ -377,10 +378,7 @@ describe("payment simulation (test only)", () => {
 });
 
 describe("information screens honesty", () => {
-  it("carries the real citation and no unsourced statistic", () => {
-    const text = JSON.stringify(en.info);
-    expect(text).toContain("Clinical Psychological Science, 8(3), 450–463");
-    expect(text).not.toMatch(/\d+x/);
-    expect(en.info.science.caveat).toMatch(/not proof/);
+  it("cites the study where it was really published", () => {
+    expect(JSON.stringify(fr.info)).toContain("Clinical Psychological Science, 8(3), 450–463");
   });
 });

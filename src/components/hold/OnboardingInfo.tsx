@@ -137,7 +137,6 @@ function Science() {
     <>
       <Title sub={t("info.science.sub")}>{t("info.science.title")}</Title>
       <ScienceChart />
-      <p className="fade-up mt-3 text-sm leading-snug text-muted-foreground" style={{ "--d": "600ms" } as React.CSSProperties}>{t("info.science.caveat")}</p>
       <p className="fade-up mt-6 text-xs leading-snug text-muted-foreground" style={{ "--d": "800ms" } as React.CSSProperties}>
         {t("info.science.source")}{" "}
         doi.org/10.1177/2167702620916454

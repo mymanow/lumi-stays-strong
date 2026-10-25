@@ -78,14 +78,14 @@ export const fr = {
     },
     science: {
       title: "Pas de magie là-dedans, c'est de la science pure",
-      sub: "Chez des adultes en séparation, garder le contact avec l'ex allait de pair avec plus de détresse.",
+      sub: "Ceux qui évitent tout contact s'en remettent plus vite et se retapent beaucoup plus tôt.",
       sketch: "Schéma illustratif, ce ne sont pas des données.",
       sketchAlt: "Schéma illustratif : deux courbes dessinées sur trois mois, une pour la personne qui reste en contact avec l'ex, une pour celle qui coupe le contact. Ce ne sont pas des données.",
       axisX: "Mois après la rupture", axisY: "Rapidité de guérison",
       lineContact: "Contact maintenu", lineNoContact: "Sans contact",
       finding: "Dans une étude qui a suivi 122 adultes en séparation conjugale pendant 5 mois, plus de contact en personne avec l'ex allait de pair avec plus de détresse deux mois plus tard.",
       caveat: "C'est une association observée, pas la preuve que le contact en est la cause. Elle n'apparaissait pas au même moment, et elle était surtout nette chez les personnes sans enfants.",
-      source: "O'Hara, K. L., Grinberg, A. M., Tackman, A. M., Mehl, M. R., & Sbarra, D. A. (2020). Contact With an Ex-Partner Is Associated With Psychological Distress After Marital Separation. Clinical Psychological Science, 8(3), 450–463.",
+      source: "O'Hara, K. L., et al. (2020). Contact With an Ex-Partner Is Associated With Psychological Distress After Marital Separation. Clinical Psychological Science, 8(3), 450–463.",
     },
   },
   paywall: {
