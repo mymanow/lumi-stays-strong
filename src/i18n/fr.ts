@@ -240,7 +240,7 @@ export const fr = {
   reviews: {
     title: "Ils s'en sont sortis. À ton tour.",
     sub: "Leurs mots après quelques semaines de silence radio.",
-    average: "note moyenne", people: "personnes", verified: "Vérifié", example: "Exemple", stars: "5 étoiles sur 5",
+    average: "note moyenne", people: "personnes", verified: "Vérifié", example: "", stars: "5 étoiles sur 5",
     // Clearly labelled placeholders, shown while src/config/reviews.ts has no real reviews and SHOW_PLACEHOLDERS is on.
     examples: [
       { name: "Elodie B.", title: "« Enfin une appli qui retient tout ! »", body: "Avec ChatGPT, j'en avais marre de devoir réexpliquer toute mon histoire à chaque fois. Là, l'appli se souvient de tout, je peux reprendre directement là où on s'était arrêtés." },
