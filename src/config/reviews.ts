@@ -10,8 +10,8 @@ export type Review = { name: string; title: string; body: string; verified?: boo
 
 export const REVIEWS: Review[] = [];
 
-/** Portraits for the placeholder cards, in the same order as `reviews.examples`. None for Elodie B. / Sébastien H.: the card shows their initial. */
-export const EXAMPLE_PHOTOS: (string | undefined)[] = [];
+/** Portraits for the placeholder cards, in the same order as `reviews.examples` (Elodie B., Sébastien H.). Replace with real, consented photos. */
+export const EXAMPLE_PHOTOS: (string | undefined)[] = ["/reviews/emma.jpg", "/reviews/lucas.jpg"];
 
 /** Placeholder cards while there are no real reviews. Turn off before launch. */
 export const SHOW_PLACEHOLDERS = true;
