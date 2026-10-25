@@ -8,7 +8,7 @@ export type FeatureKind = (typeof FEATURE_KINDS)[number];
 /** Miniature of the red flags list (the sample flags of the toolkit screen), with the check-in triggers. */
 function ClarityScreen() {
   const { t, tl } = useI18n();
-  const flags = tl<string[]>("info.toolkit.samples");
+  const flags = tl<string[]>("info.toolkit.samples").slice(0, 2);
   return (
     <div className="flex h-full flex-col px-4 pt-14 text-left text-white">
       <h3 className="font-display text-[19px] leading-tight">{t("rem.flagsTitle")}</h3>
@@ -21,9 +21,9 @@ function ClarityScreen() {
         ))}
       </div>
       <p className="mt-5 text-[12px] opacity-80">{t("features.clarity.triggers")}</p>
-      <div className="mt-2 flex flex-wrap gap-1.5">
-        {tl<string[]>("features.clarity.triggerSamples").map((x) => (
-          <span key={x} className="flex items-center gap-1 rounded-full bg-white/20 px-2.5 py-1 text-[11px]"><Check size={10} strokeWidth={3} aria-hidden />{x}</span>
+      <div className="mt-2 flex gap-1.5">
+        {tl<string[]>("features.clarity.triggerSamples").slice(0, 2).map((x) => (
+          <span key={x} className="flex items-center gap-1 whitespace-nowrap rounded-full bg-white/20 px-2.5 py-1 text-[11px]"><Check size={10} strokeWidth={3} aria-hidden />{x}</span>
         ))}
       </div>
     </div>
@@ -45,9 +45,9 @@ export function FeatureScreen({ kind }: { kind: FeatureKind }) {
   const { View, background } = VIEW[kind];
   return (
     <div className="flex flex-1 flex-col text-center text-white">
-      <h1 className="fade-up font-display text-[30px] leading-[1.15]">{t(`features.${kind}.title`)}</h1>
-      <p className="fade-up mx-auto mt-3 max-w-[340px] text-[16px] leading-snug text-white/80" style={{ "--d": "120ms" } as React.CSSProperties}>{t(`features.${kind}.sub`)}</p>
-      <div className="fade-up mt-6 flex flex-1" style={{ "--d": "240ms" } as React.CSSProperties}>
+      <h1 className="fade-up font-display text-[26px] leading-[1.15]">{t(`features.${kind}.title`)}</h1>
+      <p className="fade-up mx-auto mt-3 max-w-[340px] text-[15px] leading-snug text-white/80" style={{ "--d": "120ms" } as React.CSSProperties}>{t(`features.${kind}.sub`)}</p>
+      <div className="fade-up mt-2 flex flex-1" style={{ "--d": "240ms" } as React.CSSProperties}>
         <PhoneFrame background={background} label={t(`features.${kind}.alt`)}><View /></PhoneFrame>
       </div>
     </div>

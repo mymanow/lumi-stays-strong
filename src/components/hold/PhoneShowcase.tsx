@@ -107,7 +107,7 @@ const BACKGROUNDS = [
 export function PhoneFrame({ background, label, children }: { background: string; label: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-1 items-center justify-center" role="img" aria-label={label}>
-      <div className="relative h-[430px] w-[216px] rounded-[42px] border-[5px] border-[#f1ede6] bg-black p-[6px] shadow-[0_24px_60px_-18px_rgba(0,0,0,0.7)]">
+      <div className="relative h-[440px] w-[216px] rounded-[42px] border-[5px] border-[#f1ede6] bg-black p-[6px] shadow-[0_24px_60px_-18px_rgba(0,0,0,0.7)]">
         <div aria-hidden className="relative h-full w-full overflow-hidden rounded-[34px]" style={{ background }}>
           {children}
           <div className="absolute left-1/2 top-2 h-[22px] w-[74px] -translate-x-1/2 rounded-full bg-black" />

@@ -119,12 +119,12 @@ export const fr = {
     "quarterly": {
       "name": "Formule Trimestrielle",
       "billed": "Facturé 39 euros tous les 3 mois",
-      "price": "2,99 euros"
+      "price": "2,99 €"
     },
     "weekly": {
       "name": "Hebdomadaire",
       "billed": "Facturé 6,99 euros par semaine. Sans engagement.",
-      "price": "6,99 euros"
+      "price": "6,99 €"
     }
   },
   pitch: {

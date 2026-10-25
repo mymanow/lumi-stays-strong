@@ -126,7 +126,8 @@ export function PaywallResult({ plan, onPlan, onStart, onSimulate, onSkip, onBac
         <ChevronDown size={16} aria-hidden className={`transition-transform duration-300 ${more ? "rotate-180" : ""}`} />
       </button>
 
-      <div className="fade-up sticky bottom-0 mt-4 pb-1 pt-2" style={{ "--d": "480ms" } as React.CSSProperties}>
+      <div className="fade-up sticky bottom-0 z-10 -mx-6 mt-6 px-6 pb-1 pt-3" style={{ "--d": "480ms", background: "rgb(62,72,160)" } as React.CSSProperties}>
+        <span aria-hidden className="pointer-events-none absolute inset-x-0 -top-8 h-8" style={{ background: "linear-gradient(to top, rgb(62,72,160), rgba(62,72,160,0))" }} />
         {trial > 0 && <p className="mb-2 flex items-center justify-center gap-1.5 text-sm font-semibold"><Check size={16} className="text-[#7EE39A]" strokeWidth={3} aria-hidden />{t("paywall.trialNote")}</p>}
         <PrimaryButton onClick={onStart}>{trial > 0 ? t("paywall.ctaTrial", { days: trial }) : t("paywall.cta")}</PrimaryButton>
         <button type="button" onClick={onSkip} className="mt-1 min-h-10 w-full text-sm text-white/85 underline-offset-4 hover:underline">{t("paywall.skip")}</button>
