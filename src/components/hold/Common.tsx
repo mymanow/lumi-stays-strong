@@ -37,9 +37,21 @@ export function LangSwitch({ onChange }: { onChange?: (l: Lang) => void }) {
   );
 }
 
+/** Splash shown while the session and profile load: soft drifting orbs, the wordmark and the tagline. */
 export function FullLoader() {
   const { t } = useI18n();
-  return <div className="flex min-h-screen items-center justify-center text-muted-foreground" role="status">{t("common.loading")}</div>;
+  return (
+    <div className="splash fixed inset-0 z-50 flex items-center justify-center overflow-hidden" role="status" aria-live="polite">
+      <span className="sr-only">{t("common.loading")}</span>
+      <span aria-hidden className="splash-orb splash-orb-top" />
+      <span aria-hidden className="splash-orb splash-orb-bottom" />
+      <span aria-hidden className="splash-grain" />
+      <div aria-hidden className="splash-text relative px-6 text-center text-white">
+        <p className="font-display text-[50px] leading-none tracking-[-0.005em]">{t("splash.wordmark")}</p>
+        <p className="mt-4 text-[15px] font-medium tracking-wide text-white/90">{t("splash.tagline")}</p>
+      </div>
+    </div>
+  );
 }
 
 /** Main CTA: indigo→violet gradient with glow when active, soft periwinkle gradient when disabled. */

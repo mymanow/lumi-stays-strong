@@ -1,6 +1,7 @@
 import type { fr } from "./fr";
 
 export const en: typeof fr = {
+  splash: { wordmark: "no contact.", tagline: "Zero contact. Zero overthinking. Focus on you." },
   common: {
     back: "Back", next: "Continue", later: "Later", close: "Close", retry: "Try again",
     save: "Save", cancel: "Cancel", confirm: "Confirm", loading: "Loading…", delete: "Delete",
