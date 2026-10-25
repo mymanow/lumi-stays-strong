@@ -106,6 +106,7 @@ export const en: typeof fr = {
     "best": "Best price",
     "plans": "Choose a plan",
     "perWeek": "/ week",
+    "terms": "Terms of Use", "privacy": "Privacy Policy",
     "cta": "Start Radio Silence",
     "ctaTrial": "Start my {days}-day free trial",
     "trialNote": "No payment due now · Cancel anytime",
@@ -215,7 +216,7 @@ export const en: typeof fr = {
     },
   },
   showcase: {
-    pill: "{app} Pro", title: "Start your [journey] with [support]", alt: "Preview of the app screens: counter, rules, SOS and journey",
+    pill: "{app} Pro", title: "Start your [journey] with [support]", sub: "This is it. The moment you choose yourself.", cta: "Pledge No Contact", try: "Try for free", alt: "Preview of the app screens: counter, rules, SOS and journey",
     days: "days without contact", nextMilestone: "Next milestone: 14 days", rulesTitle: "Set your no-contact rules", rules: ["No texting or calling","No checking their social media","No rereading old messages"],
     sosKicker: "Feeling the urge to write?", sosTitle: "Pause. Breathe.", sosBreathe: "Breathe in… and out…", sosButton: "SOS: I need support",
     journeyTitle: "Your journey, day by day", journey: ["Day 1 · Start","Day 3 · First steps","Day 7 · One week","Day 14 · Clearer head","Day 30 · One month"],

@@ -131,6 +131,10 @@ export function PaywallResult({ plan, onPlan, onStart, onSimulate, onSkip, onBac
         <PrimaryButton onClick={onStart}>{trial > 0 ? t("paywall.ctaTrial", { days: trial }) : t("paywall.cta")}</PrimaryButton>
         <button type="button" onClick={onSkip} className="mt-1 min-h-10 w-full text-sm text-white/85 underline-offset-4 hover:underline">{t("paywall.skip")}</button>
         {SIMULATE_PAYMENT && <button type="button" onClick={onSimulate} className="mt-1 min-h-10 w-full text-sm text-white/70 underline-offset-4 hover:underline">{t("pitch.simulate")}</button>}
+        <p className="mt-1 flex justify-center gap-4 text-xs text-white/70">
+          <a href="/terms" className="underline underline-offset-2">{t("paywall.terms")}</a>
+          <a href="/privacy" className="underline underline-offset-2">{t("paywall.privacy")}</a>
+        </p>
       </div>
     </div>
   );

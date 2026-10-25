@@ -329,6 +329,8 @@ function Onboarding() {
         break;
       }
       body = <PhoneShowcase />;
+      nextLabel = t("showcase.cta");
+      onSkip = () => go(16); skipLabel = t("showcase.try");
       break;
     case 16:
       body = <CompanionShowcase />;

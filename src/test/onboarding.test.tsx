@@ -269,7 +269,8 @@ describe("onboarding questions", () => {
     }
     expect(updateProfile).toHaveBeenLastCalledWith({ onboarding_step: 15 });
     expect(screen.getByRole("heading", { name: /Start your journey with support/ })).toBeInTheDocument();
-    fireEvent.click(next());
+    expect(screen.getByRole("button", { name: en.showcase.try })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: en.showcase.cta }));
     expect(updateProfile).toHaveBeenLastCalledWith({ onboarding_step: 16 });
     expect(screen.getByRole("heading", { name: /You are not alone in this/ })).toBeInTheDocument();
     fireEvent.click(next());

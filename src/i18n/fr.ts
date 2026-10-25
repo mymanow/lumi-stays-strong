@@ -103,27 +103,28 @@ export const fr = {
     ],
     "best": "Le plus populaire",
     "plans": "Choisir une offre",
-    "perWeek": "/ semaine",
+    "perWeek": "par semaine",
+    "terms": "Conditions d'utilisation", "privacy": "Politique de confidentialité",
     "cta": "Démarrer le Silence Radio",
-    "ctaTrial": "Commencer mes {days} jours gratuits",
+    "ctaTrial": "Démarrer mon essai gratuit",
     "trialNote": "Aucun paiement aujourd'hui · Annulable à tout moment",
     "trialBadge": "{days} jours gratuits",
     "proPill": "{app} - No Contact Pro",
-    "journeyTitle": "Ton rétablissement commence [ce soir].\nPas demain.",
-    "journeySub": "Aie tout ce qu'il te faut pour la prochaine fois que l'envie d'écrire revient.",
-    "journeyToday": { "title": "Aujourd'hui · Accès immédiat", "sub": "Mets en place le bon soutien." },
-    "journeyReminder": { "title": "Dans {n} jour · Reçois un rappel", "sub": "Avant tout prélèvement." },
-    "journeyBilling": { "title": "Dans {n} jours · Début de la facturation", "sub": "Annulable à tout moment avant." },
-    "journeyNoCommit": { "title": "Quand tu veux · Sans engagement", "sub": "Annule ton abonnement à tout moment." },
+    "journeyTitle": "Ta reconstruction commence [ce soir].\nPas demain.",
+    "journeySub": "Aie tout ce qu'il te faut sous la main la prochaine fois que l'envie de craquer te prendra.",
+    "journeyToday": { "title": "Aujourd'hui - Accès immédiat", "sub": "Mets en place le bon soutien." },
+    "journeyReminder": { "title": "Dans {n} jour - Rappel reçu", "sub": "Avant tout prélèvement." },
+    "journeyBilling": { "title": "Dans {n} jours - Début de l'abonnement", "sub": "Annulable à tout moment avant." },
+    "journeyNoCommit": { "title": "Quand tu veux - Sans engagement", "sub": "Annule ton abonnement à tout moment." },
     "quarterly": {
-      "name": "Trimestriel (90 jours)",
-      "billed": "{days} jours gratuits, puis 39,00 € tous les 3 mois.",
-      "price": "2,99 €"
+      "name": "Formule Trimestrielle",
+      "billed": "Facturé 39 euros tous les 3 mois",
+      "price": "2,99 euros"
     },
     "weekly": {
       "name": "Hebdomadaire",
-      "billed": "Facturé 6,99 € par semaine. Sans engagement.",
-      "price": "6,99 €"
+      "billed": "Facturé 6,99 euros par semaine. Sans engagement.",
+      "price": "6,99 euros"
     }
   },
   pitch: {
@@ -146,7 +147,7 @@ export const fr = {
     "best": "Meilleur prix",
     "plans": "Choisir une offre",
     "perWeek": "par semaine",
-    "more": "Afficher plus d'offres",
+    "more": "Voir plus d'offres",
     "hide": "Masquer",
     "simulate": "Simuler le paiement (test)",
     "quarterly": {
@@ -161,16 +162,16 @@ export const fr = {
     }
   },
   notify: {
-    titleAsk: "Appuie sur [Autoriser] pour recevoir ton rappel",
+    titleAsk: "Tape sur [Autoriser] pour recevoir ton rappel",
     titleInstall: "Ajoute {app} à ton [écran d'accueil]",
     titleGranted: "Rappel [activé] !",
     titleDenied: "Notifications [indisponibles]",
     titleDeclined: "Pas de [souci]",
-    dialogTitle: "« {app} » souhaite t'envoyer des notifications",
+    dialogTitle: "« {app} » aimerait vous envoyer des notifications",
     dialogBody: "Un rappel par jour au maximum, à l'heure que tu choisis.",
     dontAllow: "Ne pas autoriser",
     allow: "Autoriser",
-    anytime: "Désactivable à tout moment",
+    anytime: "Désactive les notifications à tout moment",
     why: "Sur iPhone, les notifications ne fonctionnent que si l'app est ajoutée à l'écran d'accueil. Ça prend 10 secondes :",
     installSteps: ["Touche le bouton Partager dans la barre de Safari", "Choisis « Sur l'écran d'accueil », puis « Ajouter »", "Ouvre {app} depuis son icône, puis autorise les notifications"],
     granted: "Tu recevras ton rappel quotidien.",
@@ -187,7 +188,7 @@ export const fr = {
     tz: "heure de Paris",
   },
   reminderIntro: {
-    title: "Reçois un rappel [2 jours] avant la fin de ton essai", note: "Aucun paiement aujourd'hui", cta: "Continuer GRATUITEMENT",
+    title: "Reçois un rappel [2 jours] avant la fin de ton essai", note: "Aucun paiement requis maintenant", cta: "Continuer gratuitement",
   },
   companion: {
     title: "Tu n'es [pas seul·e] dans ça", tools: ["Compteur", "SOS", "Coffre", "Parcours"], dayTitle: "Ta journée avec {app}", whens: ["Matin", "En journée", "Soir"], whats: ["un check-in de 30 secondes", "le SOS quand l'envie arrive", "écris dans le coffre, sans envoyer"],
@@ -213,7 +214,7 @@ export const fr = {
     },
   },
   showcase: {
-    pill: "{app} Pro", title: "Commence ton [parcours] avec du [soutien]", alt: "Aperçu des écrans de l'app : compteur, règles, SOS et parcours",
+    pill: "{app} Pro", title: "Commence ton [parcours Silence Radio] avec du [soutien]", sub: "C'est le moment. Le moment de te choisir enfin.", cta: "M'engager dans le Silence Radio", try: "Essayer gratuitement", alt: "Aperçu des écrans de l'app : compteur, règles, SOS et parcours",
     days: "jours sans contact", nextMilestone: "Prochain cap : 14 jours", rulesTitle: "Fixe tes règles de non-contact", rules: ["Ni message ni appel","Pas de stalking sur ses réseaux","Ne pas relire les anciens messages"],
     sosKicker: "Une envie d'écrire ?", sosTitle: "Pause. Respire.", sosBreathe: "Inspire… puis expire…", sosButton: "SOS : j'ai besoin d'aide",
     journeyTitle: "Ton parcours, jour après jour", journey: ["Jour 1 · Le départ","Jour 3 · Premiers pas","Jour 7 · Une semaine","Jour 14 · Esprit plus clair","Jour 30 · Un mois"],

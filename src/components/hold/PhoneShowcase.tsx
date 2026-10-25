@@ -133,6 +133,7 @@ export function PhoneShowcase() {
     <div className="flex flex-1 flex-col items-center text-center text-white">
       <span className="rounded-full border-2 border-white/50 bg-white/10 px-5 py-1.5 text-lg font-bold tracking-wide">{t("showcase.pill", { app: APP_NAME })}</span>
       <h1 id="q15s" className="font-display mt-6 text-[30px] leading-tight"><Title text={t("showcase.title")} /></h1>
+      <p className="mt-3 max-w-[330px] text-[16px] leading-snug text-white/80">{t("showcase.sub")}</p>
       <div className="mt-6 flex flex-1 items-center justify-center" role="img" aria-label={t("showcase.alt")}>
         <div className="relative h-[470px] w-[236px] rounded-[44px] border-[5px] border-[#f1ede6] bg-black p-[6px] shadow-[0_24px_60px_-18px_rgba(0,0,0,0.7)]">
           <div className="relative h-full w-full overflow-hidden rounded-[36px]">
