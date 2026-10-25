@@ -1,4 +1,4 @@
-import { Check, Flame, HeartCrack, RefreshCw, TrendingUp, X, Zap, type LucideIcon } from "lucide-react";
+import { Check, Clock, Flame, HeartCrack, RefreshCw, TrendingUp, X, Zap, type LucideIcon } from "lucide-react";
 import { useI18n } from "@/i18n";
 import { APP_NAME } from "@/config/app";
 import { Lumi } from "./Lumi";
@@ -50,7 +50,10 @@ function Slips({ name }: { name: string }) {
     <>
       <Title sub={t("info.slips.sub")}>{t("info.slips.title", { name })}</Title>
       <div className="fade-up" style={{ "--d": "200ms" } as React.CSSProperties}><RainyLumi /></div>
-      <p className="fade-up glass mt-6 rounded-[28px] p-5 text-base leading-snug" style={{ "--d": "500ms" } as React.CSSProperties}>{t("info.slips.card")}</p>
+      <p className="fade-up glass mt-6 flex items-center gap-4 rounded-[28px] p-5 text-base leading-snug" style={{ "--d": "500ms" } as React.CSSProperties}>
+        <span aria-hidden className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#F4B94E] text-[#2e3865] shadow-[0_6px_16px_-6px_rgba(244,185,78,0.8)] ring-4 ring-[#F4B94E]/25"><Clock className="h-6 w-6" strokeWidth={2.4} /></span>
+        <span>{t("info.slips.card")}</span>
+      </p>
     </>
   );
 }

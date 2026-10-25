@@ -35,7 +35,7 @@ export const fr = {
     slips: {
       title: "{name}, la plupart des rechutes arrivent dans un moment de faiblesse.",
       sub: "C'est bien pour ça que la simple volonté ne suffit pas.",
-      card: "L'envie d'écrire monte, puis redescend. Avoir un geste à faire à ce moment-là change tout.",
+      card: "Celles et ceux qui n'ont pas de soutien mettent 3 à 4 fois plus de temps à s'en remettre.",
     },
     bio: {
       title: "C'est purement biologique, t'y es pour rien",
