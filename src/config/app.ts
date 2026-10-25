@@ -16,3 +16,7 @@ export const SHOW_PLAN_PITCH = false;
 /** Shows the "Personnalisons ton parcours" intro (onboarding step 1, before the name question).
  *  false: the welcome screen leads straight to the name question. */
 export const SHOW_ONBOARDING_INTRO = false;
+
+/** The app is shown in French only for now: English stays in src/i18n/en.ts but is never selected.
+ *  true brings back the FR/EN switch (welcome, sign-in, settings) and the saved language. */
+export const SHOW_LANGUAGE_SWITCH = false;

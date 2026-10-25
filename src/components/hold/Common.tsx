@@ -3,6 +3,7 @@ import { Fragment, type ReactNode } from "react";
 import { useI18n, type Lang } from "@/i18n";
 import { crisisLineFor } from "@/lib/domain";
 import { ArrowRight } from "lucide-react";
+import { SHOW_LANGUAGE_SWITCH } from "@/config/app";
 import { PhoneIcon } from "./Icons";
 import { useHydrated } from "@tanstack/react-router";
 
@@ -25,6 +26,7 @@ export function CrisisLink({ className = "" }: { className?: string }) {
 
 export function LangSwitch({ onChange }: { onChange?: (l: Lang) => void }) {
   const { lang, setLang, t } = useI18n();
+  if (!SHOW_LANGUAGE_SWITCH) return null; // French only for now
   return (
     <div role="group" aria-label={t("common.language")} className="glass inline-flex rounded-full p-1">
       {(["fr", "en"] as const).map((l) => (

@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { fr } from "./fr";
 import { en } from "./en";
-import { APP_NAME, COMPANION_NAME } from "@/config/app";
+import { APP_NAME, COMPANION_NAME, SHOW_LANGUAGE_SWITCH } from "@/config/app";
 
 export type Lang = "fr" | "en";
 const dicts = { fr, en };
@@ -26,6 +26,7 @@ const I18nCtx = createContext<Ctx | null>(null);
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>("fr");
   useEffect(() => {
+    if (!SHOW_LANGUAGE_SWITCH) return; // French only: a saved "en" is ignored
     const stored = localStorage.getItem("hold_lang");
     if (stored === "fr" || stored === "en") setLangState(stored);
   }, []);
@@ -33,6 +34,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     document.documentElement.lang = lang;
   }, [lang]);
   const setLang = useCallback((l: Lang) => {
+    if (!SHOW_LANGUAGE_SWITCH) return; // French only
     localStorage.setItem("hold_lang", l);
     setLangState(l);
   }, []);

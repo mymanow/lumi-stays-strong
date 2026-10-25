@@ -14,7 +14,7 @@ import { deleteMyAccount } from "@/lib/account.functions";
 import { clearVault } from "@/lib/vault";
 import { clearKeepsakes } from "@/lib/keepsakes";
 import { localDateString } from "@/lib/domain";
-import { MANAGE_SUBSCRIPTION_URL } from "@/config/app";
+import { MANAGE_SUBSCRIPTION_URL, SHOW_LANGUAGE_SWITCH } from "@/config/app";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import type { PlanKey } from "@/config/whop";
 
@@ -66,10 +66,12 @@ function Settings() {
   return (
     <div className="flex flex-col gap-6">
       <PageTitle>{t("settings.title")}</PageTitle>
-      <Card className="flex items-center justify-between">
-        <span className="font-medium">{t("settings.language")}</span>
-        <LangSwitch onChange={(l) => updateProfile({ language: l })} />
-      </Card>
+      {SHOW_LANGUAGE_SWITCH && (
+        <Card className="flex items-center justify-between">
+          <span className="font-medium">{t("settings.language")}</span>
+          <LangSwitch onChange={(l) => updateProfile({ language: l })} />
+        </Card>
+      )}
       <ReminderControl value={reminder} onChange={changeReminder} />
       <Card className="py-1">
         <Row to="/reminders" label={t("settings.reminders")} />
