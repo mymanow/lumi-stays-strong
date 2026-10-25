@@ -93,7 +93,7 @@ describe("onboarding questions", () => {
       await act(async () => { await vi.advanceTimersByTimeAsync(400); });
       expect(updateProfile).toHaveBeenCalledTimes(1);
       expect(updateProfile).toHaveBeenCalledWith({ acquisition_source: "tiktok", onboarding_step: 8 });
-      expect(screen.getByRole("heading", { name: en.onb.goalTitle })).toBeInTheDocument();
+      expect(screen.getByRole("heading", { name: "Alex, you are in good hands!" })).toBeInTheDocument();
     } finally {
       vi.useRealTimers();
     }
@@ -151,7 +151,15 @@ describe("onboarding questions", () => {
     fireEvent.click(screen.getByRole("radio", { name: en.options.source.tiktok }));
     fireEvent.click(next());
     expect(updateProfile).toHaveBeenCalledWith({ acquisition_source: "tiktok", onboarding_step: 8 });
+    expect(screen.getByRole("heading", { name: "Alex, you are in good hands!" })).toBeInTheDocument();
+    expect(screen.getByText(en.info.hands.coach)).toBeInTheDocument();
+    expect(screen.queryByText(/coaching expert/i)).toBeNull(); // no coaching experts the app does not have
+    fireEvent.click(next());
     expect(screen.getByRole("heading", { name: en.onb.goalTitle })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Back" }));
+    expect(screen.getByRole("heading", { name: "Alex, you are in good hands!" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Back" }));
+    expect(screen.getByRole("heading", { name: /^How did you learn about/ })).toBeInTheDocument();
   });
 
   it("unfolds the explanation under the chosen situation and folds the previous one", () => {
@@ -169,6 +177,7 @@ describe("onboarding questions", () => {
   it("Q7 offers 7 goals including no end date", () => {
     Object.assign(profile, { onboarding_step: 8 });
     render(<Component />);
+    fireEvent.click(next()); // "you are in good hands" comes first
     expect(screen.getAllByRole("radio")).toHaveLength(7);
     fireEvent.click(screen.getByRole("radio", { name: en.options.goal.open }));
     fireEvent.click(screen.getByRole("button", { name: en.onb.goalNext }));
@@ -178,10 +187,11 @@ describe("onboarding questions", () => {
   it("lets the user skip the goal question without saving a goal", () => {
     Object.assign(profile, { onboarding_step: 8 });
     render(<Component />);
+    fireEvent.click(next());
     expect(screen.getByRole("button", { name: en.onb.goalNext })).toBeDisabled();
     fireEvent.click(screen.getByRole("button", { name: en.onb.skip }));
     expect(updateProfile).toHaveBeenCalledWith({ no_contact_goal: null, onboarding_step: 9 });
-    expect(screen.getByRole("heading", { name: "Alex, you are in good hands!" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Alex, many slips happen in a moment of weakness" })).toBeInTheDocument();
   });
 
   it("resumes with previously saved answers and ignores legacy values", () => {
@@ -194,22 +204,18 @@ describe("onboarding questions", () => {
     expect(screen.getByRole("radio", { checked: true })).toHaveTextContent(en.options.situation.mixed_signals);
   });
 
-  it("shows six information screens after the goal, starting with 'good hands', then the rules", () => {
+  it("shows five information screens after the goal, the toolkit before the science, then the rules", () => {
     Object.assign(profile, { onboarding_step: 9 });
     render(<Component />);
-    expect(screen.getByRole("heading", { name: "Alex, you are in good hands!" })).toBeInTheDocument();
-    expect(screen.getByText(en.info.hands.coach)).toBeInTheDocument();
-    expect(screen.queryByRole("img", { name: /expert/i })).toBeNull(); // no team photos the app does not have
-    fireEvent.click(next());
     expect(screen.getByRole("heading", { name: "Alex, many slips happen in a moment of weakness" })).toBeInTheDocument();
     fireEvent.click(next());
     expect(screen.getByRole("heading", { name: en.info.bio.title })).toBeInTheDocument();
     fireEvent.click(next());
     expect(screen.getByRole("heading", { name: en.info.compare.title })).toBeInTheDocument();
     fireEvent.click(next());
-    expect(screen.getByRole("heading", { name: en.info.science.title })).toBeInTheDocument();
-    fireEvent.click(next());
     expect(screen.getByRole("heading", { name: en.info.toolkit.title })).toBeInTheDocument();
+    fireEvent.click(next());
+    expect(screen.getByRole("heading", { name: en.info.science.title })).toBeInTheDocument();
     expect(updateProfile).not.toHaveBeenCalled();
     fireEvent.click(next());
     expect(updateProfile).toHaveBeenLastCalledWith({ onboarding_step: 10 });
@@ -276,11 +282,11 @@ describe("onboarding questions", () => {
     fireEvent.click(next());
     fireEvent.click(next());
     fireEvent.click(screen.getByRole("button", { name: "Back" }));
+    expect(screen.getByRole("heading", { name: en.info.bio.title })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Back" }));
     expect(screen.getByRole("heading", { name: "Alex, many slips happen in a moment of weakness" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Back" }));
-    expect(screen.getByRole("heading", { name: "Alex, you are in good hands!" })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Back" }));
-    expect(screen.getByRole("heading", { name: en.onb.goalTitle })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: en.onb.goalTitle })).toBeInTheDocument(); // the goal question, not the "good hands" screen before it
   });
 });
 

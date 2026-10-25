@@ -7,7 +7,7 @@ import { ScienceChart } from "./ScienceChart";
 import { GoodHands } from "./GoodHands";
 
 export type InfoKind = "hands" | "slips" | "bio" | "compare" | "science" | "toolkit";
-export const INFO_KINDS: readonly InfoKind[] = ["hands", "slips", "bio", "compare", "science", "toolkit"];
+export const INFO_KINDS: readonly InfoKind[] = ["slips", "bio", "compare", "toolkit", "science"]; // "hands" is shown before the goal question
 /** Light scenes for the reassuring screens, deep scenes for the "why Hold" and "science" screens. */
 export const INFO_TONE: Record<InfoKind, "light" | "night"> = { hands: "night", slips: "light", bio: "light", compare: "night", science: "night", toolkit: "light" };
 

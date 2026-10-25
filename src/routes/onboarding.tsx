@@ -88,6 +88,7 @@ function Onboarding() {
   const [leaving, setLeaving] = useState<"fwd" | "back" | null>(null);
   const [dir, setDir] = useState<"fwd" | "back">("fwd");
   const [infoStep, setInfoStep] = useState(1); // within step 9: the information screens (1..INFO_KINDS.length)
+  const [goalSub, setGoalSub] = useState(0); // within step 8: 0 "you are in good hands", 1 the goal question
   const [plan, setPlan] = useState<PlanKey>("quarterly"); // plan highlighted on the pitch page (the pitch page itself has no payment button; the paywall result screen after it does)
   const [reminder, setReminder] = useState({ enabled: false, time: DEFAULT_REMINDER_TIME });
 
@@ -262,10 +263,16 @@ function Onboarding() {
     case 7:
       body = (<><Question id="q7" title={t("onb.sourceTitle")} sub={t("onb.sourceSub")} />
         <ChoiceList labelledBy="q7" options={opts("source", SOURCES)} value={source ? [source] : []}
-          onChange={(v) => { const picked = v[0] ?? ""; setSource(picked); if (picked) autoNext(() => void go(8, { acquisition_source: picked })); }} /></>);
-      canNext = !!source; onNext = () => go(8, { acquisition_source: source });
+          onChange={(v) => { const picked = v[0] ?? ""; setSource(picked); if (picked) autoNext(() => { setGoalSub(0); void go(8, { acquisition_source: picked }); }); }} /></>);
+      canNext = !!source; onNext = () => { setGoalSub(0); void go(8, { acquisition_source: source }); };
       break;
     case 8:
+      if (goalSub === 0) {
+        body = <InfoBody kind="hands" name={name.trim()} />;
+        tone = INFO_TONE.hands;
+        onNext = () => { setGoalSub(1); window.scrollTo(0, 0); };
+        break;
+      }
       body = (<><Question id="q8" title={t("onb.goalTitle")} sub={t("onb.goalSub")} />
         <ChoiceList grid labelledBy="q8" options={opts("goal", GOALS)} value={goal ? [goal] : []} onChange={(v) => setGoal(v[0] ?? "")} /></>);
       canNext = !!goal; nextLabel = t("onb.goalNext"); onNext = () => { setInfoStep(1); void go(9, { no_contact_goal: goal }); };
@@ -287,6 +294,7 @@ function Onboarding() {
       body = (<><Question id="q10" title={t("onb.rulesTitle")} sub={t("onb.rulesSub")} />
         <ChoiceList multi labelledBy="q10" options={opts("rules", RULES)} value={rules} onChange={setRules} /></>);
       onNext = () => go(11, { no_contact_rules: rules });
+      onSkip = () => go(11); skipLabel = t("onb.rulesSkip");
       break;
     case 11:
       return (
@@ -356,6 +364,8 @@ function Onboarding() {
       <div className="mb-6 flex items-center gap-3">
         <button type="button" onClick={() => transition(() => {
           if (step === 9 && infoStep > 1) { setInfoStep(infoStep - 1); window.scrollTo(0, 0); }
+          else if (step === 9) { setGoalSub(1); go(8); } // back to the goal question, not the "good hands" screen before it
+          else if (step === 8 && goalSub === 1) { setGoalSub(0); window.scrollTo(0, 0); }
           else if (step === 1 && subStep > (SHOW_ONBOARDING_INTRO ? 0 : 1)) setSubStep(subStep - 1); // intro hidden: back from the name returns to the welcome
           else if (step === 14) go(hasReviews ? 12 : 10); // skip the loading scene
           else if (step === 13) go(hasReviews ? 12 : 10);
@@ -367,7 +377,7 @@ function Onboarding() {
           <div className="h-full rounded-full bg-[var(--progress)] transition-all" style={{ width: `${((step + (step === 9 ? (infoStep - 1) / INFO_KINDS.length : 0)) / TOTAL) * 100}%` }} />
         </div>
       </div>
-      <div key={`${step}-${subStep}-${infoStep}`} className={`${outClass} flex flex-1 flex-col`}>
+      <div key={`${step}-${subStep}-${infoStep}-${goalSub}`} className={`${outClass} flex flex-1 flex-col`}>
         <div className="flex-1">{body}</div>
       {(canNext || step !== 21) && (
         <div className="fade-up sticky bottom-0 mt-8 pb-2 pt-3" style={{ "--d": "450ms" } as React.CSSProperties}>

@@ -258,6 +258,7 @@ export const en: typeof fr = {
     goalSub: "Set a goal to commit to.",
     rulesTitle: "Set your no-contact rules",
     rulesSub: "Don't worry, you can update these later.",
+    rulesSkip: "I'll do this later",
   },
   options: {
     triggers: { evening: "Evenings", social_media: "Social media", loneliness: "Loneliness", alcohol: "Alcohol", argument: "An argument", anniversary: "An anniversary", other: "Other" },
