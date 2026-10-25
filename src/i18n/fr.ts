@@ -19,9 +19,10 @@ export const fr = {
     see: "Voir les ressources d'urgence",
   },
   welcome: {
-    headline: "Tiens bon quand l'envie d'écrire revient.",
+    badge: "Boosté par l'IA",
+    headline: "Commence ta détox émotionnelle",
     sub: "Voici {companion}, elle veille avec toi. Un compteur, un SOS, un coach. Privé, sans compte obligatoire.",
-    start: "Commencer", haveAccount: "J'ai déjà un compte",
+    start: "C'est parti", haveAccount: "J'ai déjà un compte",
   },
   ownReasons: {"title": "Tes raisons de tenir.", "add": "Ajouter une raison", "placeholder": "Ce qui compte pour toi…", "limit": "Jusqu’à 3 raisons personnelles."},
   info: {

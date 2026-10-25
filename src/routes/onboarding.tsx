@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { Sparkles } from "lucide-react";
 import { useI18n } from "@/i18n";
 import { useApp, type ProfilePatch } from "@/lib/app-state";
 import { Lumi } from "@/components/hold/Lumi";
@@ -20,7 +21,6 @@ import { notifyScreenApplicable } from "@/lib/notify";
 import { ReminderIntro } from "@/components/hold/ReminderIntro";
 import { PhoneShowcase } from "@/components/hold/PhoneShowcase";
 import { PlanBuilding } from "@/components/hold/PlanBuilding";
-import { APP_NAME } from "@/config/app";
 import { CONTACT_RANGE_DAYS, DEFAULT_REMINDER_TIME, MOTIVATIONS, SITUATIONS, type ContactRange } from "@/lib/domain";
 
 // Loaded only when the checkout button is pressed (keeps the payment code out of the onboarding bundle).
@@ -158,22 +158,29 @@ function Onboarding() {
   switch (step) {
     case 0:
       return (
-        <Stage key="welcome" tone="dusk"><div className={`${outClass} mx-auto flex min-h-svh max-w-[480px] flex-col px-6 pb-8 pt-6`}>
-          <div className="flex items-center justify-between">
-            <span className="font-display text-2xl">{APP_NAME}</span>
-            <LangSwitch onChange={(l) => updateProfile({ language: l })} />
+        <div key="welcome" className="welcome-scene relative min-h-svh w-full overflow-hidden text-white">
+          <span aria-hidden className="splash-orb welcome-orb-top" />
+          <span aria-hidden className="splash-orb welcome-orb-bottom" />
+          <span aria-hidden className="splash-grain" />
+          <div className={`${outClass} relative mx-auto flex min-h-svh max-w-[480px] flex-col px-6 pb-6 pt-5`}>
+            <div className="relative flex items-center justify-center">
+              <span className="font-display text-[34px] leading-none">{t("splash.wordmark")}</span>
+              <div className="absolute right-0"><LangSwitch onChange={(l) => updateProfile({ language: l })} /></div>
+            </div>
+            <div className="flex flex-1 flex-col items-center justify-center pb-24 text-center">
+              <p className="fade-up flex items-center gap-1.5 text-[15px] font-medium text-white/90">{t("welcome.badge")}<Sparkles aria-hidden size={14} /></p>
+              <h1 className="fade-up font-display mt-3 max-w-[340px] text-[36px] leading-[1.1]" style={{ "--d": "150ms" } as React.CSSProperties}>{t("welcome.headline")}</h1>
+            </div>
+            <button type="button" onClick={() => transition(() => go(1, { language: lang }))}
+              className="fade-up min-h-[60px] w-full rounded-full bg-white px-6 text-lg font-semibold text-[#1E1F3B] shadow-[0_12px_30px_-12px_rgba(0,0,0,0.45)] transition-transform active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white" style={{ "--d": "300ms" } as React.CSSProperties}>
+              {t("welcome.start")}
+            </button>
+            <button type="button" onClick={() => navigate({ to: "/signin" })} className="mt-3 min-h-11 text-[17px] font-semibold text-white underline-offset-4 hover:underline">{t("welcome.haveAccount")}</button>
+            <p className="mt-2 text-center text-xs text-white/75">
+              <a href={`tel:${crisis.tel}`} className="underline-offset-4 hover:underline">{t("crisis.disclaimer", { number: crisis.number })}</a>
+            </p>
           </div>
-          <div className="flex flex-1 flex-col items-center justify-center text-center">
-            <div className="fade-up"><Lumi size={120} stage={3} emotion="happy" /></div>
-            <h1 className="fade-up mt-8 text-4xl leading-tight md:text-5xl" style={{ "--d": "200ms" } as React.CSSProperties}>{t("welcome.headline")}</h1>
-            <p className="fade-up mt-4 text-lg text-muted-foreground" style={{ "--d": "350ms" } as React.CSSProperties}>{t("welcome.sub")}</p>
-          </div>
-          <PrimaryButton onClick={() => transition(() => go(1, { language: lang }))}>{t("welcome.start")}</PrimaryButton>
-          <button type="button" onClick={() => navigate({ to: "/signin" })} className="mt-3 min-h-11 text-foreground underline-offset-4 hover:underline">{t("welcome.haveAccount")}</button>
-          <p className="mt-4 text-center text-xs text-muted-foreground">
-            <a href={`tel:${crisis.tel}`} className="underline-offset-4 hover:underline">{t("crisis.disclaimer", { number: crisis.number })}</a>
-          </p>
-        </div></Stage>
+        </div>
       );
     case 1:
       if (subStep === 0) {

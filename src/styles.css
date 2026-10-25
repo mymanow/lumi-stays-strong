@@ -258,6 +258,11 @@ body::before, .stage-light::before, .stage-dusk::before, .stage-night::before {
 .splash-text { animation: splash-in 700ms ease-out both; text-shadow: 0 1px 18px rgba(80, 70, 170, 0.18); }
 @keyframes splash-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
+/* Welcome: deep navy night between a periwinkle glow (top) and a lavender glow (bottom); reuses the splash orbs and grain. */
+.welcome-scene { background: linear-gradient(180deg, #5E7FD0 0%, #2D4A86 28%, #22396E 50%, #2B3A72 74%, #4A4594 92%, #8E7FDC 100%); }
+.welcome-orb-top { top: -24vh; width: 130vw; height: 50vh; transform: translateX(-50%); background: radial-gradient(closest-side, #DDE6FF 0%, #9FB6F2 40%, rgba(110,140,220,0) 100%); animation: splash-drift-top 7s ease-in-out infinite alternate; }
+.welcome-orb-bottom { bottom: -20vh; width: 120vw; height: 40vh; transform: translateX(-50%); background: radial-gradient(closest-side, #F3F0FF 0%, #B7A7F2 42%, rgba(142,127,220,0) 100%); animation: splash-drift-bottom 8s ease-in-out infinite alternate; }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-delay: 0s !important;

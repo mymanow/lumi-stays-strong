@@ -21,7 +21,8 @@ export const en: typeof fr = {
     see: "See crisis resources",
   },
   welcome: {
-    headline: "Hold on when the urge to text comes back.",
+    badge: "Powered by AI",
+    headline: "Start your emotional detox",
     sub: "Meet {companion}, she watches over you. A counter, an SOS, a coach. Private, no account required.",
     start: "Get started", haveAccount: "I already have an account",
   },
