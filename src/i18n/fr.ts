@@ -1,5 +1,5 @@
 export const fr = {
-  splash: { wordmark: "no contact.", tagline: "Zéro contact. Zéro prise de tête. Cap sur toi." },
+  splash: { wordmark: "Hold.", tagline: "Zéro contact. Zéro prise de tête. Cap sur toi." },
   common: {
     back: "Retour", next: "Continuer", later: "Plus tard", close: "Fermer", retry: "Réessayer",
     save: "Enregistrer", cancel: "Annuler", confirm: "Confirmer", loading: "Chargement…", delete: "Supprimer",
