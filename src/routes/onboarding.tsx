@@ -42,7 +42,8 @@ export const Route = createFileRoute("/onboarding")({
 
 const TOTAL = 20;
 const LAST_CONTACT = ["today", "week", "month", "m1_3", "m3_6", "gt_6m"] as const;
-const AFTER = ["worse", "ignored", "nothing_changed", "saw_upsetting", "argued", "cold", "not_yet"] as const;
+const AFTER = ["worse", "ignored", "nothing_changed", "saw_upsetting", "argued", "cold", "not_yet", "prefer_not"] as const;
+const AFTER_EXCLUSIVE = ["not_yet", "prefer_not"]; // picking one of these clears the other answers
 const NOW = ["devastated", "angry", "hoping", "guilty", "confused", "lonely", "okay"] as const;
 const GOALS = ["d7", "d14", "d30", "d60", "d90", "d180", "open"] as const;
 const RULES = ["no_texting", "no_stalking", "no_old_photos", "no_meeting", "no_reply_except", "no_asking_friends", "no_running_into"] as const;
@@ -242,7 +243,10 @@ function Onboarding() {
     case 4:
       body = (<><Question id="q4" title={t("onb.afterTitle")} sub={t("onb.multiSub")} />
         <ChoiceList multi labelledBy="q4" options={opts("after", AFTER)} value={after}
-          onChange={(v) => setAfter(v.includes("not_yet") && !after.includes("not_yet") ? ["not_yet"] : v.filter((x) => x !== "not_yet" || v.length === 1))} /></>);
+          onChange={(v) => {
+            const added = v.find((x) => !after.includes(x));
+            setAfter(added && AFTER_EXCLUSIVE.includes(added) ? [added] : v.filter((x) => !AFTER_EXCLUSIVE.includes(x) || v.length === 1));
+          }} /></>);
       canNext = after.length > 0; onNext = () => go(5, { last_contact_feelings: after });
       break;
     case 5:
@@ -264,7 +268,7 @@ function Onboarding() {
     case 8:
       body = (<><Question id="q8" title={t("onb.goalTitle")} sub={t("onb.goalSub")} />
         <ChoiceList grid labelledBy="q8" options={opts("goal", GOALS)} value={goal ? [goal] : []} onChange={(v) => setGoal(v[0] ?? "")} /></>);
-      canNext = !!goal; onNext = () => { setInfoStep(1); void go(9, { no_contact_goal: goal }); };
+      canNext = !!goal; nextLabel = t("onb.goalNext"); onNext = () => { setInfoStep(1); void go(9, { no_contact_goal: goal }); };
       onSkip = () => { setGoal(""); setInfoStep(1); void go(9, { no_contact_goal: null }); };
       break;
     case 9:

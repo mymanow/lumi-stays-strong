@@ -250,6 +250,7 @@ export const en: typeof fr = {
     hopeTitle: "What do you hope to get out of going No Contact?",
     hopeSub: "Choose what feels true for you today.",
     goalTitle: "How long do you want to stay No Contact?",
+    goalNext: "Next",
     sourceTitle: "How did you learn about {app}?",
     sourceSub: "Choose which platform you found us on.",
     aloneTitle: "You won't have to do it alone, {name}",
@@ -294,6 +295,7 @@ export const en: typeof fr = {
       argued: "We argued",
       cold: "They were cold/distant",
       not_yet: "I haven't reached out yet",
+      prefer_not: "Prefer not to say",
     },
     now: {
       devastated: "Devastated, barely functioning",

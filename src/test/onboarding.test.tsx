@@ -103,8 +103,12 @@ describe("onboarding questions", () => {
     Object.assign(profile, { onboarding_step: 4 });
     render(<Component />);
     expect(screen.getByText(en.onb.multiSub)).toBeInTheDocument();
-    expect(screen.getAllByRole("checkbox")).toHaveLength(7);
+    expect(screen.getAllByRole("checkbox")).toHaveLength(8);
     expect(next()).toBeDisabled();
+    fireEvent.click(screen.getByRole("checkbox", { name: en.options.after.prefer_not }));
+    fireEvent.click(screen.getByRole("checkbox", { name: en.options.after.not_yet })); // the two exclusive answers replace each other
+    expect(screen.getByRole("checkbox", { checked: true })).toHaveTextContent(en.options.after.not_yet);
+    fireEvent.click(screen.getByRole("checkbox", { name: en.options.after.not_yet }));
     fireEvent.click(screen.getByRole("checkbox", { name: en.options.after.worse }));
     fireEvent.click(screen.getByRole("checkbox", { name: en.options.after.argued }));
     expect(screen.getAllByRole("checkbox", { checked: true })).toHaveLength(2);
@@ -167,14 +171,14 @@ describe("onboarding questions", () => {
     render(<Component />);
     expect(screen.getAllByRole("radio")).toHaveLength(7);
     fireEvent.click(screen.getByRole("radio", { name: en.options.goal.open }));
-    fireEvent.click(next());
+    fireEvent.click(screen.getByRole("button", { name: en.onb.goalNext }));
     expect(updateProfile).toHaveBeenCalledWith({ no_contact_goal: "open", onboarding_step: 9 });
   });
 
   it("lets the user skip the goal question without saving a goal", () => {
     Object.assign(profile, { onboarding_step: 8 });
     render(<Component />);
-    expect(next()).toBeDisabled();
+    expect(screen.getByRole("button", { name: en.onb.goalNext })).toBeDisabled();
     fireEvent.click(screen.getByRole("button", { name: en.onb.skip }));
     expect(updateProfile).toHaveBeenCalledWith({ no_contact_goal: null, onboarding_step: 9 });
     expect(screen.getByRole("heading", { name: "Alex, you are in good hands!" })).toBeInTheDocument();
