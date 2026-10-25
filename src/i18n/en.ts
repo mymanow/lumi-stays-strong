@@ -194,6 +194,26 @@ export const en: typeof fr = {
   companion: {
     title: "You are [not alone] in this", tools: ["Counter", "SOS", "Vault", "Journey"], dayTitle: "Your day with {app}", whens: ["Morning", "Anytime", "Evening"], whats: ["a 30-second check-in", "SOS when the urge hits", "write it in the vault, don't send it"],
   },
+  features: {
+    cta: "Start No Contact",
+    tools: {
+      title: "Every tool you need for the moments you can't control.",
+      sub: "Crisis coach, breathing tools, a vault to write without sending — so when the urge to reach out hits at 2am, you have something stronger than willpower.",
+      alt: "Preview of the SOS screen: guided breathing and help button",
+    },
+    progress: {
+      title: "Track every day you hold. Watch yourself become someone new.",
+      sub: "Your no-contact streak, milestones, keepsakes and your own reasons — a living record of who you're growing into.",
+      alt: "Preview of the no-contact day counter and next milestone",
+    },
+    clarity: {
+      title: "Finally understand what happened — and who you really are without them.",
+      sub: "Reread their red flags, spot what triggers the urge, keep your own reasons in sight. Clarity replaces obsession, one day at a time.",
+      alt: "Preview of the red flags list and spotted triggers",
+      triggers: "What triggers the urge",
+      triggerSamples: ["Evenings", "Social media", "Loneliness"],
+    },
+  },
   showcase: {
     pill: "{app} Pro", title: "Start your [journey] with [support]", alt: "Preview of the app screens: counter, rules, SOS and journey",
     days: "days without contact", nextMilestone: "Next milestone: 14 days", rulesTitle: "Set your no-contact rules", rules: ["No texting or calling","No checking their social media","No rereading old messages"],

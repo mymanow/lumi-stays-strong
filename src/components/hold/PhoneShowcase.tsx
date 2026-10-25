@@ -20,7 +20,7 @@ function Title({ text }: { text: string }) {
 
 /* ---- Miniature versions of our own screens (static markup, translated, no network) ---- */
 
-function CounterScreen() {
+export function CounterScreen() {
   const { t } = useI18n();
   return (
     <div className="flex h-full flex-col items-center px-4 pt-14 text-center text-white">
@@ -58,7 +58,7 @@ function RulesScreen() {
   );
 }
 
-function SosScreen() {
+export function SosScreen() {
   const { t } = useI18n();
   return (
     <div className="flex h-full flex-col items-center px-4 pt-14 text-center text-white">
@@ -75,7 +75,7 @@ function SosScreen() {
   );
 }
 
-function JourneyScreen() {
+export function JourneyScreen() {
   const { t, tl } = useI18n();
   const days = tl<string[]>("showcase.journey");
   return (
@@ -102,6 +102,22 @@ const BACKGROUNDS = [
   "linear-gradient(180deg,#5C74E0 0%,#3F4DA8 60%,#283272 100%)",
   "linear-gradient(180deg,#7C7BEA 0%,#5A5CC8 60%,#3C4294 100%)",
 ];
+
+/** An iPhone drawn in CSS around one of the miniature screens (used by the feature screens before the paywall). */
+export function PhoneFrame({ background, label, children }: { background: string; label: string; children: React.ReactNode }) {
+  return (
+    <div className="flex flex-1 items-center justify-center" role="img" aria-label={label}>
+      <div className="relative h-[430px] w-[216px] rounded-[42px] border-[5px] border-[#f1ede6] bg-black p-[6px] shadow-[0_24px_60px_-18px_rgba(0,0,0,0.7)]">
+        <div aria-hidden className="relative h-full w-full overflow-hidden rounded-[34px]" style={{ background }}>
+          {children}
+          <div className="absolute left-1/2 top-2 h-[22px] w-[74px] -translate-x-1/2 rounded-full bg-black" />
+          <span className="absolute left-5 top-2.5 text-[10px] font-semibold text-white">9:41</span>
+          <div className="absolute bottom-2 left-1/2 h-1 w-20 -translate-x-1/2 rounded-full bg-white/70" />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 /** "Start your journey with support": an iPhone drawn in CSS whose screen cycles through miniature versions of our own screens. */
 export function PhoneShowcase() {

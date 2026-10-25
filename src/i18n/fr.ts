@@ -192,6 +192,26 @@ export const fr = {
   companion: {
     title: "Tu n'es [pas seul·e] dans ça", tools: ["Compteur", "SOS", "Coffre", "Parcours"], dayTitle: "Ta journée avec {app}", whens: ["Matin", "En journée", "Soir"], whats: ["un check-in de 30 secondes", "le SOS quand l'envie arrive", "écris dans le coffre, sans envoyer"],
   },
+  features: {
+    cta: "Commencer le Silence Radio",
+    tools: {
+      title: "Tous les outils nécessaires pour les moments où tu perds le contrôle.",
+      sub: "Coach de crise, exercices de respiration, coffre pour écrire sans envoyer : pour que l'envie de craquer à 2h du matin ne fasse plus le poids face à ta détermination.",
+      alt: "Aperçu de l'écran SOS : respiration guidée et bouton d'aide",
+    },
+    progress: {
+      title: "Suis chaque jour où tu tiens bon. Regarde-toi te reconstruire jour après jour.",
+      sub: "Ton compteur de jours, tes victoires, ta boîte à souvenirs et tes raisons de tenir : un journal de bord vivant de ta transformation.",
+      alt: "Aperçu du compteur de jours sans contact et du prochain cap",
+    },
+    clarity: {
+      title: "Comprends enfin ce qui s'est passé — et qui tu es vraiment sans cette personne.",
+      sub: "Relis ses red flags, repère ce qui déclenche tes envies de craquer, garde tes propres raisons sous les yeux. La clarté remplace l'obsession, pas à pas.",
+      alt: "Aperçu de la liste de red flags et des déclencheurs repérés",
+      triggers: "Ce qui déclenche l'envie",
+      triggerSamples: ["Le soir", "Les réseaux", "La solitude"],
+    },
+  },
   showcase: {
     pill: "{app} Pro", title: "Commence ton [parcours] avec du [soutien]", alt: "Aperçu des écrans de l'app : compteur, règles, SOS et parcours",
     days: "jours sans contact", nextMilestone: "Prochain cap : 14 jours", rulesTitle: "Fixe tes règles de non-contact", rules: ["Ni message ni appel","Pas de stalking sur ses réseaux","Ne pas relire les anciens messages"],

@@ -12,6 +12,7 @@ import { AloneScreen } from "@/components/hold/AloneScreen";
 import { ReviewsScreen, reviewsAvailable } from "@/components/hold/ReviewsScreen";
 import { PlanReady } from "@/components/hold/PlanReady";
 import { CompanionShowcase } from "@/components/hold/CompanionShowcase";
+import { FEATURE_KINDS, FeatureScreen } from "@/components/hold/FeatureScreens";
 import { SHOW_ONBOARDING_INTRO, SHOW_PLAN_PITCH, SIMULATE_PAYMENT } from "@/config/app";
 import { PaywallResult } from "@/components/hold/PaywallResult";
 import { PlanPitch } from "@/components/hold/PlanPitch";
@@ -88,6 +89,7 @@ function Onboarding() {
   const [leaving, setLeaving] = useState<"fwd" | "back" | null>(null);
   const [dir, setDir] = useState<"fwd" | "back">("fwd");
   const [infoStep, setInfoStep] = useState(1); // within step 9: the information screens (1..INFO_KINDS.length)
+  const [featSub, setFeatSub] = useState(0); // within step 15: the feature screens (0..2), then the paywall intro (3)
   const [goalSub, setGoalSub] = useState(0); // within step 8: 0 "you are in good hands", 1 the goal question
   const [plan, setPlan] = useState<PlanKey>("quarterly"); // plan highlighted on the pitch page (the pitch page itself has no payment button; the paywall result screen after it does)
   const [reminder, setReminder] = useState({ enabled: false, time: DEFAULT_REMINDER_TIME });
@@ -316,10 +318,17 @@ function Onboarding() {
       body = <PlanReady name={name.trim()} goal={goal} celebrate={celebrate} onCelebrated={() => setCelebrate(false)} />;
       tone = "dusk";
       nextLabel = t("ready.start");
+      onNext = () => { setFeatSub(0); void go(15); };
       break;
     case 15:
-      body = <PhoneShowcase />;
       tone = "dusk";
+      if (featSub < FEATURE_KINDS.length) {
+        body = <FeatureScreen kind={FEATURE_KINDS[featSub]!} />;
+        nextLabel = t("features.cta");
+        onNext = () => { setFeatSub(featSub + 1); window.scrollTo(0, 0); };
+        break;
+      }
+      body = <PhoneShowcase />;
       break;
     case 16:
       body = <CompanionShowcase />;
@@ -366,6 +375,8 @@ function Onboarding() {
           if (step === 9 && infoStep > 1) { setInfoStep(infoStep - 1); window.scrollTo(0, 0); }
           else if (step === 9) { setGoalSub(1); go(8); } // back to the goal question, not the "good hands" screen before it
           else if (step === 8 && goalSub === 1) { setGoalSub(0); window.scrollTo(0, 0); }
+          else if (step === 15 && featSub > 0) { setFeatSub(featSub - 1); window.scrollTo(0, 0); }
+          else if (step === 16) { setFeatSub(FEATURE_KINDS.length); go(15); } // back to the paywall intro, after the feature screens
           else if (step === 1 && subStep > (SHOW_ONBOARDING_INTRO ? 0 : 1)) setSubStep(subStep - 1); // intro hidden: back from the name returns to the welcome
           else if (step === 14) go(hasReviews ? 12 : 10); // skip the loading scene
           else if (step === 13) go(hasReviews ? 12 : 10);
@@ -377,7 +388,7 @@ function Onboarding() {
           <div className="h-full rounded-full bg-[var(--progress)] transition-all" style={{ width: `${((step + (step === 9 ? (infoStep - 1) / INFO_KINDS.length : 0)) / TOTAL) * 100}%` }} />
         </div>
       </div>
-      <div key={`${step}-${subStep}-${infoStep}-${goalSub}`} className={`${outClass} flex flex-1 flex-col`}>
+      <div key={`${step}-${subStep}-${infoStep}-${goalSub}-${featSub}`} className={`${outClass} flex flex-1 flex-col`}>
         <div className="flex-1">{body}</div>
       {(canNext || step !== 21) && (
         <div className="fade-up sticky bottom-0 mt-8 pb-2 pt-3" style={{ "--d": "450ms" } as React.CSSProperties}>
