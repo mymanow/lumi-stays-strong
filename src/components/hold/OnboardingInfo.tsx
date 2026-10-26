@@ -5,6 +5,7 @@ import { Lumi } from "./Lumi";
 import { ToolkitMarquee } from "./ToolkitMarquee";
 import { ScienceChart } from "./ScienceChart";
 import { GoodHands } from "./GoodHands";
+import { OtherAppsLogos } from "./OtherAppsLogos";
 
 export type InfoKind = "hands" | "slips" | "bio" | "compare" | "science" | "toolkit";
 export const INFO_KINDS: readonly InfoKind[] = ["slips", "bio", "compare", "toolkit", "science"]; // "hands" is shown before the goal question
@@ -75,7 +76,6 @@ function Bio() {
           );
         })}
       </ul>
-      <p className="fade-up mt-4 text-center text-xs text-muted-foreground" style={{ "--d": "800ms" } as React.CSSProperties}>{t("info.bio.note")}</p>
     </>
   );
 }
@@ -104,6 +104,7 @@ function Compare() {
         <div className="rounded-[28px] border border-white/30 bg-white/10 p-4 pt-6 text-center">
           <p className="font-display text-xl">{t("info.compare.otherTitle")}</p>
           <p className="mt-2 text-sm text-muted-foreground">{t("info.compare.others")}</p>
+          <OtherAppsLogos />
           <Bars heights={[60]} className="bg-white/70" />
         </div>
       </div>
@@ -113,8 +114,8 @@ function Compare() {
         <thead>
           <tr className="border-b border-white/30">
             <th scope="col" className="pb-3 text-left font-normal"><span className="sr-only">{t("info.compare.tableTitle")}</span></th>
-            <th scope="col" className="w-20 pb-3 text-center text-sm font-semibold text-muted-foreground">{t("info.compare.without")}</th>
-            <th scope="col" className="w-20 rounded-t-2xl bg-[#2e3865]/60 pb-3 pt-3 text-center font-display text-lg">{APP_NAME}</th>
+            <th scope="col" className="w-[84px] px-1 pb-3 text-center align-bottom text-sm font-semibold leading-tight text-muted-foreground">{t("info.compare.without")}</th>
+            <th scope="col" className="w-[84px] rounded-t-2xl bg-[#2e3865]/60 pb-3 pt-3 text-center font-display text-lg">{APP_NAME}</th>
           </tr>
         </thead>
         <tbody>

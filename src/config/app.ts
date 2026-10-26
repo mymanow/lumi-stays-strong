@@ -20,3 +20,7 @@ export const SHOW_ONBOARDING_INTRO = false;
 /** The app is shown in French only for now: English stays in src/i18n/en.ts but is never selected.
  *  true brings back the FR/EN switch (welcome, sign-in, settings) and the saved language. */
 export const SHOW_LANGUAGE_SWITCH = false;
+
+/** Shows "Tu n'es pas seul·e dans ça" (onboarding step 16) after the paywall intro.
+ *  false: the paywall intro leads straight to the trial reminder (step 17). */
+export const SHOW_COMPANION_SHOWCASE = false;

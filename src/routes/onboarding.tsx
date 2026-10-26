@@ -13,7 +13,7 @@ import { ReviewsScreen, reviewsAvailable } from "@/components/hold/ReviewsScreen
 import { PlanReady } from "@/components/hold/PlanReady";
 import { CompanionShowcase } from "@/components/hold/CompanionShowcase";
 import { FEATURE_KINDS, FeatureScreen } from "@/components/hold/FeatureScreens";
-import { SHOW_ONBOARDING_INTRO, SHOW_PLAN_PITCH, SIMULATE_PAYMENT } from "@/config/app";
+import { SHOW_COMPANION_SHOWCASE, SHOW_ONBOARDING_INTRO, SHOW_PLAN_PITCH, SIMULATE_PAYMENT } from "@/config/app";
 import { PaywallResult } from "@/components/hold/PaywallResult";
 import { PlanPitch } from "@/components/hold/PlanPitch";
 import type { PlanKey } from "@/config/whop";
@@ -98,7 +98,7 @@ function Onboarding() {
     if (!ready || !profile || init) return;
     if (profile.onboarding_completed) { navigate({ to: "/" }); return; }
     const saved = profile.onboarding_step ?? 0;
-    setStep(!SHOW_PLAN_PITCH && saved === 19 ? 20 : saved); // a hidden pitch step resumes on the paywall result
+    setStep(!SHOW_PLAN_PITCH && saved === 19 ? 20 : !SHOW_COMPANION_SHOWCASE && saved === 16 ? 17 : saved); // a hidden step resumes on the next one
     if (profile.name) { setName(profile.name); setSubStep(1); }
     setSituation(only(SITUATIONS, profile.situation_type));
     setLastContact(only(LAST_CONTACT, profile.last_contact_range));
@@ -131,7 +131,8 @@ function Onboarding() {
   useEffect(() => () => { if (autoTimer.current) window.clearTimeout(autoTimer.current); autoTimer.current = null; }, [step]);
 
   const go = async (target: number, patch: ProfilePatch = {}) => {
-    const next = !SHOW_PLAN_PITCH && target === 19 ? 20 : target; // pitch hidden: go straight to the paywall result
+    let next = !SHOW_PLAN_PITCH && target === 19 ? 20 : target; // pitch hidden: go straight to the paywall result
+    if (!SHOW_COMPANION_SHOWCASE && next === 16) next = 17; // "you are not alone" hidden: on to the trial reminder
     if (next === 20 && target === 19) setCelebrateResult(true); // keep the arrival confetti the pitch used to trigger
     setStep(next);
     window.scrollTo(0, 0);
@@ -378,7 +379,7 @@ function Onboarding() {
           else if (step === 9) { setGoalSub(1); go(8); } // back to the goal question, not the "good hands" screen before it
           else if (step === 8 && goalSub === 1) { setGoalSub(0); window.scrollTo(0, 0); }
           else if (step === 15 && featSub > 0) { setFeatSub(featSub - 1); window.scrollTo(0, 0); }
-          else if (step === 16) { setFeatSub(FEATURE_KINDS.length); go(15); } // back to the paywall intro, after the feature screens
+          else if (step === 16 || (step === 17 && !SHOW_COMPANION_SHOWCASE)) { setFeatSub(FEATURE_KINDS.length); go(15); } // back to the paywall intro, after the feature screens
           else if (step === 1 && subStep > (SHOW_ONBOARDING_INTRO ? 0 : 1)) setSubStep(subStep - 1); // intro hidden: back from the name returns to the welcome
           else if (step === 14) go(hasReviews ? 12 : 10); // skip the loading scene
           else if (step === 13) go(hasReviews ? 12 : 10);

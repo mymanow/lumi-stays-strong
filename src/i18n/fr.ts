@@ -235,7 +235,7 @@ export const fr = {
     sub: "Ça va prendre une petite minute, accroche-toi.",
     steps: ["Analyse de ta situation en cours", "Définition de ton calendrier d'engagement", "Calibration des outils d'urgence", "Planification de tes points de suivi", "Connexion avec ton espace de soutien"],
     quote: "« Parfois, le plus dur n'est pas d'arriver à lâcher prise, mais bien d'apprendre à recommencer. » — Nicole Sobon",
-    ready: "Je suis prêt·e",
+    ready: "Je suis prêt(e)",
   },
   reviews: {
     title: "Ils s'en sont sortis. À ton tour.",

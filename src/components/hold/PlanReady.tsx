@@ -3,7 +3,6 @@ import { Bell, Flag, Heart, Lock, Map as MapIcon, MessageCircle, PenLine, Shield
 import { useI18n } from "@/i18n";
 import { Lumi } from "./Lumi";
 import { Celebration } from "./Celebration";
-import { GOAL_DAYS } from "@/lib/domain";
 
 const CHIP_ICONS: LucideIcon[] = [MessageCircle, Zap, Lock, Flag, MapIcon, TrendingUp, Bell, Heart];
 const CARD_ICONS: LucideIcon[] = [ShieldCheck, Wind, Sun, PenLine, TrendingUp];
@@ -25,13 +24,15 @@ function ChipRow({ labels, icons, dir, seconds }: { labels: string[]; icons: Luc
   );
 }
 
-/** "Your plan is ready": target date from the chosen goal, feature chips drifting sideways and a swipeable benefits carousel. */
-export function PlanReady({ name, goal, celebrate = false, onCelebrated }: { name: string; goal: string; celebrate?: boolean; onCelebrated?: () => void }) {
+/** Target date shown on "your plan is ready": always today + 90 days, whatever goal was picked. */
+export const PLAN_TARGET_DAYS = 90;
+
+/** "Your plan is ready": target date (today + 90 days), feature chips drifting sideways and a swipeable benefits carousel. */
+export function PlanReady({ name, celebrate = false, onCelebrated }: { name: string; goal?: string; celebrate?: boolean; onCelebrated?: () => void }) {
   const { t, tl, lang } = useI18n();
   const chips = tl<string[]>("ready.chips");
   const cards = tl<string[]>("ready.cards");
-  const days = GOAL_DAYS[goal];
-  const date = days ? new Intl.DateTimeFormat(lang === "fr" ? "fr-FR" : "en-US", { dateStyle: "long" }).format(new Date(Date.now() + days * 86400000)) : null;
+  const date: string | null = new Intl.DateTimeFormat(lang === "fr" ? "fr-FR" : "en-US", { dateStyle: "long" }).format(new Date(Date.now() + PLAN_TARGET_DAYS * 86400000));
   const scroller = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
   const onScroll = () => {

@@ -263,6 +263,7 @@ describe("onboarding questions", () => {
     fireEvent.click(screen.getByRole("button", { name: en.build.ready }));
     expect(updateProfile).toHaveBeenLastCalledWith({ onboarding_step: 14 });
     expect(screen.getByRole("heading", { name: "Your personalized plan is ready, Alex!" })).toBeInTheDocument();
+    expect(screen.getByText(new Intl.DateTimeFormat("en-US", { dateStyle: "long" }).format(new Date(Date.now() + 90 * 86400000)))).toBeInTheDocument(); // always today + 90 days
     fireEvent.click(screen.getByRole("button", { name: en.ready.start }));
     expect(updateProfile).toHaveBeenLastCalledWith({ onboarding_step: 15 });
     for (const kind of ["tools", "progress", "clarity"] as const) { // the three feature screens before the paywall intro
@@ -273,10 +274,8 @@ describe("onboarding questions", () => {
     expect(screen.getByRole("heading", { name: /Start your journey with support/ })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: en.showcase.try })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: en.showcase.cta }));
-    expect(updateProfile).toHaveBeenLastCalledWith({ onboarding_step: 16 });
-    expect(screen.getByRole("heading", { name: /You are not alone in this/ })).toBeInTheDocument();
-    fireEvent.click(next());
-    expect(updateProfile).toHaveBeenLastCalledWith({ onboarding_step: 17 });
+    expect(updateProfile).toHaveBeenLastCalledWith({ onboarding_step: 17 }); // "you are not alone" is hidden (SHOW_COMPANION_SHOWCASE)
+    expect(screen.queryByRole("heading", { name: /You are not alone in this/ })).toBeNull();
     expect(screen.getByRole("heading", { name: /Get a reminder 2 days before your trial ends/ })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: en.reminderIntro.cta }));
     expect(updateProfile).toHaveBeenLastCalledWith({ onboarding_step: 20 }); // jsdom has no Notification API: the permission screen is skipped, and the hidden plan pitch (SHOW_PLAN_PITCH) too
