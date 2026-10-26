@@ -111,10 +111,9 @@ export function PlanStories() {
             {[0, 1, 2, 3, 4].map((i) => <Star key={i} size={26} fill="currentColor" strokeWidth={0} />)}
           </div>
           <blockquote className="mx-auto mt-6 max-w-[330px] text-[15px] leading-snug text-white/90">{review.body}</blockquote>
-          <figcaption className="mt-3 flex items-center justify-center gap-2 text-sm text-white/75">
-            {review.name}
-            {example && t("reviews.example") && <span className="rounded-md bg-[#f4b94e] px-2 py-0.5 text-xs font-semibold text-[#2e3865]">{t("reviews.example")}</span>}
-          </figcaption>
+          {example && t("reviews.example") && (
+            <figcaption className="mt-3 flex justify-center"><span className="rounded-md bg-[#f4b94e] px-2 py-0.5 text-xs font-semibold text-[#2e3865]">{t("reviews.example")}</span></figcaption>
+          )}
         </figure>
       )}
 

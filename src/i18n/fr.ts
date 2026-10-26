@@ -197,7 +197,7 @@ export const fr = {
     cta: "Commencer le Silence Radio",
     tools: {
       title: "Tous les outils nécessaires pour les moments où tu perds le contrôle.",
-      sub: "Coach de crise, exercices de respiration, coffre pour écrire sans envoyer : pour que l'envie de craquer à 2h du matin ne fasse plus le poids face à ta détermination.",
+      sub: "Coach de crise, exercices de respiration, scan corporel : pour que l'envie de craquer à 2h du matin ne fasse plus le poids face à ta détermination.",
       alt: "Aperçu de l'écran SOS : respiration guidée et bouton d'aide",
     },
     progress: {
