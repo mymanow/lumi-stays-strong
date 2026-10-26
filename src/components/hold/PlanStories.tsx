@@ -102,7 +102,7 @@ export function PlanStories() {
                 )}
               </figure>
             )}
-            <hr className="-mx-6 mt-10 w-[calc(100%+3rem)] border-t border-white/25" />
+            <hr className="mx-auto mt-10 w-4/5 border-t border-white/25" />
           </article>
         );
       })}
