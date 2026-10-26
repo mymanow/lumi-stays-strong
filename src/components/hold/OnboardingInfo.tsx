@@ -80,9 +80,10 @@ function Bio() {
   );
 }
 
+/** Bars that stand on the bottom edge of their card (mt-auto + no bottom padding on the card). */
 function Bars({ heights, className }: { heights: number[]; className: string }) {
   return (
-    <div aria-hidden className="mt-4 flex h-24 items-end justify-center gap-2">
+    <div aria-hidden className="mt-auto flex h-28 items-end justify-center gap-2 pt-4">
       {heights.map((h, i) => <span key={i} className={`w-7 rounded-t-lg ${className}`} style={{ height: `${h}%` }} />)}
     </div>
   );
@@ -95,17 +96,17 @@ function Compare() {
     <>
       <Title sub={t("info.compare.sub")}>{t("info.compare.title")}</Title>
       <div className="fade-up grid grid-cols-2 gap-3" style={{ "--d": "150ms" } as React.CSSProperties}>
-        <div className="relative rounded-[28px] border border-white/60 bg-white/20 p-4 pt-6 text-center">
+        <div className="relative flex flex-col rounded-[28px] border border-white/60 bg-white/20 px-4 pb-0 pt-6 text-center">
           <span className="absolute -top-3 left-3 rounded-full bg-white px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-[#2e3865]">{t("info.compare.badge")}</span>
           <div className="flex items-center justify-center gap-2"><Lumi size={26} stage={2} emotion="happy" breathe={false} label="" /><span className="font-display text-2xl">{APP_NAME}</span></div>
           <p className="mt-2 text-sm text-muted-foreground">{t("info.compare.ours")}</p>
           <Bars heights={[35, 62, 95]} className="bg-gradient-to-t from-[#8B7CF8] to-[#C9C0FF]" />
         </div>
-        <div className="rounded-[28px] border border-white/30 bg-white/10 p-4 pt-6 text-center">
+        <div className="flex flex-col overflow-hidden rounded-[28px] border border-white/30 bg-white/10 px-4 pb-0 pt-6 text-center">
           <p className="font-display text-xl">{t("info.compare.otherTitle")}</p>
           <p className="mt-2 text-sm text-muted-foreground">{t("info.compare.others")}</p>
           <OtherAppsLogos />
-          <Bars heights={[60]} className="bg-white/70" />
+          <Bars heights={[95]} className="bg-white/70" />
         </div>
       </div>
 
