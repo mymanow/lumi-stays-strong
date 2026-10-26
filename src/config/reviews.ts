@@ -24,3 +24,7 @@ export function reviewsToShow<T extends { name: string; title: string; body: str
   if (REVIEWS.length > 0) return { items: REVIEWS.slice(0, 3), example: false };
   return SHOW_PLACEHOLDERS ? { items: examples, example: true } : { items: [], example: false };
 }
+
+/** Placeholder portraits above the three stories of the plan-ready screen (ready.storyPeople, same order).
+ *  Generic silhouettes: replace with real, consented photos. */
+export const STORY_PHOTOS = ["/reviews/placeholder-1.svg", "/reviews/placeholder-2.svg", "/reviews/placeholder-3.svg"];

@@ -1,6 +1,6 @@
 import { Star } from "lucide-react";
 import { useI18n } from "@/i18n";
-import { reviewsToShow } from "@/config/reviews";
+import { STORY_PHOTOS, reviewsToShow } from "@/config/reviews";
 import { FEATURE_KINDS, type FeatureKind } from "./FeatureScreens";
 import { Lumi } from "./Lumi";
 
@@ -80,7 +80,8 @@ function Illustration({ kind }: { kind: FeatureKind }) {
 export function PlanStories() {
   const { t, tl } = useI18n();
   const { items, example } = reviewsToShow(tl<{ name: string; title: string; body: string }[]>("reviews.examples"));
-  const ordered = items.length > 1 ? [items[1]!, items[0]!, ...items.slice(2)] : items; // Sébastien H. first: it describes what the app really does
+  const ordered = items; // same order as ready.storyPeople: Elodie, Sébastien, then a third review when there is one
+  const people = tl<{ name: string; age: number }[]>("ready.storyPeople") ?? [];
 
   return (
     <section className="fade-up mt-12" style={{ "--d": "900ms" } as React.CSSProperties}>
@@ -88,6 +89,12 @@ export function PlanStories() {
         const review = ordered[i];
         return (
           <article key={k} className="flex flex-col items-center pt-10 text-center first:pt-0">
+            {people[i] && (
+              <div className="mb-6 flex items-center gap-4">
+                <img src={STORY_PHOTOS[i]} alt="" width={64} height={64} loading="lazy" className="h-16 w-16 rounded-full object-cover ring-2 ring-white/40" />
+                <span className="font-display text-[22px]">{people[i]!.name}, {people[i]!.age}</span>
+              </div>
+            )}
             <Illustration kind={k} />
             <h3 className="font-display mt-6 text-[26px] leading-[1.2]">{t(`features.${k}.title`)}</h3>
             <p className="mt-3 max-w-[340px] text-[16px] leading-snug text-white/85">{t(`features.${k}.sub`)}</p>
