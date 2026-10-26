@@ -29,7 +29,7 @@ export const fr = {
     hands: {
       title: "{name}, tu es entre de bonnes mains !", titleNoName: "Tu es entre de bonnes mains !",
       sub: "{app} associe des modèles d'IA avancés, des sciences comportementales et ce que la recherche dit de la rupture amoureuse.",
-      research: "Recherche sur la rupture", coach: "Ingénierie IA", techniques: "Sciences comportementales",
+      research: "Experts en coaching", coach: "Ingénierie IA", techniques: "Sciences comportementales",
       app: "{app}", caption: "La recherche sur la rupture, l'ingénierie IA et les sciences comportementales se rejoignent dans {app}.",
     },
     slips: {
