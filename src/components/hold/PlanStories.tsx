@@ -1,4 +1,3 @@
-import { useRef, useState } from "react";
 import { Star } from "lucide-react";
 import { useI18n } from "@/i18n";
 import { reviewsToShow } from "@/config/reviews";
@@ -74,50 +73,39 @@ function Illustration({ kind }: { kind: FeatureKind }) {
 }
 
 /**
- * After "Avec Hold, tu peux :" on the plan-ready screen: a swipeable set of stories (illustration, title, text) with
- * page dots on top, then one review under five stars and a separator line (room for another element below).
- * The review comes from the reviews config: real ones, else the labelled "Exemple" placeholders, else nothing.
+ * After "Avec Hold, tu peux :" on the plan-ready screen: three stories stacked vertically (illustration, title, text),
+ * each followed by five stars with a review and a separator line. Reviews come from the reviews config, in order
+ * (real ones once there are some, else the owner's example texts); a story without a review shows no stars.
  */
 export function PlanStories() {
   const { t, tl } = useI18n();
-  const scroller = useRef<HTMLDivElement>(null);
-  const [active, setActive] = useState(0);
-  const onScroll = () => {
-    const el = scroller.current;
-    if (!el) return;
-    setActive(Math.round((el.scrollLeft / Math.max(1, el.scrollWidth - el.clientWidth)) * (FEATURE_KINDS.length - 1)));
-  };
   const { items, example } = reviewsToShow(tl<{ name: string; title: string; body: string }[]>("reviews.examples"));
-  const review = items[1] ?? items[0]; // the second example (Sébastien H.) describes what the app really does
+  const ordered = items.length > 1 ? [items[1]!, items[0]!, ...items.slice(2)] : items; // Sébastien H. first: it describes what the app really does
 
   return (
-    <section className="fade-up mt-12" style={{ "--d": "900ms" } as React.CSSProperties} aria-roledescription="carousel">
-      <div className="flex justify-center gap-2" aria-hidden>
-        {FEATURE_KINDS.map((k, i) => <span key={k} className={`h-2 w-2 rounded-full transition-colors ${i === active ? "bg-white" : "bg-white/35"}`} />)}
-      </div>
-      <div ref={scroller} onScroll={onScroll} className="-mx-6 mt-6 flex snap-x snap-mandatory overflow-x-auto [scrollbar-width:none]">
-        {FEATURE_KINDS.map((k) => (
-          <article key={k} className="flex w-full shrink-0 snap-center flex-col items-center px-6 text-center">
+    <section className="fade-up mt-12" style={{ "--d": "900ms" } as React.CSSProperties}>
+      {FEATURE_KINDS.map((k, i) => {
+        const review = ordered[i];
+        return (
+          <article key={k} className="flex flex-col items-center pt-10 text-center first:pt-0">
             <Illustration kind={k} />
             <h3 className="font-display mt-6 text-[26px] leading-[1.2]">{t(`features.${k}.title`)}</h3>
             <p className="mt-3 max-w-[340px] text-[16px] leading-snug text-white/85">{t(`features.${k}.sub`)}</p>
+            {review && (
+              <figure className="mt-8">
+                <div className="flex justify-center gap-2 text-[#F4B94E]" role="img" aria-label={t("reviews.stars")}>
+                  {[0, 1, 2, 3, 4].map((n) => <Star key={n} size={26} fill="currentColor" strokeWidth={0} />)}
+                </div>
+                <blockquote className="mx-auto mt-6 max-w-[330px] text-[15px] leading-snug text-white/90">« {review.body} »</blockquote>
+                {example && t("reviews.example") && (
+                  <figcaption className="mt-3 flex justify-center"><span className="rounded-md bg-[#f4b94e] px-2 py-0.5 text-xs font-semibold text-[#2e3865]">{t("reviews.example")}</span></figcaption>
+                )}
+              </figure>
+            )}
+            <hr className="-mx-6 mt-10 w-[calc(100%+3rem)] border-t border-white/25" />
           </article>
-        ))}
-      </div>
-
-      {review && (
-        <figure className="mt-10 text-center">
-          <div className="flex justify-center gap-2 text-[#F4B94E]" role="img" aria-label={t("reviews.stars")}>
-            {[0, 1, 2, 3, 4].map((i) => <Star key={i} size={26} fill="currentColor" strokeWidth={0} />)}
-          </div>
-          <blockquote className="mx-auto mt-6 max-w-[330px] text-[15px] leading-snug text-white/90">{review.body}</blockquote>
-          {example && t("reviews.example") && (
-            <figcaption className="mt-3 flex justify-center"><span className="rounded-md bg-[#f4b94e] px-2 py-0.5 text-xs font-semibold text-[#2e3865]">{t("reviews.example")}</span></figcaption>
-          )}
-        </figure>
-      )}
-
-      <hr className="-mx-6 mt-10 border-t border-white/25" />
+        );
+      })}
     </section>
   );
 }
