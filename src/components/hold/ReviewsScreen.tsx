@@ -33,11 +33,11 @@ export function ReviewsScreen() {
                 : <span aria-hidden className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#dfe3fb] font-medium text-[#2e3865]">{r.name.charAt(0)}</span>}
               <div className="flex-1">
                 <div className="text-base font-medium">{r.name}</div>
-                {example ? (
+                {/* {example ? (
                   <span className="rounded-md bg-[#f4b94e] px-2 py-0.5 text-xs font-semibold text-[#2e3865]">{t("reviews.example")}</span>
                 ) : ("verified" in r && r.verified) ? (
                   <span className="rounded-md bg-[#2e3865] px-2 py-0.5 text-xs font-medium text-white">{t("reviews.verified")}</span>
-                ) : null}
+                ) : null} */}
               </div>
               <div className="flex gap-0.5 text-[#f4b94e]" role="img" aria-label={t("reviews.stars")}>
                 {[0, 1, 2, 3, 4].map((i) => <Star key={i} size={16} fill="currentColor" strokeWidth={0} />)}
