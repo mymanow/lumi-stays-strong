@@ -80,40 +80,12 @@ function Bio() {
   );
 }
 
-type PrismColors = { front: [string, string]; side: string; top: string };
-const PURPLE: PrismColors = { front: ["#B79BE6", "#7E58C2"], side: "#5B3A96", top: "#E4D6FA" };
-const WHITE: PrismColors = { front: ["#FBFAF6", "#E9E6DE"], side: "#CFCBC0", top: "#FFFFFF" };
-const BASE = 160, DX = 16, DY = -9, W = 40;
-
-/** One 3D pillar standing on the bottom of the drawing: front face, right side and top. */
-function Prism({ x, h, c, id }: { x: number; h: number; c: PrismColors; id: string }) {
-  const y = BASE - h;
+/** Rounded-top bars standing on the bottom edge of their card (mt-auto + no bottom padding on the card). */
+function Bars({ heights, className }: { heights: number[]; className: string }) {
   return (
-    <g>
-      <defs>
-        <linearGradient id={id} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={c.front[0]} /><stop offset="1" stopColor={c.front[1]} /></linearGradient>
-      </defs>
-      <polygon points={`${x + W},${y} ${x + W + DX},${y + DY} ${x + W + DX},${BASE + DY} ${x + W},${BASE}`} fill={c.side} />
-      <polygon points={`${x},${y} ${x + DX},${y + DY} ${x + W + DX},${y + DY} ${x + W},${y}`} fill={c.top} />
-      <rect x={x} y={y} width={W} height={h} fill={`url(#${id})`} />
-    </g>
-  );
-}
-
-/** 3D pillars standing on the bottom edge of their card: three rising purple ones for Hold, one tall white one for the others. */
-function Pillars({ kind }: { kind: "ours" | "others" }) {
-  return (
-    <svg aria-hidden viewBox="0 0 140 160" preserveAspectRatio="xMidYMax meet" className="mt-auto block h-auto w-full pt-3">
-      {kind === "ours" ? (
-        <>
-          <Prism id="p-ours-3" x={84} h={146} c={PURPLE} />
-          <Prism id="p-ours-2" x={44} h={102} c={PURPLE} />
-          <Prism id="p-ours-1" x={4} h={60} c={PURPLE} />
-        </>
-      ) : (
-        <Prism id="p-others" x={42} h={146} c={WHITE} />
-      )}
-    </svg>
+    <div aria-hidden className="mt-auto flex h-36 items-end justify-center gap-2.5 pt-3">
+      {heights.map((h, i) => <span key={i} className={`w-9 rounded-t-full ${className}`} style={{ height: `${h}%` }} />)}
+    </div>
   );
 }
 
@@ -124,17 +96,17 @@ function Compare() {
     <>
       <Title sub={t("info.compare.sub")}>{t("info.compare.title")}</Title>
       <div className="fade-up grid grid-cols-2 gap-3" style={{ "--d": "150ms" } as React.CSSProperties}>
-        <div className="relative flex flex-col rounded-[28px] border border-white/60 bg-white/20 px-3 pb-0 pt-7 text-center">
+        <div className="relative flex flex-col rounded-[28px] border border-white/60 bg-white/20 px-3 pb-0 pt-5 text-center">
           <span className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-white px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-[#2e3865]">{t("info.compare.badge")}</span>
           <p className="font-display text-[26px] leading-none">{APP_NAME}</p>
-          <p className="mt-2 text-sm text-muted-foreground">{t("info.compare.ours")}</p>
-          <Pillars kind="ours" />
+          <p className="mt-1.5 text-sm leading-snug text-muted-foreground">{t("info.compare.ours")}</p>
+          <Bars heights={[38, 66, 100]} className="bg-gradient-to-t from-[#8B7CF8] to-[#C9C0FF]" />
         </div>
-        <div className="flex flex-col overflow-hidden rounded-[28px] border border-white/30 bg-white/10 px-3 pb-0 pt-7 text-center">
-          <p className="font-display text-xl">{t("info.compare.otherTitle")}</p>
-          <p className="mt-2 text-sm text-muted-foreground">{t("info.compare.others")}</p>
+        <div className="flex flex-col overflow-hidden rounded-[28px] border border-white/30 bg-white/10 px-3 pb-0 pt-4 text-center">
+          <p className="font-display text-xl leading-tight">{t("info.compare.otherTitle")}</p>
+          <p className="mt-1.5 text-sm leading-snug text-muted-foreground">{t("info.compare.others")}</p>
           <OtherAppsLogos />
-          <Pillars kind="others" />
+          <Bars heights={[100]} className="bg-white/75" />
         </div>
       </div>
 
