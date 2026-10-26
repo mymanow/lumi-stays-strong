@@ -255,7 +255,7 @@ describe("onboarding questions", () => {
     fireEvent.click(next());
     expect(updateProfile).toHaveBeenLastCalledWith({ onboarding_step: 12 });
     expect(screen.getByRole("heading", { name: en.reviews.title })).toBeInTheDocument();
-    expect(screen.getAllByText(en.reviews.example)).toHaveLength(2);
+    for (const r of en.reviews.examples) expect(screen.getByText(r.name)).toBeInTheDocument();
     expect(screen.queryByText(en.reviews.verified)).toBeNull(); // examples are never shown as verified
     fireEvent.click(next());
     expect(updateProfile).toHaveBeenLastCalledWith({ onboarding_step: 13 });

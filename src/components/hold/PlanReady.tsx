@@ -3,6 +3,7 @@ import { Bell, Flag, Heart, Lock, Map as MapIcon, MessageCircle, PenLine, Shield
 import { useI18n } from "@/i18n";
 import { Lumi } from "./Lumi";
 import { Celebration } from "./Celebration";
+import { PlanStories } from "./PlanStories";
 
 const CHIP_ICONS: LucideIcon[] = [MessageCircle, Zap, Lock, Flag, MapIcon, TrendingUp, Bell, Heart];
 const CARD_ICONS: LucideIcon[] = [ShieldCheck, Wind, Sun, PenLine, TrendingUp];
@@ -77,6 +78,7 @@ export function PlanReady({ name, celebrate = false, onCelebrated }: { name: str
       <div className="mt-3 flex justify-center gap-2" aria-hidden>
         {cards.map((c, i) => <span key={c} className={`h-2 w-2 rounded-full transition-colors ${i === active ? "bg-white" : "bg-white/35"}`} />)}
       </div>
+      <PlanStories />
     </>
   );
 }
