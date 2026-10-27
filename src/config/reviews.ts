@@ -1,7 +1,3 @@
-import elodiePhoto from "@/assets/stories/elodie.png.asset.json";
-import marcPhoto from "@/assets/stories/marc.png.asset.json";
-import camillePhoto from "@/assets/stories/camille.png.asset.json";
-
 /**
  * Social proof for the onboarding "Help others find us" screen.
  *
@@ -30,5 +26,5 @@ export function reviewsToShow<T extends { name: string; title: string; body: str
 }
 
 /** Placeholder portraits above the three stories of the plan-ready screen (ready.storyPeople, same order).
- *  Generic silhouettes: replace with real, consented photos. */
-export const STORY_PHOTOS = [elodiePhoto.url, marcPhoto.url, camillePhoto.url];
+ *  Files live in public/stories/ (not Lovable asset URLs, which 404 outside Lovable hosting). Use real, consented photos. */
+export const STORY_PHOTOS = ["/stories/elodie.webp", "/stories/marc.webp", "/stories/camille.webp"];
