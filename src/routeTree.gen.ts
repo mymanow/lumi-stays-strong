@@ -27,6 +27,8 @@ import { Route as ApiCoachRouteImport } from './routes/api/coach'
 import { Route as SubscribeSuccessRouteImport } from './routes/subscribe.success'
 import { Route as ApiPublicTrialRemindersRouteImport } from './routes/api/public/trial-reminders'
 import { Route as ApiPublicWhopWebhookRouteImport } from './routes/api/public/whop-webhook'
+import { Route as ApiPublicWhopOauthCallbackRouteImport } from './routes/api/public/whop-oauth/callback'
+import { Route as ApiPublicWhopOauthStartRouteImport } from './routes/api/public/whop-oauth/start'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -118,6 +120,17 @@ const ApiPublicWhopWebhookRoute = ApiPublicWhopWebhookRouteImport.update({
   path: '/api/public/whop-webhook',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicWhopOauthCallbackRoute =
+  ApiPublicWhopOauthCallbackRouteImport.update({
+    id: '/api/public/whop-oauth/callback',
+    path: '/api/public/whop-oauth/callback',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicWhopOauthStartRoute = ApiPublicWhopOauthStartRouteImport.update({
+  id: '/api/public/whop-oauth/start',
+  path: '/api/public/whop-oauth/start',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -138,6 +151,8 @@ export interface FileRoutesByFullPath {
   '/subscribe/success': typeof SubscribeSuccessRoute
   '/api/public/trial-reminders': typeof ApiPublicTrialRemindersRoute
   '/api/public/whop-webhook': typeof ApiPublicWhopWebhookRoute
+  '/api/public/whop-oauth/callback': typeof ApiPublicWhopOauthCallbackRoute
+  '/api/public/whop-oauth/start': typeof ApiPublicWhopOauthStartRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -158,6 +173,8 @@ export interface FileRoutesByTo {
   '/subscribe/success': typeof SubscribeSuccessRoute
   '/api/public/trial-reminders': typeof ApiPublicTrialRemindersRoute
   '/api/public/whop-webhook': typeof ApiPublicWhopWebhookRoute
+  '/api/public/whop-oauth/callback': typeof ApiPublicWhopOauthCallbackRoute
+  '/api/public/whop-oauth/start': typeof ApiPublicWhopOauthStartRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -179,6 +196,8 @@ export interface FileRoutesById {
   '/subscribe/success': typeof SubscribeSuccessRoute
   '/api/public/trial-reminders': typeof ApiPublicTrialRemindersRoute
   '/api/public/whop-webhook': typeof ApiPublicWhopWebhookRoute
+  '/api/public/whop-oauth/callback': typeof ApiPublicWhopOauthCallbackRoute
+  '/api/public/whop-oauth/start': typeof ApiPublicWhopOauthStartRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -201,6 +220,8 @@ export interface FileRouteTypes {
     | '/subscribe/success'
     | '/api/public/trial-reminders'
     | '/api/public/whop-webhook'
+    | '/api/public/whop-oauth/callback'
+    | '/api/public/whop-oauth/start'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -221,6 +242,8 @@ export interface FileRouteTypes {
     | '/subscribe/success'
     | '/api/public/trial-reminders'
     | '/api/public/whop-webhook'
+    | '/api/public/whop-oauth/callback'
+    | '/api/public/whop-oauth/start'
   id:
     | '__root__'
     | '/'
@@ -241,6 +264,8 @@ export interface FileRouteTypes {
     | '/subscribe/success'
     | '/api/public/trial-reminders'
     | '/api/public/whop-webhook'
+    | '/api/public/whop-oauth/callback'
+    | '/api/public/whop-oauth/start'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -262,6 +287,8 @@ export interface RootRouteChildren {
   SubscribeSuccessRoute: typeof SubscribeSuccessRoute
   ApiPublicTrialRemindersRoute: typeof ApiPublicTrialRemindersRoute
   ApiPublicWhopWebhookRoute: typeof ApiPublicWhopWebhookRoute
+  ApiPublicWhopOauthCallbackRoute: typeof ApiPublicWhopOauthCallbackRoute
+  ApiPublicWhopOauthStartRoute: typeof ApiPublicWhopOauthStartRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -392,6 +419,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicWhopWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/whop-oauth/callback': {
+      id: '/api/public/whop-oauth/callback'
+      path: '/api/public/whop-oauth/callback'
+      fullPath: '/api/public/whop-oauth/callback'
+      preLoaderRoute: typeof ApiPublicWhopOauthCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/whop-oauth/start': {
+      id: '/api/public/whop-oauth/start'
+      path: '/api/public/whop-oauth/start'
+      fullPath: '/api/public/whop-oauth/start'
+      preLoaderRoute: typeof ApiPublicWhopOauthStartRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -414,6 +455,8 @@ const rootRouteChildren: RootRouteChildren = {
   SubscribeSuccessRoute: SubscribeSuccessRoute,
   ApiPublicTrialRemindersRoute: ApiPublicTrialRemindersRoute,
   ApiPublicWhopWebhookRoute: ApiPublicWhopWebhookRoute,
+  ApiPublicWhopOauthCallbackRoute: ApiPublicWhopOauthCallbackRoute,
+  ApiPublicWhopOauthStartRoute: ApiPublicWhopOauthStartRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
