@@ -80,7 +80,7 @@ function Illustration({ kind }: { kind: FeatureKind }) {
 export function PlanStories() {
   const { t, tl } = useI18n();
   const { items, example } = reviewsToShow(tl<{ name: string; title: string; body: string }[]>("reviews.examples"));
-  const ordered = items; // same order as ready.storyPeople: Elodie, Sébastien, then a third review when there is one
+  const ordered = items; // same order as ready.storyPeople: Elodie, Marc, then a third review when there is one
   const people = tl<{ name: string; age: number }[]>("ready.storyPeople") ?? [];
 
   return (

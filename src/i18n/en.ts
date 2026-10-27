@@ -229,7 +229,7 @@ export const en: typeof fr = {
     words: "Breathe. Hold. Move on.",
     chips: ["Lumi coach", "Anti-temptation SOS", "Vault: write without sending", "Red flags to reread", "Day-by-day journey", "Progress tracking", "Daily reminder", "Milestones to celebrate"],
     withTitle: "With {app}, you can:",
-    storyPeople: [{ name: "Elodie", age: 25 }, { name: "Sébastien", age: 32 }, { name: "Camille", age: 28 }],
+    storyPeople: [{ name: "Elodie", age: 25 }, { name: "Marc", age: 32 }, { name: "Camille", age: 28 }],
     cards: ["Hold on when the urge to text comes back", "Breathe when the storm rises", "Give yourself space to move forward", "Write what you feel, without sending it", "See your progress day after day"],
     start: "Start",
   },

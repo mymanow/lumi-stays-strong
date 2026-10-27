@@ -227,7 +227,7 @@ export const fr = {
     words: "Zéro contact. Zéro prise de tête. Cap sur toi.",
     chips: ["Coach Lumi", "SOS anti-tentation", "Coffre : écrire sans envoyer", "Red flags à relire", "Parcours jour après jour", "Suivi de tes progrès", "Rappel quotidien", "Jalons à célébrer"],
     withTitle: "Avec {app}, tu peux :",
-    storyPeople: [{ name: "Elodie", age: 25 }, { name: "Sébastien", age: 32 }, { name: "Camille", age: 28 }],
+    storyPeople: [{ name: "Elodie", age: 25 }, { name: "Marc", age: 32 }, { name: "Camille", age: 28 }],
     cards: ["Tenir quand l'envie d'écrire revient", "Respirer quand la tempête monte", "Te laisser de l'espace pour avancer", "Écrire ce que tu ressens, sans l'envoyer", "Voir tes progrès jour après jour"],
     start: "Commencer le Silence Radio",
   },
