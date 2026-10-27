@@ -39,7 +39,7 @@ function SignIn() {
           {t("signin.whop")}
         </PrimaryButton>
         <p aria-live="polite" className="text-sm text-muted-foreground">
-          {error === "noaccount" && t("signin.noAccount")}{error === "unverified" && t("signin.unverified")}{error === "whop" && t("account.error")}
+          {error === "noaccount" && t("signin.noAccount")}{error === "unverified" && t("signin.unverified")}{error?.startsWith("whop") && t("account.error")}
         </p>
       </div>
     </div>

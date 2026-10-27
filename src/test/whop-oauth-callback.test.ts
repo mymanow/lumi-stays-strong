@@ -43,7 +43,7 @@ const location = (r: Response) => r.headers.get("location") ?? "";
 
 describe("whop oauth callback", () => {
   it("rejects a bad state", async () => {
-    expect(location(await call("other"))).toBe("https://hold-no-contact.vercel.app/signin?error=whop");
+    expect(location(await call("other"))).toBe("https://hold-no-contact.vercel.app/signin?error=whop_state");
   });
 
   it("uses the pinned redirect URI and the JSON body with the PKCE verifier", async () => {
