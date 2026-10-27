@@ -266,10 +266,7 @@ describe("onboarding questions", () => {
     expect(screen.getByText(new Intl.DateTimeFormat("en-US", { dateStyle: "long" }).format(new Date(Date.now() + 90 * 86400000)))).toBeInTheDocument(); // always today + 90 days
     fireEvent.click(screen.getByRole("button", { name: en.ready.start }));
     expect(updateProfile).toHaveBeenLastCalledWith({ onboarding_step: 15 });
-    for (const kind of ["tools", "progress", "clarity"] as const) { // the three feature screens before the paywall intro
-      expect(screen.getByRole("heading", { name: en.features[kind].title })).toBeInTheDocument();
-      fireEvent.click(screen.getByRole("button", { name: en.features.cta }));
-    }
+    for (const kind of ["tools", "progress", "clarity"] as const) expect(screen.queryByRole("heading", { name: en.features[kind].title })).toBeNull(); // feature screens removed: straight to the paywall intro
     expect(updateProfile).toHaveBeenLastCalledWith({ onboarding_step: 15 });
     expect(screen.getByRole("heading", { name: /Start your journey with support/ })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: en.showcase.try })).toBeInTheDocument();
