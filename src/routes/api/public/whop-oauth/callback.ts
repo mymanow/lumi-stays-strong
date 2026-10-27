@@ -71,11 +71,11 @@ export const Route = createFileRoute("/api/public/whop-oauth/callback")({
         if (!code) return fail(url.searchParams.get("error") ? "whop_denied" : "whop_code");
         if (!verifier) return fail("whop_state"); // state cookie missing or different: sign-in started on another domain, or expired (10 min)
 
-        const clientId = process.env["WHOP_OAUTH_CLIENT_ID"];
+        const clientId = process.env["WHOP_OAUTH_CLIENT_ID"]?.trim();
         if (!clientId) return fail("whop_config");
 
         try {
-          const { token: accessToken, status } = await exchangeCode(code, verifier, redirect, clientId, process.env["WHOP_OAUTH_CLIENT_SECRET"]);
+          const { token: accessToken, status } = await exchangeCode(code, verifier, redirect, clientId, process.env["WHOP_OAUTH_CLIENT_SECRET"]?.trim());
           if (!accessToken) return fail(`whop_token_${status}`);
 
           const infoRes = await fetch(WHOP_USERINFO_URL, { headers: { Authorization: `Bearer ${accessToken}` } });

@@ -39,7 +39,7 @@ export function verifyState(cookie: string | null, state: string | null): string
  * Without it, the callback on the requesting origin.
  */
 export function redirectUri(requestUrl: string) {
-  return process.env["WHOP_OAUTH_REDIRECT_URI"] || `${new URL(requestUrl).origin}${CALLBACK_PATH}`;
+  return process.env["WHOP_OAUTH_REDIRECT_URI"]?.trim() || `${new URL(requestUrl).origin}${CALLBACK_PATH}`;
 }
 
 export type WhopUserInfo = { sub?: string; email?: string; email_verified?: boolean };

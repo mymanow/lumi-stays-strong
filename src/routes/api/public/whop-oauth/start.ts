@@ -5,7 +5,7 @@ export const Route = createFileRoute("/api/public/whop-oauth/start")({
   server: {
     handlers: {
       GET: async ({ request }) => {
-        const clientId = process.env["WHOP_OAUTH_CLIENT_ID"];
+        const clientId = process.env["WHOP_OAUTH_CLIENT_ID"]?.trim();
         const origin = new URL(request.url).origin;
         if (!clientId) return Response.redirect(`${origin}/signin?error=whop`, 302);
         const state = randomToken(16);
