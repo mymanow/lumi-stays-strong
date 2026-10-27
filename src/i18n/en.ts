@@ -374,7 +374,7 @@ export const en: typeof fr = {
     google: "Continue with Google", apple: "Continue with Apple",
     linked: "Account saved: {email}", invalid: "Invalid email address.", error: "Sending failed. Try again in a moment.",
   },
-  signin: { title: "Welcome back.", sub: "Sign in with your Whop account to pick up where you left off.", whop: "Sign in with Whop", noAccount: "No Hold account is linked to this Whop account." },
+  signin: { title: "Welcome back.", sub: "Sign in with your Whop account to pick up where you left off.", whop: "Sign in with Whop", noAccount: "No Hold account is linked to this Whop account.", unverified: "Please confirm your e-mail address on Whop first, then try again." },
   home: {
     since: "No contact for",
     units: { d: "days", h: "hours", m: "min", s: "sec" },

@@ -3,6 +3,7 @@ export const WHOP_AUTHORIZE_URL = "https://api.whop.com/oauth/authorize";
 export const WHOP_TOKEN_URL = "https://api.whop.com/oauth/token";
 export const WHOP_USERINFO_URL = "https://api.whop.com/oauth/userinfo";
 export const OAUTH_COOKIE = "hold_whop_oauth";
+export const CALLBACK_PATH = "/api/public/whop-oauth/callback";
 
 const b64url = (bytes: Uint8Array) =>
   btoa(String.fromCharCode(...bytes)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
@@ -31,3 +32,14 @@ export function verifyState(cookie: string | null, state: string | null): string
   if (!saved || !verifier || saved !== state) return null;
   return verifier;
 }
+
+/**
+ * The redirect URI registered at Whop (exact match required). WHOP_OAUTH_REDIRECT_URI pins it, e.g.
+ * https://hold-no-contact.vercel.app/api/public/whop-oauth/callback, so preview deployments use the same one.
+ * Without it, the callback on the requesting origin.
+ */
+export function redirectUri(requestUrl: string) {
+  return process.env["WHOP_OAUTH_REDIRECT_URI"] || `${new URL(requestUrl).origin}${CALLBACK_PATH}`;
+}
+
+export type WhopUserInfo = { sub?: string; email?: string; email_verified?: boolean };

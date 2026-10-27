@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { OAUTH_COOKIE, WHOP_AUTHORIZE_URL, pkceChallenge, randomToken } from "@/lib/whop-oauth";
+import { OAUTH_COOKIE, WHOP_AUTHORIZE_URL, pkceChallenge, randomToken, redirectUri } from "@/lib/whop-oauth";
 
 export const Route = createFileRoute("/api/public/whop-oauth/start")({
   server: {
@@ -13,7 +13,7 @@ export const Route = createFileRoute("/api/public/whop-oauth/start")({
         const url = new URL(WHOP_AUTHORIZE_URL);
         url.search = new URLSearchParams({
           client_id: clientId,
-          redirect_uri: `${origin}/api/public/whop-oauth/callback`,
+          redirect_uri: redirectUri(request.url),
           response_type: "code",
           scope: "openid profile email",
           state,

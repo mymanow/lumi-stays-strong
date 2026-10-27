@@ -264,3 +264,21 @@ SELECT cron.schedule(
        body := '{}'::jsonb
      ); $$
 );
+
+
+-- ===== 0011_whop_signin =====
+-- Connexion avec Whop (/api/public/whop-oauth/callback) : retrouver un compte Hold par son e-mail sans le créer.
+-- Réservée au service role (la route serveur) ; jamais exposée aux utilisateurs.
+CREATE OR REPLACE FUNCTION public.hold_user_id_by_email(p_email text)
+RETURNS uuid
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+  SELECT id FROM auth.users WHERE lower(email) = lower(p_email) LIMIT 1;
+$$;
+REVOKE ALL ON FUNCTION public.hold_user_id_by_email(text) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.hold_user_id_by_email(text) TO service_role;
+
+CREATE INDEX IF NOT EXISTS subscriptions_whop_user_id_idx ON public.subscriptions (whop_user_id);
