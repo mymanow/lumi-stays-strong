@@ -33,36 +33,38 @@ export function PhaseCard({ days }: { days: number }) {
   const fill = journeyProgress(days);
 
   return (
-    <Card>
+    <Card className="rounded-[28px]">
       <div className="flex items-center justify-between gap-2">
         <h2 className="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground">{t("home.phasesLabel")}</h2>
-        <span className="text-sm font-semibold">{t("home.phaseOf", { i: index + 1, n: JOURNEY_KEYS.length })}</span>
+        <span className="text-sm font-bold text-[#5a55d6]">{t("home.phaseOf", { i: index + 1, n: JOURNEY_KEYS.length })}</span>
       </div>
-      <div className="mt-3 grid gap-1.5" style={{ gridTemplateColumns: `repeat(${JOURNEY_KEYS.length}, 1fr)` }} aria-hidden>
+      <div className="mt-3 grid gap-[3px] overflow-hidden rounded-full" style={{ gridTemplateColumns: `repeat(${JOURNEY_KEYS.length}, 1fr)` }} aria-hidden>
         {JOURNEY_KEYS.map((k, i) => (
-          <span key={k} className="h-2 overflow-hidden rounded-full bg-white/50">
-            <span className="block h-full rounded-full bg-[var(--progress)]" style={{ width: i < index ? "100%" : i === index ? `${Math.max(8, Math.round(fill * 100))}%` : "0%" }} />
+          <span key={k} className="h-2 bg-white/55">
+            <span className="block h-full bg-[#f4b94e]" style={{ width: i < index ? "100%" : i === index ? `${Math.max(12, Math.round(fill * 100))}%` : "0%" }} />
           </span>
         ))}
       </div>
-      <div className="mt-4 flex items-start justify-between gap-3">
-        <div>
-          <p className="font-display text-2xl leading-tight">{t(`journey.stages.${key}.title`)}</p>
+      <div className="mt-4 flex items-start justify-between gap-3 rounded-[18px] bg-white/50 p-4">
+        <div className="min-w-0">
+          <p className="font-bold">{t(`journey.stages.${key}.title`)}</p>
           <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{t(`journey.stages.${key}.feel`)}</p>
         </div>
-        <span className="shrink-0 rounded-full bg-white/60 px-3 py-1 text-xs font-semibold">
+        <span className="shrink-0 rounded-lg border border-[#2e3865]/20 bg-white/60 px-2 py-1 text-xs font-semibold text-muted-foreground">
           {next === undefined ? t("journey.rangeOpen", { a: start }) : t("journey.range", { a: start, b: next - 1 })}
         </span>
       </div>
-      <p className="mt-4 text-sm font-semibold text-muted-foreground">{t("journey.task")}</p>
-      <div className="mt-1 flex items-center gap-3">
-        <p className={`flex-1 ${done ? "text-muted-foreground line-through" : ""}`}>{tip}</p>
+      <div className="mt-3 flex items-center gap-3 px-1">
+        <div className="min-w-0 flex-1">
+          <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">{t("journey.task")}</p>
+          <p className={`mt-0.5 text-sm ${done ? "text-muted-foreground line-through" : ""}`}>{tip}</p>
+        </div>
         <button type="button" role="checkbox" aria-checked={done} aria-label={done ? t("journey.undo") : t("journey.done")} onClick={toggle}
           className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full border ${done ? "border-primary bg-primary text-primary-foreground" : "border-line bg-white/40"}`}>
           {done && <Check className="h-5 w-5" strokeWidth={3} />}
         </button>
       </div>
-      <Link to="/journey" className="mt-2 inline-flex min-h-11 items-center text-sm font-medium underline underline-offset-4">{t("journey.see")}</Link>
+      <Link to="/journey" className="mt-1 inline-flex min-h-11 items-center px-1 text-sm font-medium underline underline-offset-4">{t("journey.see")}</Link>
     </Card>
   );
 }

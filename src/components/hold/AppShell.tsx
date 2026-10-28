@@ -65,7 +65,7 @@ export function AppShell({ children, wide = false }: { children: ReactNode; wide
               <Link to={to} activeOptions={{ exact: to === "/" }}
                 className="flex min-h-12 items-center justify-center gap-1.5 rounded-full text-[13px] font-semibold text-white/75"
                 activeProps={{ className: "bg-white !text-[#2e3865]", "aria-current": "page" }}>
-                {({ isActive }) => <><Icon width={20} height={20} aria-hidden /><span className={isActive ? "" : "sr-only"}>{t(key)}</span></>}
+                {() => <><Icon width={20} height={20} aria-hidden /><span className="sr-only">{t(key)}</span></>}
               </Link>
             </li>
           ))}
