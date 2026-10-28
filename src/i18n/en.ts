@@ -405,6 +405,10 @@ export const en: typeof fr = {
       night: ["It's late. Nothing is urgent tonight.", "Night makes everything louder. Wait for tomorrow."],
     },
   },
+  streak: {
+    title: "Streak & progress", back: "Back home", current: "current streak", day: "1 day", days: "{n} days",
+    prev: "Previous month", next: "Next month", checkin: "Check-in done", noContact: "No-contact day", today: "Today",
+  },
   sos: {
     breatheTitle: "Breathe with {companion}", inhale: "Breathe in…", exhale: "Breathe out…",
     remaining: "{n}s",

@@ -22,6 +22,7 @@ import { Route as RemindersRouteImport } from './routes/reminders'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SigninRouteImport } from './routes/signin'
 import { Route as SosRouteImport } from './routes/sos'
+import { Route as StreakRouteImport } from './routes/streak'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as ApiCoachRouteImport } from './routes/api/coach'
 import { Route as SubscribeSuccessRouteImport } from './routes/subscribe.success'
@@ -95,6 +96,11 @@ const SosRoute = SosRouteImport.update({
   path: '/sos',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StreakRoute = StreakRouteImport.update({
+  id: '/streak',
+  path: '/streak',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
@@ -146,6 +152,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/signin': typeof SigninRoute
   '/sos': typeof SosRoute
+  '/streak': typeof StreakRoute
   '/terms': typeof TermsRoute
   '/api/coach': typeof ApiCoachRoute
   '/subscribe/success': typeof SubscribeSuccessRoute
@@ -168,6 +175,7 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/signin': typeof SigninRoute
   '/sos': typeof SosRoute
+  '/streak': typeof StreakRoute
   '/terms': typeof TermsRoute
   '/api/coach': typeof ApiCoachRoute
   '/subscribe/success': typeof SubscribeSuccessRoute
@@ -191,6 +199,7 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/signin': typeof SigninRoute
   '/sos': typeof SosRoute
+  '/streak': typeof StreakRoute
   '/terms': typeof TermsRoute
   '/api/coach': typeof ApiCoachRoute
   '/subscribe/success': typeof SubscribeSuccessRoute
@@ -215,6 +224,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/signin'
     | '/sos'
+    | '/streak'
     | '/terms'
     | '/api/coach'
     | '/subscribe/success'
@@ -237,6 +247,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/signin'
     | '/sos'
+    | '/streak'
     | '/terms'
     | '/api/coach'
     | '/subscribe/success'
@@ -259,6 +270,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/signin'
     | '/sos'
+    | '/streak'
     | '/terms'
     | '/api/coach'
     | '/subscribe/success'
@@ -282,6 +294,7 @@ export interface RootRouteChildren {
   SettingsRoute: typeof SettingsRoute
   SigninRoute: typeof SigninRoute
   SosRoute: typeof SosRoute
+  StreakRoute: typeof StreakRoute
   TermsRoute: typeof TermsRoute
   ApiCoachRoute: typeof ApiCoachRoute
   SubscribeSuccessRoute: typeof SubscribeSuccessRoute
@@ -384,6 +397,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SosRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/streak': {
+      id: '/streak'
+      path: '/streak'
+      fullPath: '/streak'
+      preLoaderRoute: typeof StreakRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/terms': {
       id: '/terms'
       path: '/terms'
@@ -450,6 +470,7 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsRoute: SettingsRoute,
   SigninRoute: SigninRoute,
   SosRoute: SosRoute,
+  StreakRoute: StreakRoute,
   TermsRoute: TermsRoute,
   ApiCoachRoute: ApiCoachRoute,
   SubscribeSuccessRoute: SubscribeSuccessRoute,
@@ -461,13 +482,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

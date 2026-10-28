@@ -403,6 +403,10 @@ export const fr = {
       night: ["Il est tard. Rien ne presse ce soir.", "La nuit amplifie tout. Attends demain."],
     },
   },
+  streak: {
+    title: "Série & progrès", back: "Retour à l'accueil", current: "série actuelle", day: "1 jour", days: "{n} jours",
+    prev: "Mois précédent", next: "Mois suivant", checkin: "Check-in fait", noContact: "Jour sans contact", today: "Aujourd'hui",
+  },
   sos: {
     breatheTitle: "Respire avec {companion}", inhale: "Inspire…", exhale: "Expire…",
     remaining: "{n} s",

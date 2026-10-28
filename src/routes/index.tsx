@@ -112,9 +112,9 @@ function Home() {
           <p className="mt-1 text-muted-foreground">{line}</p>
         </div>
         <div className="flex shrink-0 items-center gap-1">
-          <span className="flex items-center gap-1 rounded-full bg-white/70 px-3 py-1.5 text-sm font-bold text-[#2e3865]" aria-label={t("home.streakBadge", { n: parts.d })}>
+          <Link to="/streak" className="flex min-h-11 items-center gap-1 rounded-full bg-white/70 px-3 text-sm font-bold text-[#2e3865] active:scale-95" aria-label={t("home.streakBadge", { n: parts.d })}>
             <Flame aria-hidden className="h-4 w-4 text-[#e8893a]" fill="#f4b94e" strokeWidth={2} />{parts.d}
-          </span>
+          </Link>
           <Lumi size={40} stage={stage} emotion="happy" interactive />
         </div>
       </header>
