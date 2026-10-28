@@ -14,16 +14,16 @@ type Admin = {
 };
 
 /**
- * Exchanges the code. Whop documents a JSON body with the PKCE verifier; some apps also need the client secret, so
- * the secret is added to the JSON body, then sent as a form as a last resort. Returns the status of the last try.
+ * Exchanges the code. Whop requires the client secret ("client_secret is required"): it is sent in the JSON body,
+ * then as a form, then with HTTP Basic auth. Returns the status of the last try.
  */
-async function exchangeCode(code: string, verifier: string, redirect_uri: string, clientId: string, clientSecret: string | undefined) {
-  const fields: Record<string, string> = { grant_type: "authorization_code", code, redirect_uri, client_id: clientId, code_verifier: verifier };
-  const attempts: RequestInit[] = [{ headers: { "Content-Type": "application/json" }, body: JSON.stringify(fields) }];
-  if (clientSecret) {
-    attempts.push({ headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...fields, client_secret: clientSecret }) });
-    attempts.push({ headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: new URLSearchParams({ ...fields, client_secret: clientSecret }) });
-  }
+async function exchangeCode(code: string, verifier: string, redirect_uri: string, clientId: string, clientSecret: string) {
+  const fields = { grant_type: "authorization_code", code, redirect_uri, client_id: clientId, code_verifier: verifier };
+  const attempts: RequestInit[] = [
+    { headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...fields, client_secret: clientSecret }) },
+    { headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: new URLSearchParams({ ...fields, client_secret: clientSecret }) },
+    { headers: { "Content-Type": "application/json", Authorization: `Basic ${btoa(`${clientId}:${clientSecret}`)}` }, body: JSON.stringify(fields) },
+  ];
   let status = 0;
   for (const init of attempts) {
     const res = await fetch(WHOP_TOKEN_URL, { method: "POST", ...init });
@@ -73,9 +73,11 @@ export const Route = createFileRoute("/api/public/whop-oauth/callback")({
 
         const clientId = process.env["WHOP_OAUTH_CLIENT_ID"]?.trim();
         if (!clientId) return fail("whop_config");
+        const clientSecret = process.env["WHOP_OAUTH_CLIENT_SECRET"]?.trim();
+        if (!clientSecret) { console.error("whop oauth: WHOP_OAUTH_CLIENT_SECRET is not set on this deployment"); return fail("whop_config_secret"); }
 
         try {
-          const { token: accessToken, status } = await exchangeCode(code, verifier, redirect, clientId, process.env["WHOP_OAUTH_CLIENT_SECRET"]?.trim());
+          const { token: accessToken, status } = await exchangeCode(code, verifier, redirect, clientId, clientSecret);
           if (!accessToken) return fail(`whop_token_${status}`);
 
           const infoRes = await fetch(WHOP_USERINFO_URL, { headers: { Authorization: `Bearer ${accessToken}` } });

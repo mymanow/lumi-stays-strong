@@ -23,6 +23,7 @@ vi.mock("@/integrations/supabase/client.server", () => ({
 }));
 
 process.env["WHOP_OAUTH_CLIENT_ID"] = "app_test";
+process.env["WHOP_OAUTH_CLIENT_SECRET"] = "secret_test";
 process.env["WHOP_OAUTH_REDIRECT_URI"] = "https://hold-no-contact.vercel.app/api/public/whop-oauth/callback";
 
 const { Route } = await import("@/routes/api/public/whop-oauth/callback");
@@ -51,7 +52,7 @@ describe("whop oauth callback", () => {
     subs.set("user_whop1", "u1");
     userinfo = { sub: "user_whop1", email: "a@b.co", email_verified: true };
     await call();
-    expect(JSON.parse(tokenBody)).toMatchObject({ code_verifier: "ver", redirect_uri: "https://hold-no-contact.vercel.app/api/public/whop-oauth/callback" });
+    expect(JSON.parse(tokenBody)).toMatchObject({ client_secret: "secret_test", code_verifier: "ver", redirect_uri: "https://hold-no-contact.vercel.app/api/public/whop-oauth/callback" });
   });
 
   it("signs in the anonymous account linked by its Whop subscription, attaching the verified Whop e-mail", async () => {
