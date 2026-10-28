@@ -1,12 +1,14 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
-import type { Database } from "@/integrations/supabase/types";
+import { db, type HoldDatabase } from "./db";
+import { deviceTimezone } from "./domain";
 import { useI18n } from "@/i18n";
 import { flushPendingEvents } from "./events";
 
-export type Profile = Database["public"]["Tables"]["profiles"]["Row"];
-export type ProfilePatch = Database["public"]["Tables"]["profiles"]["Update"];
+export type Profile = HoldDatabase["public"]["Tables"]["profiles"]["Row"];
+export type ProfilePatch = HoldDatabase["public"]["Tables"]["profiles"]["Update"];
+
 
 type Ctx = {
   ready: boolean;
@@ -29,11 +31,15 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
 
   const loadProfile = useCallback(async (uid: string) => {
-    let { data } = await supabase.from("profiles").select("*").eq("id", uid).maybeSingle();
+    let { data } = await db.from("profiles").select("*").eq("id", uid).maybeSingle();
     if (!data) {
       const stored = localStorage.getItem("hold_lang") ?? "fr";
-      const ins = await supabase.from("profiles").upsert({ id: uid, language: stored }).select("*").single();
+      const ins = await db.from("profiles").upsert({ id: uid, language: stored, timezone: deviceTimezone() }).select("*").single();
       data = ins.data;
+    } else if (!data.timezone && deviceTimezone()) {
+      // Filled once from the device; the user can change it in the settings.
+      const upd = await db.from("profiles").update({ timezone: deviceTimezone() }).eq("id", uid).select("*").single();
+      if (upd.data) data = upd.data;
     }
     setProfile(data);
     if (data) localStorage.setItem("hold_reasons", JSON.stringify(data.reasons ?? []));
@@ -73,7 +79,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const updateProfile = useCallback(async (patch: ProfilePatch) => {
     if (!session) return;
     setProfile((p) => (p ? { ...p, ...patch } as Profile : p));
-    const { data } = await supabase.from("profiles").update(patch).eq("id", session.user.id).select("*").single();
+    const { data } = await db.from("profiles").update(patch).eq("id", session.user.id).select("*").single();
     if (data) setProfile(data);
   }, [session]);
 

@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import type { Database } from "@/integrations/supabase/types";
 import { detectCrisis } from "@/lib/domain";
-import { FREE_COACH_MESSAGES_PER_DAY, PREMIUM_COACH_DAILY_CAP } from "@/config/app";
+import type { HoldDatabase } from "@/lib/db";
 
 const Body = z.object({
   messages: z.array(z.object({ role: z.enum(["user", "assistant"]), content: z.string().min(1).max(4000) })).min(1).max(30),
@@ -69,21 +69,24 @@ export const Route = createFileRoute("/api/coach")({
           userClient.from("contact_events").select("occurred_at").eq("type", "relapse").order("occurred_at", { ascending: false }).limit(1).maybeSingle(),
         ]);
         const premium = sub?.status === "active";
-        const cap = premium ? PREMIUM_COACH_DAILY_CAP : FREE_COACH_MESSAGES_PER_DAY;
 
+        // 1 message = 1 credit, debited before calling the AI and given back if no answer comes (coach_credit_* in SQL).
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-        const day = new Date().toISOString().slice(0, 10);
-        const { data: usage } = await supabaseAdmin.from("ai_usage").select("count").eq("user_id", userId).eq("day", day).maybeSingle();
-        if ((usage?.count ?? 0) >= cap) return json(429, { error: "limit" }, { "X-Remaining": "0" });
-        const { data: newCount } = await supabaseAdmin.rpc("increment_ai_usage", { _user: userId, _day: day });
-        const remaining = premium ? 999 : Math.max(0, cap - (newCount ?? 1));
+        const admin = supabaseAdmin as unknown as SupabaseClient<HoldDatabase>;
+        const { data: left, error: spendError } = await admin.rpc("coach_credit_spend", { _user: userId });
+        if (spendError) { console.error("coach credits", spendError); return json(500, { error: "credits" }); }
+        if (left === null || left < 0) return json(402, { error: "no_credits", premium }, { "X-Credits": "0" });
+        const refund = async () => {
+          const { data } = await admin.rpc("coach_credit_refund", { _user: userId });
+          return typeof data === "number" && data >= 0 ? data : left + 1;
+        };
 
         const lastUser = [...messages].reverse().find((m) => m.role === "user")?.content ?? "";
         const crisis = detectCrisis(lastUser);
         const days = profile?.last_contact_at ? Math.floor((Date.now() - new Date(profile.last_contact_at).getTime()) / 86400000) : 0;
 
         const apiKey = process.env["LOVABLE_API_KEY"];
-        if (!apiKey) return json(500, { error: "config" });
+        if (!apiKey) { await refund(); return json(500, { error: "config" }); }
         const upstream = await fetch("https://ai.gateway.lovable.dev/v1/responses", {
           method: "POST",
           signal: request.signal,
@@ -96,11 +99,12 @@ export const Route = createFileRoute("/api/coach")({
             store: false,
             reasoning: { effort: "low" },
           }),
-        });
-        const baseHeaders: Record<string, string> = { "X-Remaining": String(remaining), "X-Crisis": crisis ? "1" : "0" };
-        if (!upstream.ok || !upstream.body) {
-          console.error("coach upstream", upstream.status, await upstream.text().catch(() => ""));
-          return json(upstream.status === 429 ? 503 : 502, { error: "upstream" }, baseHeaders);
+        }).catch(() => null);
+        const baseHeaders: Record<string, string> = { "X-Credits": String(left), "X-Crisis": crisis ? "1" : "0" };
+        if (!upstream?.ok || !upstream.body) {
+          console.error("coach upstream", upstream?.status ?? "network", await upstream?.text().catch(() => ""));
+          const back = await refund();
+          return json(upstream?.status === 429 ? 503 : 502, { error: "upstream" }, { ...baseHeaders, "X-Credits": String(back) });
         }
 
         // Convert Responses SSE into a plain text stream of answer deltas.

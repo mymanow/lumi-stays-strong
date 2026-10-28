@@ -2,10 +2,13 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { Bell, Flame, Info, NotebookPen } from "lucide-react";
 import { AppShell } from "@/components/hold/AppShell";
-import { Card, SosButton } from "@/components/hold/Common";
-import { DailyTask } from "@/components/hold/DailyTask";
+import { Card } from "@/components/hold/Common";
+import { PhaseCard } from "@/components/hold/PhaseCard";
 import { MilestoneBanner } from "@/components/hold/MilestoneBanner";
+import { NoContactEditor } from "@/components/hold/NoContactEditor";
+import { ReminderControl } from "@/components/hold/ReminderControl";
 import { checkMilestone } from "@/lib/milestones";
 import { streakStats } from "@/lib/streaks";
 import { Lumi } from "@/components/hold/Lumi";
@@ -13,7 +16,6 @@ import { useI18n } from "@/i18n";
 import { useApp } from "@/lib/app-state";
 import { supabase } from "@/integrations/supabase/client";
 import { localDateString, lumiStageForDays, splitDuration, timeOfDay } from "@/lib/domain";
-import { MILESTONE_DAYS } from "@/config/app";
 import { logEvent } from "@/lib/events";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
@@ -42,12 +44,17 @@ const Pair = ({ n, slide = false }: { n: number; slide?: boolean }) => {
   return <><Digit key={`a${s[0]}`} value={s[0]!} slide={slide} /><Digit key={`b${s[1]}`} value={s[1]!} slide={slide} /></>;
 };
 
+/** Small uppercase label at the top of a home card, as in the mock-up. */
+const Label = ({ children }: { children: React.ReactNode }) => <h2 className="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground">{children}</h2>;
+
 function Home() {
   const { t, tl } = useI18n();
   const { profile, updateProfile, session } = useApp();
   const qc = useQueryClient();
   const [now, setNow] = useState(() => Date.now());
   const [open, setOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [reminderOpen, setReminderOpen] = useState(false);
   const [trigger, setTrigger] = useState<string | null>(null);
   const [note, setNote] = useState("");
   const [celebrate, setCelebrate] = useState<number | null>(null);
@@ -57,12 +64,14 @@ function Home() {
   const seconds = Math.max(0, (now - since) / 1000);
   const parts = splitDuration(seconds);
   const bestSeconds = Math.max(profile?.best_streak_seconds ?? 0, seconds);
-  const bestDays = Math.floor(bestSeconds / 86400);
-  const stage = lumiStageForDays(bestDays);
+  const stage = lumiStageForDays(Math.floor(bestSeconds / 86400));
+  const hour = new Date(now).getHours();
   const line = useMemo(() => {
-    const lines = tl<Record<string, string[]>>("home.lines")[timeOfDay(new Date().getHours())] ?? [];
+    const lines = tl<Record<string, string[]>>("home.lines")[timeOfDay(hour)] ?? [];
     return lines[new Date().getDate() % Math.max(1, lines.length)] ?? "";
-  }, [tl]);
+  }, [tl, hour]);
+  const hello = t(`home.greet.${timeOfDay(hour)}`);
+  const name = profile?.name?.trim();
 
   const startKey = profile?.last_contact_at ?? null;
   const wholeDays = parts.d;
@@ -96,79 +105,121 @@ function Home() {
     toast(t("home.together"));
   };
 
-  const R = 120; const C = 2 * Math.PI * R;
-  const dayFrac = (seconds % 86400) / 86400;
+  const reminder = { enabled: !!profile?.reminder_enabled, time: profile?.reminder_time?.slice(0, 5) ?? "21:30" };
+  const reasons = (profile?.reasons ?? []).filter((r) => r.trim());
+  const streakTitle = parts.d === 0 ? t("home.streakZero") : parts.d === 1 ? t("home.streakDay") : t("home.streakDays", { n: parts.d });
+  const pill = "flex min-h-12 min-w-0 flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-full px-3 text-[13px] font-semibold";
 
   return (
-    <div className="grid gap-6 md:grid-cols-2 md:gap-8">
+    <div className="flex flex-col gap-5">
       {celebrate !== null && <MilestoneBanner days={celebrate} onClose={() => setCelebrate(null)} />}
-      <div className="flex flex-col gap-6">
-        <Card className="flex flex-col items-center py-8">
-          <p className="text-sm text-muted-foreground">{t("home.since")}</p>
-          <div className="relative mt-4 flex h-64 w-64 items-center justify-center">
-            <span aria-hidden className="halo pointer-events-none absolute -inset-6 rounded-full"
-              style={{ background: "radial-gradient(circle, rgba(255,255,255,0.55) 0%, rgba(139,124,248,0.22) 45%, transparent 72%)" }} />
-            <svg className="absolute inset-0 -rotate-90" viewBox="0 0 260 260" aria-hidden>
-              <circle cx="130" cy="130" r={R} stroke="var(--line)" strokeWidth="8" fill="none" />
-              <circle cx="130" cy="130" r={R} stroke="var(--progress)" strokeWidth="8" fill="none" strokeLinecap="round" strokeDasharray={C} strokeDashoffset={C * (1 - dayFrac)} />
-            </svg>
-            <div className="relative text-center" aria-live="off">
-              <p className="font-display text-7xl leading-none">{parts.d}</p>
-              <p className="mt-1 text-muted-foreground">{t("home.units.d")}</p>
-              <p aria-hidden className="mt-3 font-display text-lg tabular-nums">
-                <Pair n={parts.h} />:<Pair n={parts.m} />:<Pair n={parts.s} slide />
-              </p>
+
+      <header className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h1 className="font-display text-[34px] leading-tight">{name ? t("home.greetName", { hello, name }) : hello}</h1>
+          <p className="mt-1 text-muted-foreground">{line}</p>
+        </div>
+        <div className="flex shrink-0 items-center gap-1">
+          <span className="flex items-center gap-1 rounded-full bg-white/70 px-3 py-1.5 text-sm font-bold text-[#2e3865]" aria-label={t("home.streakBadge", { n: parts.d })}>
+            <Flame aria-hidden className="h-4 w-4 text-[#e8893a]" fill="#f4b94e" strokeWidth={2} />{parts.d}
+          </span>
+          <Lumi size={40} stage={stage} emotion="happy" interactive />
+        </div>
+      </header>
+
+      <div className="grid gap-5 md:grid-cols-2">
+        <div className="flex flex-col gap-5">
+          <Card>
+            <div className="flex items-center justify-between">
+              <Label>{t("home.streakLabel")}</Label>
+              <button type="button" onClick={() => setEditOpen(true)} aria-label={t("home.editOpen")} className="-m-2 flex h-11 w-11 items-center justify-center rounded-full text-muted-foreground hover:bg-white/40">
+                <Info className="h-5 w-5" aria-hidden />
+              </button>
+            </div>
+            <p className="font-display text-[32px] leading-tight">{streakTitle}</p>
+            <p className="text-muted-foreground">{t("home.streakSub")}</p>
+            <div className="mt-4 flex gap-2">
+              <Link to="/checkin" className={`${pill} relative bg-[#2e3865] text-white`}>
+                <NotebookPen aria-hidden className="h-4 w-4" />{t("home.checkinShort")}
+                {checkin.isSuccess && !checkin.data && (
+                  <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#f2998d] px-1 text-[11px] font-bold text-[#2e3865]" aria-label={t("home.checkinPending")}>1</span>
+                )}
+              </Link>
+              <button type="button" onClick={() => setReminderOpen(true)} className={`${pill} glass`}>
+                <Bell aria-hidden className="h-4 w-4" />{reminder.enabled ? t("home.reminderAt", { time: reminder.time }) : t("home.reminderShort")}
+              </button>
+            </div>
+          </Card>
+
+          <Card>
+            <Label>{t("home.counterLabel")}</Label>
+            <p className="mt-1 text-muted-foreground">{t("home.counterSub")}</p>
+            <div className="mt-3 flex items-end gap-3" aria-live="off">
+              <p className="font-display text-6xl leading-none">{parts.d}</p>
+              <div className="pb-1">
+                <p className="text-sm text-muted-foreground">{parts.d === 1 ? t("home.unitDay") : t("home.units.d")}</p>
+                <p aria-hidden className="font-display text-2xl leading-none tabular-nums">
+                  <Pair n={parts.h} />:<Pair n={parts.m} />:<Pair n={parts.s} slide />
+                </p>
+              </div>
               <p className="sr-only">{parts.d} {t("home.units.d")}, {parts.h} {t("home.units.h")}, {parts.m} {t("home.units.m")}</p>
             </div>
-          </div>
-          <p className="mt-4 text-sm text-muted-foreground">{t("home.best", { n: bestDays })}</p>
-          <dl className="mt-5 grid w-full grid-cols-3 gap-2 text-center">
-            {([["progress.best", `${Math.floor(stats.bestSeconds / 86400)} ${t("home.units.d")}`], ["progress.attempts", String(stats.attempts)], ["progress.resistances", String(stats.resistances)]] as const).map(([k, v]) => (
-              <div key={k} className="rounded-[18px] bg-white/40 px-1 py-2">
-                <dd className="font-display text-xl leading-none">{v}</dd>
-                <dt className="mt-1 text-xs text-muted-foreground">{t(k)}</dt>
-              </div>
-            ))}
-          </dl>
-        </Card>
-        <SosButton />
-        <button type="button" onClick={() => setOpen(true)} className="min-h-11 self-center font-medium text-foreground underline underline-offset-4">{t("home.relapse")}</button>
+            <dl className="mt-4 grid grid-cols-3 gap-2 text-center">
+              {([["progress.best", `${Math.floor(stats.bestSeconds / 86400)} ${t("home.units.d")}`], ["progress.attempts", String(stats.attempts)], ["progress.resistances", String(stats.resistances)]] as const).map(([k, v]) => (
+                <div key={k} className="rounded-[18px] bg-white/40 px-1 py-2">
+                  <dd className="font-display text-xl leading-none">{v}</dd>
+                  <dt className="mt-1 text-xs text-muted-foreground">{t(k)}</dt>
+                </div>
+              ))}
+            </dl>
+            <div className="mt-4 flex gap-2">
+              <Link to="/history" className={`${pill} glass`}>{t("home.journal")}</Link>
+              <button type="button" onClick={() => setOpen(true)} className={`${pill} border border-[#f2998d] bg-[#f2998d]/25`}>{t("home.relapse")}</button>
+            </div>
+          </Card>
+        </div>
+
+        <div className="flex flex-col gap-5">
+          <PhaseCard days={parts.d} />
+
+          <Card>
+            <div className="flex items-center justify-between">
+              <Label>{t("home.reasonsLabel")}</Label>
+              <button type="button" onClick={() => setEditOpen(true)} className="-my-2 min-h-11 rounded-full px-3 text-sm font-semibold underline underline-offset-4">{t("home.reasonsEdit")}</button>
+            </div>
+            {reasons.length === 0 ? (
+              <p className="mt-2 text-muted-foreground">{t("home.reasonsEmpty")}</p>
+            ) : (
+              <ol className="mt-3 flex flex-col gap-2">
+                {reasons.map((r, i) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <span aria-hidden className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/70 text-sm font-bold text-[#2e3865]">{i + 1}</span>
+                    <span className="break-words pt-0.5">{r}</span>
+                  </li>
+                ))}
+              </ol>
+            )}
+          </Card>
+
+          <Card>
+            <h2 className="text-2xl">{t("home.remindersTitle")}</h2>
+            <p className="mt-1 text-sm text-muted-foreground">{t("home.remindersSub")}</p>
+            <Link to="/reminders" className="mt-4 flex min-h-12 items-center justify-center rounded-full border border-white/80 font-semibold">{t("home.remindersOpen")}</Link>
+          </Card>
+        </div>
       </div>
 
-      <div className="flex flex-col gap-6">
-        <Card className="flex items-center gap-4">
-          <Lumi size={52} stage={stage} emotion="happy" interactive />
-          <p className="font-display text-lg leading-snug">{line}</p>
-        </Card>
-        <DailyTask days={parts.d} />
-        <Card>
-          <h2 className="text-2xl">{t("home.checkinTitle")}</h2>
-          <p className="mt-1 text-sm text-muted-foreground">{checkin.data ? t("home.checkinDone") : "30 s"}</p>
-          <Link to="/checkin" className="mt-4 flex min-h-12 items-center justify-center rounded-full bg-white font-bold text-[#2e3865]">
-            {checkin.data ? t("home.checkinEdit") : t("home.checkinCta")}
-          </Link>
-        </Card>
-        <Card>
-          <h2 className="text-2xl">{t("home.remindersTitle")}</h2>
-          <p className="mt-1 text-sm text-muted-foreground">{t("home.remindersSub")}</p>
-          <Link to="/reminders" className="mt-4 flex min-h-12 items-center justify-center rounded-full border border-white/80 font-semibold">{t("home.remindersOpen")}</Link>
-        </Card>
-        <Card>
-          <h2 className="mb-4 text-2xl">{t("home.milestones")}</h2>
-          <ol className="flex flex-wrap justify-between gap-2">
-            {MILESTONE_DAYS.map((d) => {
-              const reached = parts.d >= d;
-              return (
-                <li key={d} className="flex flex-col items-center gap-1">
-                  <span aria-hidden className={`h-4 w-4 rounded-full ${reached ? "bg-primary shadow-[0_0_10px_var(--primary)]" : "border border-line"}`} />
-                  <span className="text-xs text-muted-foreground">{d}</span>
-                  <span className="sr-only">{t("home.milestoneDay", { n: d })} — {reached ? t("home.milestoneReached") : t("home.milestoneNext")}</span>
-                </li>
-              );
-            })}
-          </ol>
-        </Card>
-      </div>
+      <NoContactEditor open={editOpen} onOpenChange={setEditOpen} />
+
+      <Dialog open={reminderOpen} onOpenChange={setReminderOpen}>
+        <DialogContent className="rounded-[28px] border-white/70 bg-[#e9e6fb] text-[#2e3865]">
+          <DialogHeader>
+            <DialogTitle className="sr-only">{t("home.reminderShort")}</DialogTitle>
+            <DialogDescription className="sr-only">{t("plan.reminderSub")}</DialogDescription>
+          </DialogHeader>
+          <ReminderControl value={reminder} onChange={(v) => void updateProfile({ reminder_enabled: v.enabled, reminder_time: v.time })} />
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="rounded-[28px] border-white/70 bg-[#e9e6fb] text-[#2e3865]">

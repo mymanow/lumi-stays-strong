@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { Zap } from "lucide-react";
 import { z } from "zod";
 import { AppShell } from "@/components/hold/AppShell";
 import { Lumi } from "@/components/hold/Lumi";
@@ -8,7 +10,7 @@ import { useI18n } from "@/i18n";
 import { useApp } from "@/lib/app-state";
 import { supabase } from "@/integrations/supabase/client";
 import { detectCrisis, lumiStageForDays } from "@/lib/domain";
-import { FREE_COACH_MESSAGES_PER_DAY } from "@/config/app";
+import { useCoachCredits } from "@/lib/credits";
 import type { PlanKey } from "@/config/whop";
 
 // Loaded only when "subscribe" is pressed.
@@ -37,28 +39,26 @@ type Mode = "urge" | "relapse" | "bad";
 function Coach() {
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [checkoutPlan, setCheckoutPlan] = useState<PlanKey>("quarterly");
-  const { t, lang } = useI18n();
-  const { profile, premium, updateProfile, session } = useApp();
-  const initial = Route.useSearch().mode;
-  const [mode, setMode] = useState<Mode>(initial ?? "urge");
+  const { t, tl, lang } = useI18n();
+  const { profile, premium, updateProfile } = useApp();
+  const mode: Mode = Route.useSearch().mode ?? "urge";
+  const qc = useQueryClient();
+  const credits = useCoachCredits();
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
-  const [remaining, setRemaining] = useState<number | null>(null);
+  const [left, setLeft] = useState<number | null>(null);
   const [crisis, setCrisis] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
   const tone = (["gentle", "direct", "frank"].includes(profile?.coach_tone ?? "") ? profile!.coach_tone : "gentle") as "gentle" | "direct" | "frank";
   const days = profile?.last_contact_at ? Math.floor((Date.now() - new Date(profile.last_contact_at).getTime()) / 86400000) : 0;
 
-  useEffect(() => {
-    if (!session) return;
-    const day = new Date().toISOString().slice(0, 10);
-    supabase.from("ai_usage").select("count").eq("day", day).maybeSingle().then(({ data }) => setRemaining(Math.max(0, FREE_COACH_MESSAGES_PER_DAY - (data?.count ?? 0))));
-  }, [session]);
+  // The server's answer (X-Credits) wins over the cached balance until the query is refreshed.
+  const balance = left ?? credits.data?.balance ?? null;
   useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" }); }, [messages]);
 
-  const limitReached = !premium && remaining === 0;
+  const limitReached = balance === 0;
 
   const send = async (text: string) => {
     const content = text.trim();
@@ -74,10 +74,10 @@ function Coach() {
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${data.session?.access_token}` },
         body: JSON.stringify({ messages: next.slice(-10), mode, tone, lang }),
       });
-      const rem = res.headers.get("X-Remaining");
-      if (rem !== null) setRemaining(Number(rem));
+      const rem = res.headers.get("X-Credits");
+      if (rem !== null && rem !== "") setLeft(Number(rem));
       if (res.headers.get("X-Crisis") === "1") setCrisis(true);
-      if (res.status === 429) { setRemaining(0); setMessages(next); return; }
+      if (res.status === 402) { setLeft(0); setMessages(messages); setInput(content); return; }
       if (!res.ok || !res.body) throw new Error("coach");
       const reader = res.body.getReader();
       const dec = new TextDecoder();
@@ -94,30 +94,35 @@ function Coach() {
       setMessages(next);
     } finally {
       setBusy(false);
+      void qc.invalidateQueries({ queryKey: ["credits"] });
     }
   };
+  const name = profile?.name?.trim();
+  const creditLabel = balance === null ? "…" : balance === 1 ? t("coach.credit") : t("coach.credits", { n: balance });
 
   return (
     <div className="mx-auto flex max-w-[720px] flex-col" style={{ minHeight: "calc(100dvh - 9rem)" }}>
-      <header className="mb-4 flex flex-wrap items-center gap-3 border-b border-white/60 pb-4">
+      <header className="mb-3 flex items-center gap-3 border-b border-white/60 pb-4">
         <Lumi size={36} stage={lumiStageForDays(Math.max(days, Math.floor((profile?.best_streak_seconds ?? 0) / 86400)))} />
-        <div className="flex-1">
-          <h1 className="text-3xl">{t("coach.title")}</h1>
-          <p className="text-sm text-muted-foreground">{premium ? t("coach.unlimited") : t("coach.remaining", { n: remaining ?? FREE_COACH_MESSAGES_PER_DAY })}</p>
+        <div className="min-w-0 flex-1">
+          <h1 className="font-display text-[23px] leading-tight">{t("coach.title")}</h1>
+          <p className="mt-0.5 inline-flex items-center gap-1.5 rounded-full bg-white/60 px-2.5 py-0.5 text-xs font-semibold text-[#1d6b4f]">
+            <span aria-hidden className="h-2 w-2 rounded-full bg-[#2fb37d]" />{t("coach.online")}
+          </p>
         </div>
-        <div role="radiogroup" aria-label={t("coach.tone")} className="glass inline-flex rounded-full p-1">
-          {(["gentle", "direct", "frank"] as const).map((k) => (
-            <button key={k} type="button" role="radio" aria-checked={tone === k} onClick={() => updateProfile({ coach_tone: k })}
-              className={`min-h-9 rounded-full px-4 text-sm ${tone === k ? "bg-white text-[#2e3865]" : "text-muted-foreground"}`}>{t(`coach.${k}`)}</button>
-          ))}
-        </div>
+        <span className="flex shrink-0 items-center gap-1 rounded-full bg-white/70 px-3 py-1.5 text-sm font-bold text-[#2e3865]" title={t("coach.creditsHint")} aria-live="polite">
+          <Zap aria-hidden className="h-4 w-4 text-[#e8a33a]" fill="#f4b94e" strokeWidth={1.5} />{creditLabel}
+        </span>
       </header>
 
-      <div role="radiogroup" aria-label="Mode" className="mb-4 flex flex-wrap gap-2">
-        {(["urge", "relapse", "bad"] as const).map((m) => (
-          <button key={m} type="button" role="radio" aria-checked={mode === m} onClick={() => setMode(m)}
-            className={`min-h-11 rounded-full border px-4 text-sm ${mode === m ? "border-white bg-white text-[#2e3865]" : "border-white/70"}`}>{t(`coach.modes.${m}`)}</button>
-        ))}
+      <div role="radiogroup" aria-label={t("coach.tone")} className="mb-4 flex items-center gap-2 text-sm">
+        <span className="text-muted-foreground">{t("coach.tone")}</span>
+        <div className="glass inline-flex rounded-full p-1">
+          {(["gentle", "direct", "frank"] as const).map((k) => (
+            <button key={k} type="button" role="radio" aria-checked={tone === k} onClick={() => updateProfile({ coach_tone: k })}
+              className={`min-h-9 rounded-full px-3.5 ${tone === k ? "bg-white text-[#2e3865]" : "text-muted-foreground"}`}>{t(`coach.${k}`)}</button>
+          ))}
+        </div>
       </div>
 
       {crisis && (
@@ -128,7 +133,10 @@ function Coach() {
       )}
 
       <div className="flex flex-1 flex-col gap-4" aria-live="polite">
-        {messages.length === 0 && <p className="font-display text-xl text-foreground/90">{t("coach.intro")}</p>}
+        <div className="flex max-w-[90%] gap-2 self-start">
+          <span className="mt-1 shrink-0"><Lumi size={14} stage={3} breathe={false} label="" /></span>
+          <p className="rounded-[22px] rounded-tl-md bg-white/70 px-4 py-3 leading-relaxed text-[#2e3865]">{name ? t("coach.hello", { name }) : t("coach.helloNoName")}</p>
+        </div>
         {messages.map((m, i) => m.role === "user" ? (
           <div key={i} className="max-w-[85%] self-end whitespace-pre-wrap break-words rounded-[24px] rounded-br-md bg-primary px-4 py-3 text-primary-foreground">{m.content}</div>
         ) : (
@@ -140,17 +148,27 @@ function Coach() {
         {error && <p role="alert" className="font-semibold text-foreground">{error}</p>}
         {limitReached && (
           <div className="glass rounded-[24px] p-4">
-            <p>{t("coach.limit")}</p>
+            <p>{premium && credits.data?.nextRefill
+              ? t("coach.limitPremium", { date: credits.data.nextRefill.toLocaleDateString(lang === "fr" ? "fr-FR" : "en-GB", { day: "numeric", month: "long" }) })
+              : t("coach.limit")}</p>
             <div className="mt-3 flex flex-wrap gap-3">
               <Link to="/sos" className="inline-flex min-h-11 items-center rounded-full border border-white/80 px-4">SOS</Link>
-              <button type="button" onClick={() => setCheckoutOpen(true)} className="inline-flex min-h-11 items-center rounded-full bg-primary px-4 font-semibold text-primary-foreground">{t("coach.upgrade")}</button>
+              {!premium && <button type="button" onClick={() => setCheckoutOpen(true)} className="inline-flex min-h-11 items-center rounded-full bg-primary px-4 font-semibold text-primary-foreground">{t("coach.upgrade", { n: credits.data?.monthly ?? 300 })}</button>}
             </div>
           </div>
         )}
         <div ref={endRef} />
       </div>
 
-      <form onSubmit={(e) => { e.preventDefault(); void send(input); }} className="sticky bottom-20 mt-4 md:bottom-4">
+      <form onSubmit={(e) => { e.preventDefault(); void send(input); }} className="sticky bottom-24 mt-4 md:bottom-4">
+        {!limitReached && (
+          <div className="-mx-5 mb-2 flex gap-2 overflow-x-auto px-5 pb-1 [scrollbar-width:none] md:mx-0 md:px-0">
+            {tl<string[]>("coach.suggestions").map((q) => (
+              <button key={q} type="button" disabled={busy} onClick={() => void send(q)}
+                className="glass min-h-10 shrink-0 rounded-full px-4 text-sm font-medium disabled:opacity-50">{q}</button>
+            ))}
+          </div>
+        )}
         <div className="flex items-end gap-2 glass rounded-[24px] p-2">
           <label htmlFor="coach-input" className="sr-only">{t("coach.placeholder")}</label>
           <textarea id="coach-input" rows={1} value={input} disabled={limitReached} onChange={(e) => setInput(e.target.value)} placeholder={t("coach.placeholder")}

@@ -4,10 +4,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Frown, Heart, Meh, Smile, Sparkles, type LucideIcon } from "lucide-react";
 import { AppShell } from "@/components/hold/AppShell";
-import { ChoiceList, PageTitle, PrimaryButton } from "@/components/hold/Common";
+import { ChoiceList, PrimaryButton } from "@/components/hold/Common";
 import { useI18n } from "@/i18n";
 import { useApp } from "@/lib/app-state";
-import { supabase } from "@/integrations/supabase/client";
+import { db } from "@/lib/db";
 import { detectCrisis, localDateString } from "@/lib/domain";
 import { Lumi } from "@/components/hold/Lumi";
 
@@ -17,15 +17,36 @@ export const Route = createFileRoute("/checkin")({
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { title: "Check-in du jour — Hold" },
-      { name: "description", content: "30 secondes pour noter ton humeur, ton envie et tes déclencheurs." },
+      { name: "description", content: "Ton check-in en 4 étapes : émotions, relation, corps, puis humeur et envie d'écrire." },
       { property: "og:title", content: "Check-in du jour — Hold" },
-      { property: "og:description", content: "30 secondes pour noter ton humeur, ton envie et tes déclencheurs." },
+      { property: "og:description", content: "Ton check-in en 4 étapes : émotions, relation, corps, puis humeur et envie d'écrire." },
     ],
   }),
   component: () => <AppShell><Checkin /></AppShell>,
 });
 
 const TRIGGERS = ["evening", "social_media", "loneliness", "alcohol", "argument", "anniversary", "other"];
+
+/** É-R-P check-in: three multi-choice steps (keys saved in checkins.emotions / relational / physical), then mood and urge. */
+const EMOTIONS = ["sad", "anxious", "angry", "lonely", "nostalgic", "lost", "relieved", "calm"] as const;
+const RELATIONAL = ["thought_of_them", "checked_profile", "they_contacted", "wanted_to_write", "talked_to_someone", "saw_people"] as const;
+const PHYSICAL = ["slept_well", "slept_badly", "tired", "no_appetite", "knot", "moved"] as const;
+const STEPS = ["e", "r", "p", "last"] as const;
+
+function Chips({ id, group, options, value, onChange }: { id: string; group: "emotions" | "relational" | "physical"; options: readonly string[]; value: string[]; onChange: (v: string[]) => void }) {
+  const { t } = useI18n();
+  return (
+    <div role="group" aria-labelledby={id} className="cascade flex flex-wrap gap-2.5">
+      {options.map((k) => {
+        const on = value.includes(k);
+        return (
+          <button key={k} type="button" role="checkbox" aria-checked={on} onClick={() => onChange(on ? value.filter((v) => v !== k) : [...value, k])}
+            className="choice min-h-12 rounded-full px-4 text-[15px] font-medium transition-transform active:scale-95">{t(`checkin.${group}.${k}`)}</button>
+        );
+      })}
+    </div>
+  );
+}
 
 const MOOD_ICONS: { Icon: LucideIcon; color: string }[] = [
   { Icon: Frown, color: "#C0443B" },
@@ -82,6 +103,10 @@ function Checkin() {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const today = localDateString();
+  const [step, setStep] = useState(0);
+  const [emotions, setEmotions] = useState<string[]>([]);
+  const [relational, setRelational] = useState<string[]>([]);
+  const [physical, setPhysical] = useState<string[]>([]);
   const [mood, setMood] = useState(3);
   const [urge, setUrge] = useState(3);
   const [triggers, setTriggers] = useState<string[]>([]);
@@ -92,16 +117,17 @@ function Checkin() {
   const [glad, setGlad] = useState(false);
 
   useEffect(() => {
-    supabase.from("checkins").select("*").eq("date", today).maybeSingle().then(({ data }) => {
+    db.from("checkins").select("*").eq("date", today).maybeSingle().then(({ data }) => {
       if (!data) return;
       setMood(data.mood); setUrge(data.urge); setTriggers(data.triggers ?? []); setNote(data.note ?? "");
+      setEmotions(data.emotions ?? []); setRelational(data.relational ?? []); setPhysical(data.physical ?? []);
     });
   }, [today]);
 
   const save = async () => {
     if (!session) return;
     setSaving(true);
-    const { error } = await supabase.from("checkins").upsert({ user_id: session.user.id, date: today, mood, urge, triggers, note: note.slice(0, 500) || null }, { onConflict: "user_id,date" });
+    const { error } = await db.from("checkins").upsert({ user_id: session.user.id, date: today, mood, urge, triggers, emotions, relational, physical, note: note.slice(0, 500) || null }, { onConflict: "user_id,date" });
     setSaving(false);
     if (error) { toast.error(error.message); return; }
     qc.invalidateQueries();
@@ -114,26 +140,49 @@ function Checkin() {
     window.setTimeout(() => navigate({ to: "/" }), 1600);
   };
 
+  const key = STEPS[step]!;
+  const go = (n: number) => { setStep(n); window.scrollTo({ top: 0, behavior: "smooth" }); };
+
   return (
     <div className="mx-auto max-w-[520px]">
-      <PageTitle>{t("checkin.title")}</PageTitle>
-      <Scale id="mood" label={t("checkin.mood")} value={mood} onChange={setMood} labels={tl<string[]>("checkin.moodScale")} icons={MOOD_ICONS} />
-      <Scale id="urge" label={t("checkin.urge")} value={urge} onChange={setUrge} labels={tl<string[]>("checkin.urgeScale")} bars />
-      <h2 id="ctrig" className="mb-3 text-lg font-semibold">{t("checkin.triggers")}</h2>
-      <ChoiceList multi labelledBy="ctrig" options={TRIGGERS.map((k) => ({ value: k, label: t(`options.triggers.${k}`) }))} value={triggers} onChange={setTriggers} />
-      <label className="mt-8 flex flex-col gap-2">
-        <span className="text-lg font-semibold">{t("checkin.note")}</span>
-        <textarea value={note} maxLength={500} rows={4} onChange={(e) => setNote(e.target.value)} placeholder={t("checkin.notePh")}
-          className="glass rounded-[24px] p-4 text-base placeholder:text-muted-foreground/60" />
-        <span className="self-end text-xs text-muted-foreground">{t("checkin.count", { n: note.length })}</span>
-      </label>
+      <p className="text-sm font-semibold text-muted-foreground">{t("checkin.title")} · {t("checkin.stepOf", { i: step + 1, n: STEPS.length })}</p>
+      <div className="mt-2 grid grid-cols-4 gap-1.5" aria-hidden>
+        {STEPS.map((k, i) => <span key={k} className={`h-1.5 rounded-full ${i <= step ? "bg-[var(--progress)]" : "bg-white/50"}`} />)}
+      </div>
+      <div key={key} className="fade-up mt-6">
+        <p className="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground">{t(`checkin.steps.${key}.tag`)}</p>
+        <h1 id={`q-${key}`} className="mt-1 text-[30px] leading-tight">{t(`checkin.steps.${key}.q`)}</h1>
+        {key !== "last" && <p className="mb-5 mt-1 text-sm text-muted-foreground">{t("checkin.multi")}</p>}
+        {key === "e" && <Chips id="q-e" group="emotions" options={EMOTIONS} value={emotions} onChange={setEmotions} />}
+        {key === "r" && <Chips id="q-r" group="relational" options={RELATIONAL} value={relational} onChange={setRelational} />}
+        {key === "p" && <Chips id="q-p" group="physical" options={PHYSICAL} value={physical} onChange={setPhysical} />}
+        {key === "last" && (
+          <div className="mt-6">
+            <Scale id="mood" label={t("checkin.mood")} value={mood} onChange={setMood} labels={tl<string[]>("checkin.moodScale")} icons={MOOD_ICONS} />
+            <Scale id="urge" label={t("checkin.urge")} value={urge} onChange={setUrge} labels={tl<string[]>("checkin.urgeScale")} bars />
+            <h2 id="ctrig" className="mb-3 text-lg font-semibold">{t("checkin.triggers")}</h2>
+            <ChoiceList multi labelledBy="ctrig" options={TRIGGERS.map((k) => ({ value: k, label: t(`options.triggers.${k}`) }))} value={triggers} onChange={setTriggers} />
+            <label className="mt-8 flex flex-col gap-2">
+              <span className="text-lg font-semibold">{t("checkin.note")}</span>
+              <textarea value={note} maxLength={500} rows={4} onChange={(e) => setNote(e.target.value)} placeholder={t("checkin.notePh")}
+                className="glass rounded-[24px] p-4 text-base placeholder:text-muted-foreground/60" />
+              <span className="self-end text-xs text-muted-foreground">{t("checkin.count", { n: note.length })}</span>
+            </label>
+          </div>
+        )}
+      </div>
       {showCrisis && (
         <div role="alert" className="mt-6 rounded-[24px] border border-white bg-white/60 p-4">
           <p>{t("crisis.notice")}</p>
           <Link to="/crisis" className="mt-3 inline-flex min-h-11 items-center font-bold text-foreground underline">{t("crisis.see")}</Link>
         </div>
       )}
-      <PrimaryButton arrow={false} className="mt-6" onClick={save} disabled={saving || thanks}>{t("checkin.save")}</PrimaryButton>
+      <div className="mt-8 flex flex-col gap-3">
+        {key === "last"
+          ? <PrimaryButton arrow={false} onClick={save} disabled={saving || thanks}>{t("checkin.save")}</PrimaryButton>
+          : <PrimaryButton onClick={() => go(step + 1)}>{t("checkin.next")}</PrimaryButton>}
+        {step > 0 && <button type="button" onClick={() => go(step - 1)} className="min-h-11 font-medium underline-offset-4 hover:underline">{t("checkin.back")}</button>}
+      </div>
       {thanks && (
         <div role="status" className="sos-enter fixed inset-0 z-50 flex flex-col items-center justify-center gap-5 bg-[rgba(46,56,101,0.35)] backdrop-blur-sm">
           <div className="relative flex h-40 w-40 items-center justify-center">

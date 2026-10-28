@@ -3,19 +3,20 @@ import { useEffect, type ReactNode } from "react";
 import { useI18n } from "@/i18n";
 import { useApp } from "@/lib/app-state";
 import { APP_NAME } from "@/config/app";
-import { CoachIcon, HistoryIcon, HomeIcon, SettingsIcon } from "./Icons";
+import { CoachIcon, HomeIcon, LifebuoyIcon, SettingsIcon } from "./Icons";
 import { FullLoader } from "./Common";
 import { Lumi } from "./Lumi";
 import { msUntilNext, showNotification } from "@/lib/notify";
 
 const NAV = [
   { to: "/", key: "nav.home", Icon: HomeIcon },
-  { to: "/history", key: "nav.history", Icon: HistoryIcon },
+  { to: "/sos", key: "nav.sos", Icon: LifebuoyIcon },
   { to: "/coach", key: "nav.coach", Icon: CoachIcon },
   { to: "/settings", key: "nav.settings", Icon: SettingsIcon },
 ] as const;
 
-/** Main app layout: bottom tabs on phones, sidebar from 768px. Redirects to onboarding when unfinished. */
+/** Main app layout: a floating tab bar on phones (Accueil / SOS / Coach / Réglages), sidebar from 768px.
+ *  The history opens from the home ("Journal & historique"). Redirects to onboarding when unfinished. */
 export function AppShell({ children, wide = false }: { children: ReactNode; wide?: boolean }) {
   const { t } = useI18n();
   const { ready, profile } = useApp();
@@ -53,21 +54,18 @@ export function AppShell({ children, wide = false }: { children: ReactNode; wide
             </Link>
           ))}
         </nav>
-        <Link to="/sos" className="mt-auto flex min-h-14 items-center justify-center rounded-full bg-primary px-4 text-center font-bold text-primary-foreground">
-          {t("home.sos")}
-        </Link>
       </aside>
 
       <main className={`mx-auto w-full flex-1 px-5 pb-28 pt-8 md:px-10 md:pb-10 ${wide ? "max-w-6xl" : "max-w-3xl"}`}>{children}</main>
 
-      <nav aria-label={t("nav.main")} className="fixed inset-x-0 bottom-0 z-40 glass border-x-0 border-b-0 md:hidden" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
-        <ul className="grid grid-cols-4">
+      <nav aria-label={t("nav.main")} className="fixed inset-x-4 z-40 mx-auto max-w-md md:hidden" style={{ bottom: "max(12px, env(safe-area-inset-bottom))" }}>
+        <ul className="flex gap-1 rounded-full bg-[#2e3865]/90 p-1.5 shadow-[0_14px_34px_-12px_rgba(46,56,101,0.75)] backdrop-blur-md">
           {NAV.map(({ to, key, Icon }) => (
-            <li key={to}>
+            <li key={to} className="min-w-0 flex-1 transition-[flex-grow] duration-300 has-[[aria-current=page]]:flex-[1.8]">
               <Link to={to} activeOptions={{ exact: to === "/" }}
-                className="flex min-h-16 flex-col items-center justify-center gap-1 text-xs text-muted-foreground"
-                activeProps={{ className: "font-bold text-foreground", "aria-current": "page" }}>
-                <Icon /> {t(key)}
+                className="flex min-h-12 items-center justify-center gap-1.5 rounded-full text-[13px] font-semibold text-white/75"
+                activeProps={{ className: "bg-white !text-[#2e3865]", "aria-current": "page" }}>
+                {({ isActive }) => <><Icon width={20} height={20} aria-hidden /><span className={isActive ? "" : "sr-only"}>{t(key)}</span></>}
               </Link>
             </li>
           ))}

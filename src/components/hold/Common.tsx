@@ -82,15 +82,6 @@ export function PageTitle({ children }: { children: ReactNode }) {
   return <h1 className="mb-6 text-4xl">{children}</h1>;
 }
 
-export function SosButton({ className = "" }: { className?: string }) {
-  const { t } = useI18n();
-  return (
-    <Link to="/sos" className={`flex min-h-14 w-full items-center justify-center rounded-full bg-primary px-6 text-lg font-bold text-primary-foreground shadow-[0_10px_28px_-8px_rgba(46,56,101,0.6)] ${className}`}>
-      {t("home.sos")}
-    </Link>
-  );
-}
-
 export function ChoiceList<T extends string>({ options, value, onChange, multi = false, labelledBy, grid = false, details }: {
   options: { value: T; label: string }[]; value: T[]; onChange: (v: T[]) => void; multi?: boolean; labelledBy?: string;
   /** Tile layout: 3 columns of centered tiles, the last option spans the full width (e.g. durations). */

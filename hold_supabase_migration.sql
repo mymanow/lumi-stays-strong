@@ -282,3 +282,126 @@ REVOKE ALL ON FUNCTION public.hold_user_id_by_email(text) FROM PUBLIC, anon, aut
 GRANT EXECUTE ON FUNCTION public.hold_user_id_by_email(text) TO service_role;
 
 CREATE INDEX IF NOT EXISTS subscriptions_whop_user_id_idx ON public.subscriptions (whop_user_id);
+
+
+-- ===== 0012_post_login_pages =====
+-- Pages après connexion (accueil en cartes, SOS, check-in E/R/P, coach à crédits, réglages).
+
+-- Réglages : fuseau horaire IANA (ex. Europe/Paris), rempli depuis le navigateur puis modifiable.
+ALTER TABLE public.profiles
+  ADD COLUMN IF NOT EXISTS timezone text CHECK (timezone IS NULL OR char_length(timezone) <= 64);
+
+-- Check-in en 3 étapes : É(motionnel), R(elationnel), P(hysique). Des clés courtes, les libellés sont dans src/i18n.
+-- Humeur et envie restent (graphique de progrès).
+ALTER TABLE public.checkins
+  ADD COLUMN IF NOT EXISTS emotions text[] NOT NULL DEFAULT '{}' CHECK (coalesce(array_length(emotions, 1), 0) <= 12),
+  ADD COLUMN IF NOT EXISTS relational text[] NOT NULL DEFAULT '{}' CHECK (coalesce(array_length(relational, 1), 0) <= 12),
+  ADD COLUMN IF NOT EXISTS physical text[] NOT NULL DEFAULT '{}' CHECK (coalesce(array_length(physical, 1), 0) <= 12);
+
+-- Coach à crédits. 1 message envoyé = 1 crédit. Les règles se changent ici, sans redéployer l'app :
+--   welcome          crédits offerts une seule fois, au premier passage sur le coach ;
+--   premium_monthly  tant que l'abonnement est actif, le solde remonte à ce niveau tous les 30 jours (sans cumul au-delà).
+-- Les textes du paywall citent ces montants (src/i18n) : les garder alignés.
+CREATE TABLE IF NOT EXISTS public.coach_credit_rules (
+  key text PRIMARY KEY CHECK (key IN ('welcome', 'premium_monthly')),
+  amount int NOT NULL CHECK (amount >= 0),
+  description text NOT NULL,
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+INSERT INTO public.coach_credit_rules (key, amount, description) VALUES
+  ('welcome', 12, 'Crédits offerts une seule fois à chaque compte, au premier passage sur le coach.'),
+  ('premium_monthly', 300, 'Tant que l''abonnement est actif, le solde remonte à ce niveau tous les 30 jours.')
+ON CONFLICT (key) DO NOTHING;
+GRANT SELECT ON public.coach_credit_rules TO anon, authenticated;
+GRANT ALL ON public.coach_credit_rules TO service_role;
+ALTER TABLE public.coach_credit_rules ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "credit rules read" ON public.coach_credit_rules;
+CREATE POLICY "credit rules read" ON public.coach_credit_rules FOR SELECT TO anon, authenticated USING (true);
+
+-- Solde par compte : lisible par son propriétaire, modifiable seulement par les fonctions ci-dessous (service role).
+CREATE TABLE IF NOT EXISTS public.coach_credits (
+  user_id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  balance int NOT NULL DEFAULT 0 CHECK (balance >= 0),
+  welcome_granted_at timestamptz,
+  premium_refill_at timestamptz,
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+GRANT SELECT ON public.coach_credits TO authenticated;
+GRANT ALL ON public.coach_credits TO service_role;
+ALTER TABLE public.coach_credits ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "own credits read" ON public.coach_credits;
+CREATE POLICY "own credits read" ON public.coach_credits FOR SELECT TO authenticated USING (user_id = (select auth.uid()));
+
+-- Journal des mouvements (cadeau de bienvenue, recharge mensuelle, message, remboursement si le coach n'a pas répondu, achat, ajustement manuel).
+CREATE TABLE IF NOT EXISTS public.coach_credit_ledger (
+  id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  delta int NOT NULL,
+  reason text NOT NULL CHECK (reason IN ('welcome', 'premium_refill', 'message', 'refund', 'purchase', 'admin')),
+  balance_after int NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS coach_credit_ledger_user_idx ON public.coach_credit_ledger (user_id, created_at DESC);
+GRANT SELECT ON public.coach_credit_ledger TO authenticated;
+GRANT ALL ON public.coach_credit_ledger TO service_role;
+ALTER TABLE public.coach_credit_ledger ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "own ledger read" ON public.coach_credit_ledger;
+CREATE POLICY "own ledger read" ON public.coach_credit_ledger FOR SELECT TO authenticated USING (user_id = (select auth.uid()));
+
+-- Crée le solde au premier passage (cadeau de bienvenue) et applique la recharge mensuelle des abonnés. Renvoie le solde.
+CREATE OR REPLACE FUNCTION public.coach_credits_sync(_user uuid)
+RETURNS int LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
+DECLARE
+  welcome int := coalesce((SELECT amount FROM public.coach_credit_rules WHERE key = 'welcome'), 0);
+  monthly int := coalesce((SELECT amount FROM public.coach_credit_rules WHERE key = 'premium_monthly'), 0);
+  r public.coach_credits%ROWTYPE;
+  target int;
+BEGIN
+  INSERT INTO public.coach_credits (user_id, balance, welcome_granted_at) VALUES (_user, welcome, now())
+  ON CONFLICT (user_id) DO NOTHING;
+  IF FOUND AND welcome > 0 THEN
+    INSERT INTO public.coach_credit_ledger (user_id, delta, reason, balance_after) VALUES (_user, welcome, 'welcome', welcome);
+  END IF;
+  SELECT * INTO r FROM public.coach_credits WHERE user_id = _user FOR UPDATE;
+  IF EXISTS (SELECT 1 FROM public.subscriptions s WHERE s.user_id = _user AND s.status = 'active')
+     AND (r.premium_refill_at IS NULL OR r.premium_refill_at <= now() - interval '30 days') THEN
+    target := greatest(r.balance, monthly);
+    UPDATE public.coach_credits SET balance = target, premium_refill_at = now(), updated_at = now() WHERE user_id = _user;
+    IF target > r.balance THEN
+      INSERT INTO public.coach_credit_ledger (user_id, delta, reason, balance_after) VALUES (_user, target - r.balance, 'premium_refill', target);
+    END IF;
+    RETURN target;
+  END IF;
+  RETURN r.balance;
+END $$;
+
+-- Débite 1 crédit pour un message. Renvoie le nouveau solde, ou -1 si le solde est vide (rien n'est débité).
+CREATE OR REPLACE FUNCTION public.coach_credit_spend(_user uuid)
+RETURNS int LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
+DECLARE b int;
+BEGIN
+  PERFORM public.coach_credits_sync(_user);
+  UPDATE public.coach_credits SET balance = balance - 1, updated_at = now() WHERE user_id = _user AND balance > 0 RETURNING balance INTO b;
+  IF NOT FOUND THEN RETURN -1; END IF;
+  INSERT INTO public.coach_credit_ledger (user_id, delta, reason, balance_after) VALUES (_user, -1, 'message', b);
+  RETURN b;
+END $$;
+
+-- Rend le crédit quand le coach n'a pas pu répondre.
+CREATE OR REPLACE FUNCTION public.coach_credit_refund(_user uuid)
+RETURNS int LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
+DECLARE b int;
+BEGIN
+  UPDATE public.coach_credits SET balance = balance + 1, updated_at = now() WHERE user_id = _user RETURNING balance INTO b;
+  IF NOT FOUND THEN RETURN -1; END IF;
+  INSERT INTO public.coach_credit_ledger (user_id, delta, reason, balance_after) VALUES (_user, 1, 'refund', b);
+  RETURN b;
+END $$;
+
+-- Réservées à la route serveur /api/coach (service role) : un utilisateur ne peut jamais se créditer lui-même.
+REVOKE ALL ON FUNCTION public.coach_credits_sync(uuid) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.coach_credit_spend(uuid) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.coach_credit_refund(uuid) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.coach_credits_sync(uuid) TO service_role;
+GRANT EXECUTE ON FUNCTION public.coach_credit_spend(uuid) TO service_role;
+GRANT EXECUTE ON FUNCTION public.coach_credit_refund(uuid) TO service_role;

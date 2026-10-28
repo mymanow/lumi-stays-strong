@@ -61,3 +61,13 @@ export function timeOfDay(hour: number): "morning" | "afternoon" | "evening" | "
   if (hour >= 18 && hour < 23) return "evening";
   return "night";
 }
+
+/** "2026-10-28T21:05" in local time, the format of <input type="datetime-local">. */
+export function toLocalInput(d: Date) {
+  const p = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+/** The device's IANA time zone (e.g. "Europe/Paris"), or null when the browser does not say. */
+export function deviceTimezone(): string | null {
+  try { return Intl.DateTimeFormat().resolvedOptions().timeZone || null; } catch { return null; }
+}
