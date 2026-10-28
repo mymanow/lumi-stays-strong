@@ -3,16 +3,16 @@ import { useEffect, type ReactNode } from "react";
 import { useI18n } from "@/i18n";
 import { useApp } from "@/lib/app-state";
 import { APP_NAME } from "@/config/app";
-import { CoachIcon, HomeIcon, LifebuoyIcon, SettingsIcon } from "./Icons";
+import { MessageSquare, ShieldAlert, Sun, User } from "lucide-react";
 import { FullLoader } from "./Common";
 import { Lumi } from "./Lumi";
 import { msUntilNext, showNotification } from "@/lib/notify";
 
 const NAV = [
-  { to: "/", key: "nav.home", Icon: HomeIcon },
-  { to: "/sos", key: "nav.sos", Icon: LifebuoyIcon },
-  { to: "/coach", key: "nav.coach", Icon: CoachIcon },
-  { to: "/settings", key: "nav.settings", Icon: SettingsIcon },
+  { to: "/", key: "nav.home", Icon: Sun },
+  { to: "/sos", key: "nav.sos", Icon: ShieldAlert },
+  { to: "/coach", key: "nav.coach", Icon: MessageSquare },
+  { to: "/settings", key: "nav.settings", Icon: User },
 ] as const;
 
 /** Main app layout: a floating tab bar on phones (Accueil / SOS / Coach / Réglages), sidebar from 768px.
@@ -50,7 +50,7 @@ export function AppShell({ children, wide = false }: { children: ReactNode; wide
             <Link key={to} to={to} activeOptions={{ exact: to === "/" }}
               className="flex min-h-11 items-center gap-3 rounded-full px-4 font-medium text-muted-foreground hover:bg-white/40"
               activeProps={{ className: "bg-white text-[#2e3865]", "aria-current": "page" }}>
-              <Icon /> <span>{t(key)}</span>
+              <Icon size={20} strokeWidth={1.9} aria-hidden /> <span>{t(key)}</span>
             </Link>
           ))}
         </nav>
@@ -65,7 +65,7 @@ export function AppShell({ children, wide = false }: { children: ReactNode; wide
               <Link to={to} activeOptions={{ exact: to === "/" }}
                 className="flex min-h-12 items-center justify-center gap-1.5 rounded-full text-[13px] font-semibold text-white/75"
                 activeProps={{ className: "bg-white !text-[#2e3865]", "aria-current": "page" }}>
-                {() => <><Icon width={20} height={20} aria-hidden /><span className="sr-only">{t(key)}</span></>}
+                {() => <><Icon size={20} strokeWidth={1.9} aria-hidden /><span className="sr-only">{t(key)}</span></>}
               </Link>
             </li>
           ))}
