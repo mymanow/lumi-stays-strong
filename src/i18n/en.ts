@@ -151,7 +151,6 @@ export const en: typeof fr = {
     "perWeek": "per week",
     "more": "Show more plans",
     "hide": "Hide",
-    "simulate": "Simulate payment (test)",
     "quarterly": {
       "name": "Quarterly",
       "billed": "€39.00 billed every 3 months",
@@ -462,7 +461,6 @@ export const en: typeof fr = {
     successTitle: "Congratulations!", successBody: "Your unlimited coach is ready. Your support system is in place: we'll help you stay strong.", successPending: "Confirming your payment…",
     successLate: "Confirmation is taking a little while. It will arrive within a few minutes.",
     toCoach: "Let's go!",
-    simulated: "Simulation: no real payment",
   },
   journey: {
     title: "Your journey", sub: "General landmarks, not a schedule: everyone moves at their own pace.",

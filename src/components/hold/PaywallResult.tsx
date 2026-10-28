@@ -5,7 +5,6 @@ import { Lumi } from "./Lumi";
 import { Celebration } from "./Celebration";
 import { PrimaryButton } from "./Common";
 import { BackIcon } from "./Icons";
-import { SIMULATE_PAYMENT } from "@/config/app";
 import { TRIAL_DAYS, type PlanKey } from "@/config/whop";
 import { TRIAL_REMINDER_LEAD_MS } from "@/lib/trial-reminder";
 
@@ -62,7 +61,7 @@ function Journey({ plan }: { plan: PlanKey }) {
  * Post-quiz paywall: a 2-3 s "calculating" animation, then the "Hold - No Contact Pro" pill, what happens next with
  * the selected plan (trial timeline or no commitment) and the two plans. The CTA goes to the checkout of that plan.
  */
-export function PaywallResult({ plan, onPlan, onStart, onSimulate, onSkip, onBack, celebrate = false, onCelebrated }: { plan: PlanKey; onPlan: (p: PlanKey) => void; onStart: () => void; onSimulate: () => void; onSkip: () => void; onBack: () => void; celebrate?: boolean; onCelebrated?: (() => void) | undefined }) {
+export function PaywallResult({ plan, onPlan, onStart, onSkip, onBack, celebrate = false, onCelebrated }: { plan: PlanKey; onPlan: (p: PlanKey) => void; onStart: () => void; onSkip: () => void; onBack: () => void; celebrate?: boolean; onCelebrated?: (() => void) | undefined }) {
   const { t } = useI18n();
   const [loaded, setLoaded] = useState(() => reduced());
   const [more, setMore] = useState(false); // the weekly plan stays hidden until "show more plans"
@@ -131,7 +130,6 @@ export function PaywallResult({ plan, onPlan, onStart, onSimulate, onSkip, onBac
         {trial > 0 && <p className="mb-2 flex items-center justify-center gap-1.5 text-sm font-semibold"><Check size={16} className="text-[#7EE39A]" strokeWidth={3} aria-hidden />{t("paywall.trialNote")}</p>}
         <PrimaryButton onClick={onStart}>{trial > 0 ? t("paywall.ctaTrial", { days: trial }) : t("paywall.cta")}</PrimaryButton>
         <button type="button" onClick={onSkip} className="mt-1 min-h-10 w-full text-sm text-white/85 underline-offset-4 hover:underline">{t("paywall.skip")}</button>
-        {SIMULATE_PAYMENT && <button type="button" onClick={onSimulate} className="mt-1 min-h-10 w-full text-sm text-white/70 underline-offset-4 hover:underline">{t("pitch.simulate")}</button>}
         <p className="mt-1 flex justify-center gap-4 text-xs text-white/70">
           <a href="/terms" className="underline underline-offset-2">{t("paywall.terms")}</a>
           <a href="/privacy" className="underline underline-offset-2">{t("paywall.privacy")}</a>

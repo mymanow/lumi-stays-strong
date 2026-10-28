@@ -149,7 +149,6 @@ export const fr = {
     "perWeek": "par semaine",
     "more": "Voir plus d'offres",
     "hide": "Masquer",
-    "simulate": "Simuler le paiement (test)",
     "quarterly": {
       "name": "Trimestriel",
       "billed": "Facturé 39,00 € tous les 3 mois",
@@ -460,7 +459,6 @@ export const fr = {
     successTitle: "Félicitations !", successBody: "Ton coach illimité est prêt. Ton système de soutien est en place : on t'aide à tenir bon.", successPending: "On confirme ton paiement…",
     successLate: "La confirmation prend un peu de temps. Elle arrivera d'ici quelques minutes.",
     toCoach: "C'est parti !",
-    simulated: "Simulation : aucun paiement réel",
   },
   journey: {
     title: "Ton parcours", sub: "Des repères généraux, pas un calendrier : chacun avance à son rythme.",

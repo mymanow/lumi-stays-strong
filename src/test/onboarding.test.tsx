@@ -363,17 +363,6 @@ describe("paywall result screen", () => {
   });
 });
 
-describe("payment simulation (test only)", () => {
-  it("jumps from the plan pitch to the post-payment screen without writing any subscription", () => {
-    Object.assign(profile, { onboarding_step: 19 });
-    render(<Component />);
-    fireEvent.click(screen.getByRole("button", { name: en.pitch.simulate }));
-    expect(updateProfile).toHaveBeenCalledWith({ onboarding_completed: true, onboarding_step: 20 });
-    expect(navigateMock).toHaveBeenCalledWith({ to: "/subscribe/success", search: { simulate: "1" } });
-    expect(updateProfile.mock.calls.some(([p]) => JSON.stringify(p).includes("subscri"))).toBe(false);
-  });
-});
-
 describe("information screens honesty", () => {
   it("cites the study where it was really published", () => {
     expect(JSON.stringify(fr.info)).toContain("Clinical Psychological Science, 8(3), 450–463");

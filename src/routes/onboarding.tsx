@@ -12,7 +12,7 @@ import { AloneScreen } from "@/components/hold/AloneScreen";
 import { ReviewsScreen, reviewsAvailable } from "@/components/hold/ReviewsScreen";
 import { PlanReady } from "@/components/hold/PlanReady";
 import { CompanionShowcase } from "@/components/hold/CompanionShowcase";
-import { SHOW_COMPANION_SHOWCASE, SHOW_ONBOARDING_INTRO, SHOW_PLAN_PITCH, SIMULATE_PAYMENT } from "@/config/app";
+import { SHOW_COMPANION_SHOWCASE, SHOW_ONBOARDING_INTRO, SHOW_PLAN_PITCH } from "@/config/app";
 import { PaywallResult } from "@/components/hold/PaywallResult";
 import { PlanPitch } from "@/components/hold/PlanPitch";
 import type { PlanKey } from "@/config/whop";
@@ -344,8 +344,7 @@ function Onboarding() {
           <div className={`${outClass} mx-auto flex min-h-svh max-w-[480px] flex-col px-6 pb-4 pt-3`}>
             <PaywallResult plan={plan} onPlan={setPlan} celebrate={celebrateResult} onCelebrated={() => setCelebrateResult(false)} onBack={() => transition(() => go(SHOW_PLAN_PITCH ? 19 : notifyScreenApplicable() ? 18 : 17), "back")}
               onStart={() => { void complete(); setCheckoutOpen(true); }}
-              onSkip={() => void finish()}
-              onSimulate={() => { void complete(); navigate({ to: "/subscribe/success", search: { simulate: "1" } }); }} />
+              onSkip={() => void finish()} />
           </div>
           {checkoutOpen && <Suspense fallback={null}><CheckoutSheet open={checkoutOpen} onOpenChange={setCheckoutOpen} plan={plan} /></Suspense>}
         </Stage>
@@ -354,11 +353,6 @@ function Onboarding() {
       body = <PlanPitch value={plan} onChange={setPlan} />;
       tone = "dusk";
       onNext = () => { setCelebrateResult(true); void go(20); };
-      if (SIMULATE_PAYMENT) {
-        // Preview only: jump to the post-payment screen without paying or creating any subscription.
-        skipLabel = t("pitch.simulate");
-        onSkip = () => { void complete(); navigate({ to: "/subscribe/success", search: { simulate: "1" } }); };
-      }
       break;
   }
 

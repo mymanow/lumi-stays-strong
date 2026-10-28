@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Lumi } from "@/components/hold/Lumi";
 import { AccountLinker } from "@/components/hold/AccountLinker";
 import { Stage } from "@/components/hold/Common";
-import { APP_NAME, SIMULATE_PAYMENT } from "@/config/app";
+import { APP_NAME } from "@/config/app";
 
 export const Route = createFileRoute("/subscribe/success")({
   head: () => ({
@@ -20,8 +20,7 @@ export const Route = createFileRoute("/subscribe/success")({
     ],
   }),
   // Whop appends `payment` and `status` (succeeded | failed | canceled) after an off-site step such as 3DS.
-  validateSearch: (s: Record<string, unknown>): { simulate?: string; status?: string } => ({
-    ...(typeof s["simulate"] === "string" ? { simulate: s["simulate"] } : {}),
+  validateSearch: (s: Record<string, unknown>): { status?: string } => ({
     ...(typeof s["status"] === "string" ? { status: s["status"] } : {}),
   }),
   component: Success,
@@ -31,11 +30,10 @@ function Success() {
   const { t } = useI18n();
   const { session, isAnonymous, reload } = useApp();
   const search = Route.useSearch();
-  const simulated = SIMULATE_PAYMENT && !!search.simulate; // preview from the pitch page: nothing is paid or stored
   const failed = search.status === "failed" || search.status === "canceled"; // a declined or abandoned off-site step lands here too
-  const [state, setState] = useState<"pending" | "active" | "late">(simulated ? "active" : "pending");
+  const [state, setState] = useState<"pending" | "active" | "late">("pending");
   useEffect(() => {
-    if (simulated || failed || !session) return;
+    if (failed || !session) return;
     let tries = 0;
     const id = setInterval(async () => {
       tries++;
@@ -44,7 +42,7 @@ function Success() {
       else if (tries >= 10) { setState("late"); clearInterval(id); }
     }, 1500);
     return () => clearInterval(id);
-  }, [session, reload, simulated, failed]);
+  }, [session, reload, failed]);
   const active = state === "active";
   if (failed) {
     return (
@@ -64,7 +62,6 @@ function Success() {
     <Stage tone="dusk">
       <div className="relative mx-auto flex min-h-svh max-w-[480px] flex-col items-center px-6 pb-8 pt-8 text-center text-white">
         <p className="font-display text-3xl">{APP_NAME}</p>
-        {simulated && <p className="mt-2 rounded-full bg-[#f4b94e] px-3 py-1 text-xs font-semibold text-[#2e3865]">{t("subscribe.simulated")}</p>}
         <div className="flex flex-1 flex-col items-center justify-center">
           {/* Sunrise: a warm light rises behind Lumi, a ring of small stars slowly orbits her. */}
           <div className="relative flex h-[280px] w-[280px] items-center justify-center">
@@ -79,7 +76,7 @@ function Success() {
           <h1 className={`mt-8 text-4xl leading-tight ${active ? "fade-up" : ""}`} style={{ "--d": "700ms" } as React.CSSProperties}>{active ? t("subscribe.successTitle") : t("subscribe.successPending")}</h1>
           <p className={`mt-3 text-lg ${active ? "fade-up" : ""}`} style={{ "--d": "1000ms" } as React.CSSProperties} aria-live="polite">{active ? t("subscribe.successBody") : state === "late" ? t("subscribe.successLate") : ""}</p>
         </div>
-        {active && isAnonymous && !simulated && (
+        {active && isAnonymous && (
           <div className="glass fade-up mb-4 w-full rounded-[24px] p-5 text-left" style={{ "--d": "1200ms" } as React.CSSProperties}>
             <p className="font-semibold">{t("subscribe.secureTitle")}</p>
             <p className="mb-4 mt-1 text-sm text-white/80">{t("subscribe.secureBody")}</p>
