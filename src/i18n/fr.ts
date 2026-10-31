@@ -371,7 +371,7 @@ export const fr = {
     google: "Continuer avec Google", apple: "Continuer avec Apple",
     linked: "Compte sauvegardé : {email}", invalid: "Adresse e-mail invalide.", error: "L'envoi a échoué. Réessaie dans un instant.",
   },
-  signin: { title: "Content·e de te revoir.", sub: "Connecte-toi avec ton compte Whop pour retrouver ton parcours.", whop: "Se connecter avec Whop", noAccount: "Aucun compte Hold n'est lié à ce compte Whop.", unverified: "Confirme d'abord ton adresse e-mail sur Whop, puis réessaie." },
+  signin: { title: "Content de te revoir.", sub: "Connecte-toi avec ton compte Whop pour retrouver ton parcours.", whop: "Se connecter avec Whop", noAccount: "Aucun compte Hold n'est lié à ce compte Whop.", unverified: "Confirme d'abord ton adresse e-mail sur Whop, puis réessaie." },
   home: {
     since: "Sans contact depuis",
     units: { d: "jours", h: "heures", m: "min", s: "sec" },
