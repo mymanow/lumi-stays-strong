@@ -57,7 +57,7 @@ export const fr = {
       otherTitle: "Les autres applis",
       others: "Une aide ponctuelle",
       tableTitle: "Tout ce que tu obtiens",
-      without: "Sans soutien",
+      without: "sans soutien",
       yes: "Oui", no: "Non",
       rows: [
         "Stopper les ruminations quand l'envie de craquer arrive",
