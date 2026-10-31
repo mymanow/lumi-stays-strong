@@ -63,7 +63,9 @@ function History() {
             <Card key={c.id} className="p-4">
               <div className="flex flex-wrap items-baseline justify-between gap-2">
                 <p className="font-medium capitalize">{fmt(c.date + "T12:00:00")}</p>
-                <p className="text-sm text-muted-foreground">{t("history.mood", { n: c.mood })} · {t("history.urge", { n: c.urge })}</p>
+                <p className="text-sm text-muted-foreground">
+                  {c.day_outcome ? t(`checkin.outcome.${c.day_outcome}`) : [c.mood !== null && t("history.mood", { n: c.mood }), c.urge !== null && t("history.urge", { n: c.urge })].filter(Boolean).join(" · ")}
+                </p>
               </div>
               {erp(c).length > 0 && (
                 <ul className="mt-2 flex flex-wrap gap-1.5">

@@ -1,4 +1,5 @@
-export type CheckinRow = { date: string; mood: number; urge: number; triggers: string[] | null };
+export type CheckinRow = { date: string; mood: number | null; urge: number | null; triggers: string[] | null };
+const nums = (xs: (number | null)[]) => xs.filter((x): x is number => typeof x === "number");
 export type EventRow = { type: string; trigger: string | null };
 
 const DAY = 86400000;
@@ -36,10 +37,10 @@ export function weekSummary(checkins: CheckinRow[], today = new Date()): WeekSum
   const prev = checkins.filter((c) => c.date >= start14 && c.date < start7);
   return {
     count: last.length,
-    mood: avg(last.map((c) => c.mood)),
-    urge: avg(last.map((c) => c.urge)),
-    moodTrend: trend(last.map((c) => c.mood), prev.map((c) => c.mood)),
-    urgeTrend: trend(last.map((c) => c.urge), prev.map((c) => c.urge)),
+    mood: avg(nums(last.map((c) => c.mood))),
+    urge: avg(nums(last.map((c) => c.urge))),
+    moodTrend: trend(nums(last.map((c) => c.mood)), nums(prev.map((c) => c.mood))),
+    urgeTrend: trend(nums(last.map((c) => c.urge)), nums(prev.map((c) => c.urge))),
   };
 }
 

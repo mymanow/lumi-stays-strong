@@ -1,4 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { z } from "zod";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -8,6 +9,7 @@ import { Card } from "@/components/hold/Common";
 import { PhaseCard } from "@/components/hold/PhaseCard";
 import { MilestoneBanner } from "@/components/hold/MilestoneBanner";
 import { NoContactEditor } from "@/components/hold/NoContactEditor";
+import { CheckinSheet } from "@/components/hold/CheckinSheet";
 import { ReminderControl } from "@/components/hold/ReminderControl";
 import { checkMilestone } from "@/lib/milestones";
 import { Lumi } from "@/components/hold/Lumi";
@@ -19,6 +21,7 @@ import { logEvent } from "@/lib/events";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/")({
+  validateSearch: z.object({ checkin: z.literal(1).optional() }),
   head: () => ({
     meta: [
       { property: "og:type", content: "website" },
@@ -54,6 +57,11 @@ function Home() {
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [reminderOpen, setReminderOpen] = useState(false);
+  // "?checkin=1" (old /checkin links, notifications) opens the check-in sheet.
+  const wantsCheckin = Route.useSearch().checkin === 1;
+  const navigate = useNavigate();
+  const [checkinOpen, setCheckinOpen] = useState(wantsCheckin);
+  useEffect(() => { if (wantsCheckin) { setCheckinOpen(true); void navigate({ to: "/", search: {}, replace: true }); } }, [wantsCheckin, navigate]);
   const [trigger, setTrigger] = useState<string | null>(null);
   const [note, setNote] = useState("");
   const [celebrate, setCelebrate] = useState<number | null>(null);
@@ -132,12 +140,12 @@ function Home() {
             </span>
             <p className="mt-4 font-display text-[32px] leading-tight">{streakTitle}</p>
             <p className="mt-1 text-muted-foreground">{t("home.streakSub")}</p>
-            <Link to="/checkin" className="relative mx-auto mt-5 inline-flex min-h-12 items-center gap-2 rounded-full bg-white px-7 text-[15px] font-bold text-[#2e3865] shadow-[0_10px_24px_-12px_rgba(46,56,101,0.55)]">
+            <button type="button" onClick={() => setCheckinOpen(true)} className="relative mx-auto mt-5 inline-flex min-h-12 items-center gap-2 rounded-full bg-white px-7 text-[15px] font-bold text-[#2e3865] shadow-[0_10px_24px_-12px_rgba(46,56,101,0.55)]">
               {t("home.checkinShort")}
               {checkin.isSuccess && !checkin.data && (
                 <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#e5566b] px-1 text-[11px] font-bold text-white" aria-label={t("home.checkinPending")}>1</span>
               )}
-            </Link>
+            </button>
             <button type="button" onClick={() => setReminderOpen(true)} className="mx-auto mt-1 flex min-h-11 items-center gap-1.5 px-3 text-sm text-muted-foreground">
               <Bell aria-hidden className="h-3.5 w-3.5" />{reminder.enabled ? t("home.reminderAt", { time: reminder.time }) : t("home.reminderShort")}
             </button>
@@ -197,6 +205,7 @@ function Home() {
       </div>
 
       <NoContactEditor open={editOpen} onOpenChange={setEditOpen} />
+      <CheckinSheet open={checkinOpen} onOpenChange={setCheckinOpen} onBroke={() => setOpen(true)} />
 
       <Dialog open={reminderOpen} onOpenChange={setReminderOpen}>
         <DialogContent className="rounded-[28px] border-white/70 bg-[#e9e6fb] text-[#2e3865]">

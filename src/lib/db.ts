@@ -9,7 +9,10 @@ import type { Database } from "@/integrations/supabase/types";
 type Pub = Database["public"];
 type T = Pub["Tables"];
 
-type CheckinErp = { emotions: string[]; relational: string[]; physical: string[] };
+type CheckinErp = { emotions: string[]; relational: string[]; physical: string[]; day_outcome: DayOutcome | null };
+export type DayOutcome = "stayed" | "resisted" | "broke";
+/** Mood and urge are no longer asked (0013_checkin_sheet): nullable. */
+type CheckinScores = { mood: number | null; urge: number | null };
 type ProfileExtra = { timezone: string | null };
 
 export type CoachCreditsRow = { user_id: string; balance: number; welcome_granted_at: string | null; premium_refill_at: string | null; updated_at: string };
@@ -22,9 +25,9 @@ export type HoldDatabase = Omit<Database, "public"> & {
   public: Omit<Pub, "Tables" | "Functions"> & {
     Tables: Omit<T, "checkins" | "profiles"> & {
       checkins: {
-        Row: T["checkins"]["Row"] & CheckinErp;
-        Insert: T["checkins"]["Insert"] & Partial<CheckinErp>;
-        Update: T["checkins"]["Update"] & Partial<CheckinErp>;
+        Row: Omit<T["checkins"]["Row"], "mood" | "urge"> & CheckinScores & CheckinErp;
+        Insert: Omit<T["checkins"]["Insert"], "mood" | "urge"> & Partial<CheckinScores> & Partial<CheckinErp>;
+        Update: Omit<T["checkins"]["Update"], "mood" | "urge"> & Partial<CheckinScores> & Partial<CheckinErp>;
         Relationships: T["checkins"]["Relationships"];
       };
       profiles: {

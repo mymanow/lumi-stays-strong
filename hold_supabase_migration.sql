@@ -405,3 +405,13 @@ REVOKE ALL ON FUNCTION public.coach_credit_refund(uuid) FROM PUBLIC, anon, authe
 GRANT EXECUTE ON FUNCTION public.coach_credits_sync(uuid) TO service_role;
 GRANT EXECUTE ON FUNCTION public.coach_credit_spend(uuid) TO service_role;
 GRANT EXECUTE ON FUNCTION public.coach_credit_refund(uuid) TO service_role;
+
+
+-- ===== 0013_checkin_sheet =====
+-- Check-in en feuille : É (ce que je ressens), R (ce qui m'aide à me connecter), P (ce que mon corps demande),
+-- puis « Comment s'est passée ta journée côté sans-contact ? ». Humeur et envie ne sont plus demandées : nullables.
+ALTER TABLE public.checkins ALTER COLUMN mood DROP NOT NULL;
+ALTER TABLE public.checkins ALTER COLUMN urge DROP NOT NULL;
+ALTER TABLE public.checkins
+  ADD COLUMN IF NOT EXISTS day_outcome text CHECK (day_outcome IS NULL OR day_outcome IN ('stayed', 'resisted', 'broke'));
+COMMENT ON COLUMN public.checkins.day_outcome IS 'stayed = sans contact, resisted = tenté·e mais résisté, broke = contact rompu.';
